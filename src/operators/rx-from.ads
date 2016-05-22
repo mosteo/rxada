@@ -1,3 +1,5 @@
+with Rx.Operator;
+
 generic
    type T is private;
    type TA is array (Integer range <>) of T;
@@ -6,7 +8,7 @@ package Rx.From is
 
    pragma Elaborate_Body;
 
-   package Output is new Rx.Base (T);
+   package Output is new Rx.Operator (T);
 
 private
 
@@ -17,7 +19,5 @@ private
    overriding
    procedure Subscribe (O : in out Observable;
                         S : access Output.Observer'Class);
-
-   Instance : aliased Observable := (Last => VA'Length, VA => From.VA);
 
 end Rx.From;

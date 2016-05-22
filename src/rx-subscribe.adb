@@ -1,3 +1,5 @@
+with Ada.Text_IO; use Ada.Text_IO;
+
 package body Rx.Subscribe is
 
    --  SPEC
@@ -27,6 +29,6 @@ package body Rx.Subscribe is
    O : aliased Observer;
 
 begin
-   Debug("Subscribing...");
+   Put_Line ("Subscribing...");
    Observable.Instance.Subscribe (O'Access);
 end Rx.Subscribe;

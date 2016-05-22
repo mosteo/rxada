@@ -1,5 +1,7 @@
 package body Rx.Count is
 
+   Instance : aliased Operator;
+
    overriding procedure OnNext (This : in out Operator; V : Input.T) is
    begin
       This.Count := This.Count + 1;
