@@ -1,5 +1,7 @@
 package body Rx.From is
 
+   Instance : aliased Observable := (Last => VA'Length, VA => From.VA);
+
    ---------------
    -- Subscribe --
    ---------------

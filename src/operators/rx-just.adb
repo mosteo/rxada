@@ -1,5 +1,7 @@
 package body Rx.Just is
 
+   Instance : aliased Observable := (V => Holder.Hold (Just.V));
+
    ---------------
    -- Subscribe --
    ---------------
@@ -14,5 +16,6 @@ package body Rx.Just is
    end Subscribe;
 
 begin
-      Output.Instance := Instance'Access;
+   Output.Instance := Instance'Access;
+   -- No memory allocation, so no leak... but I bet this is thoroughly broken for concurrent access
 end Rx.Just;
