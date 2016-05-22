@@ -2,10 +2,10 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 package body Rx is
 
-   procedure Writeln (I : Integer) is
+   procedure Put_Line (I : Integer) is
    begin
       Put_Line (I'Img);
-   end Writeln;
+   end Put_Line;
 
    procedure Debug (S : String) is
    begin
