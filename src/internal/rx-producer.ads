@@ -4,6 +4,8 @@ generic
    type T (<>) is private;
 package Rx.Producer is
 
+   pragma Preelaborate;
+
    package Downstream is new Rx.Consumer (T);
 
    subtype Observer is Downstream.Observer;

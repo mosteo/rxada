@@ -1,5 +1,7 @@
 package body Rx.Map is
 
+   Instance : aliased Operator;
+
    ------------
    -- OnNext --
    ------------

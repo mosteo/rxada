@@ -1,11 +1,17 @@
 with Rx.Producer;
 
+--  An operator transforms or produces data
+
 generic
-   with package   Bind is new Rx.Producer (<>);
-   with procedure OnSubscribe (S : access Bind.Observer'Class) is null;
-   with procedure OnNext is null;
+   type T (<>) is private;
 package Rx.Operator is
 
-   Observable : access Bind.Observable'Class;
+   pragma Preelaborate;
+
+   package Binding is new Rx.Producer (T);
+   subtype Observable is Binding.Observable;
+   subtype Observer   is Binding.Observer;
+
+   Instance : access Binding.Observable'Class;
 
 end Rx.Operator;

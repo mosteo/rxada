@@ -1,17 +1,22 @@
+with Rx.Operator;
+with Rx.Consumer.Vectors;
+
 generic
-   with package Input is new Rx.Base (<>);
+   with package Input is new Rx.Operator (<>);
    type Result (<>) is private;
    with function Transform (I : Input.T) return Result;
 package Rx.Map is
 
    pragma Elaborate_Body;
 
-   package Output is new Rx.Base (Result);
+   package Output is new Rx.Operator (Result);
 
 private
 
+   package SM is new Output.Binding.Downstream.Vectors;
+
    type Operator is new Output.Observable and Input.Observer with record
-      Subscribers : Output.Observer_Vectors.Vector;
+      Subscribers : SM.SubscriptorManager;
    end record;
 
    overriding
@@ -20,7 +25,5 @@ private
    overriding
    procedure Subscribe (O : in out Operator;
                         S : access Output.Observer'Class);
-
-   Instance : aliased Operator;
 
 end Rx.Map;
