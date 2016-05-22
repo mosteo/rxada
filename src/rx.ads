@@ -18,6 +18,7 @@ package Rx is
 
       procedure OnNext      (This : in out Observer; V : T) is abstract;
       procedure OnCompleted (This : in out Observer) is null;
+
       procedure Subscribe   (O : in out Observable;
                              S : access Observer'Class) is abstract;
 
