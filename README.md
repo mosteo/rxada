@@ -19,10 +19,10 @@ With RxAda this becomes (tested with gnat GPL 2015 and gnat from Ubuntu 16.10):
 #!Ada
 
 declare
-   package  Just    is new Rx.Just("Hello, world");
-   function Length(S : String) return Natural is (S'Length);
-   package  Str2Len is new Rx.Map(Just.Output, Integer, Length);
-   package  Subs    is new Rx.Subscribe(Str2Len.Output, Put_Line);
+   package  Just    is new Rx.Just ("Hello, world");
+   function Length (S : String) return Natural is (S'Length);
+   package  Str2Len is new Rx.Map (Just.Output, Integer, Length);
+   package  Subs    is new Rx.Subscribe (Str2Len.Output, Put_Line);
 ```
 
 Not the tersest but for Ada I think its a-OK. And we keep compile time type checks and the rest of marvels of Ada.
