@@ -27,7 +27,7 @@ declare
 
 Not the tersest but for Ada I think its a-OK. And we keep compile time type checks and the rest of marvels of Ada.
 
-For more examples of what is implemented check the file [rx-examples.adb](Link URL)
+For more examples of what is implemented check the file [rx-examples.adb](https://bitbucket.org/amosteo/rxada/src/bde706ee0b3906abb94a88548870eddf86d452cf/src/rx-examples.adb?at=default&fileviewer=file-view-default)
 
 ### Rationale and design goals ###
 
@@ -39,7 +39,7 @@ After some tries, I settled for a driving goal: make the code as tiny and simila
 
 * It seems simple from the point of view of a new user, no complex marshallings/pre-instantiations (I'm looking at you, GtkAda and Booch components). I like the look of the result and find it understandable. The package names can be used for additional in-code documentation.
 * Each operator chaining, which in Java is a method call, here is a generic instantiation.
-* Each generic takes the resulting package of the previous instantiation. I had never used generic packages as formals of another generic; I never saw the need but here it fits naturally somehow. Check [rx-map.ads]() for example.
+* Each generic takes the resulting package of the previous instantiation. I had never used generic packages as formals of another generic; I never saw the need but here it fits naturally somehow. Check [rx-map.ads](https://bitbucket.org/amosteo/rxada/src/bde706ee0b3906abb94a88548870eddf86d452cf/src/operators/rx-map.ads?at=default&fileviewer=file-view-default) for example.
 * There is no dynamic memory involved, so no possibility of leaks. But also, everything is generated at compile time, so I'm unsure about the full implications yet. Also, it is (or will be) probably horribly broken when I introduce Schedulers. Or when using a same stream from concurrent threads. I guess at some point I will need some kind of smart pointer.
 * BIG CON: gnat gets very slow compiling these chains of generics.
 
