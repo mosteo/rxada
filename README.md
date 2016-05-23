@@ -1,6 +1,6 @@
 # README #
 
-RxAda, an experiment on porting ReactiveX to Ada. At this time, there are but a few operators available and nothing really fancy yet. This attempt is more the result of my curiosity on how it could be done than of a real need.
+RxAda, an experiment on porting [ReactiveX](http://reactivex.io/) to Ada. At this time, there are but a few operators available and nothing really fancy yet. This attempt is more the result of my curiosity on how it could be done than of a real need.
 
 Quick example. Suppose a Java 8 case where we print the length of a string:
 
