@@ -1,3 +1,4 @@
+with Ada.Tags;
 with Ada.Text_IO; use Ada.Text_IO;
 
 package body Rx.Subscribe is
@@ -29,6 +30,6 @@ package body Rx.Subscribe is
    O : aliased Observer;
 
 begin
-   Put_Line ("Subscribing...");
+   Put_Line ("Subscribing: " & Ada.Tags.Expanded_Name (Observable.Instance'Tag));
    Observable.Instance.Subscribe (O'Access);
 end Rx.Subscribe;
