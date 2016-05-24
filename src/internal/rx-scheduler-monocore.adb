@@ -1,6 +1,8 @@
 with Ada.Real_Time;
 
-package body Rx.Scheduler is
+with Rx.Debug;
+
+package body Rx.Scheduler.Monocore is
 
    type Run_Event is new TE.Timing_Event with record
       R : Runnable_Holder;
@@ -28,10 +30,8 @@ package body Rx.Scheduler is
    -- Schedule --
    --------------
 
-   procedure Schedule
-     (Where : in out Object;
-      After : Duration;
-      What  : Runnable'Class)
+   overriding
+   procedure Schedule (Where : in out Object; What : Runnable'Class; After : Duration := 0.0)
    is
       E : Run_Event;
    begin
@@ -55,9 +55,9 @@ package body Rx.Scheduler is
             R.Constant_Reference.Run;
          exception
             when E : others =>
-               null;
+               Debug.Print (E);
          end;
       end loop;
    end Runner;
 
-end Rx.Scheduler;
+end Rx.Scheduler.Monocore;

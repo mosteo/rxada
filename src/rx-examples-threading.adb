@@ -1,18 +1,23 @@
 with Ada.Text_IO; use Ada.Text_IO;
 
+with Rx.Debug;
 with Rx.Interval;
 with Rx.Subscribe;
 
 procedure Rx.Examples.Threading is
 
-   procedure Put_Line (I : Integer) is
+   procedure Main is
+      package I1 is new Rx.Interval (1.0);
+      package I2 is new Rx.Subscribe (I1.Output, Debug.Put_Line);
    begin
-      Put_Line (I'Img);
-   end Put_Line;
+      null;
+   end Main;
 
-   package I1 is new Rx.Interval (1.0);
-   package I2 is new Rx.Subscribe (I1.Output, Put_Line);
 
 begin
-   Put_Line ("Never reached");
+   Main;
+   Put_Line ("After main");
+exception
+   when E : others =>
+      Debug.Print (E);
 end Rx.Examples.Threading;

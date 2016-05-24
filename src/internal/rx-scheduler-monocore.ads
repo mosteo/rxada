@@ -4,18 +4,15 @@ with Ada.Containers.Synchronized_Queue_Interfaces;
 with Ada.Containers.Unbounded_Synchronized_Queues;
 with Ada.Real_Time.Timing_Events;
 
-package Rx.Scheduler is
+package Rx.Scheduler.Monocore is
 
    pragma Elaborate_Body;
 
-   type Object (Workers : Positive := 1) is tagged limited private;
-
-   type Runnable is interface;
-
-   procedure Run (This : Runnable) is null;
+   type Object is limited new Scheduler.Object with private;
 
    --  Schedule a code to be run at a certain point from now, in a certain scheduler (thread)
-   procedure Schedule (Where : in out Object; After : Duration; What : Runnable'Class);
+   overriding
+   procedure Schedule (Where : in out Object; What : Runnable'Class; After : Duration := 0.0);
 
 private
 
@@ -40,28 +37,9 @@ private
       Queue : Runnable_Queues.List;
    end Safe;
 
-   pragma Unimplemented ("Worker pools, as in RxJava");
-   type Object (Workers : Positive := 1) is tagged limited record
+   type Object is limited new Scheduler.Object with record
       Thread  : Runner (Object'Access);
       Queue   : Safe (Object'Access);
    end record;
 
-end Rx.Scheduler;
-with Ada.Containers.Indefinite_Doubly_Linked_Lists;
-with Ada.Containers.Indefinite_Holders;
-with Ada.Containers.Synchronized_Queue_Interfaces;
-with Ada.Containers.Unbounded_Synchronized_Queues;
-with Ada.Real_Time.Timing_Events;
-
-package Rx.Scheduler is
-
-   type Object is limited interface;
-
-   type Runnable is interface;
-
-   procedure Run (This : Runnable) is null;
-
-   --  Schedule a code to be run at a certain point from now, in a certain scheduler (thread)
-   procedure Schedule (Where : in out Object; After : Duration; What : Runnable'Class) is abstract;
-
-end Rx.Scheduler;
+end Rx.Scheduler.Monocore;
