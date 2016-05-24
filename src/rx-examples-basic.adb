@@ -8,7 +8,7 @@ with Rx.Map;
 with Rx.Subscribe;
 with Rx.Util;
 
-procedure Rx.Examples is
+procedure Rx.Examples.Basic is
 
    procedure Put_Line (I : Integer) is
    begin
@@ -35,4 +35,4 @@ procedure Rx.Examples is
 
 begin
    null;
-end Rx.Examples;
+end Rx.Examples.Basic;
