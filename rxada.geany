@@ -29,8 +29,8 @@ long_line_column=72
 
 [files]
 current_page=0
-FILE_NAME_0=40;Ada;0;EUTF-8;1;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Frx.ads;0;4
-FILE_NAME_1=289;Ada;0;EUTF-8;1;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Finternal%2Frx-consumer.ads;0;4
+FILE_NAME_0=2461;Pascal;0;EUTF-8;0;1;0;%2Fmedia%2Fjano%2F7C9B-6206%2FLa%20mazmorra%20de%20Antonio%2FMuestraProfesorCorregido.pas;0;8
+FILE_NAME_1=3006;Pascal;0;EISO-8859-1;0;1;0;%2Fhome%2Fjano%2Flocal%2Ffundinf%2Fproyectos%2Frpg%2Frpglib.pas;0;3
 
 [VTE]
 last_dir=/home/jano
@@ -39,7 +39,10 @@ last_dir=/home/jano
 AdaFT_01_LB=_Build
 AdaFT_01_CM=gprbuild
 AdaFT_01_WD=%p
-filetypes=Ada;
+filetypes=Ada;Pascal;
 AdaFT_00_LB=_Compile
 AdaFT_00_CM=gprbuild -c "%d/%f"
 AdaFT_00_WD=%p
+PascalFT_00_LB=_Compile
+PascalFT_00_CM=fpc -gl "%f"
+PascalFT_00_WD=
