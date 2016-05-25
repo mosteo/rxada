@@ -7,7 +7,7 @@ with Rx.Subscribe;
 procedure Rx.Examples.Threading is
 
    procedure Main is
-      package I1 is new Rx.Interval (1.0);
+      package I1 is new Rx.Interval.Producer (1.0);
       package I2 is new Rx.Subscribe (I1.Output, Debug.Put_Line);
    begin
       null;
