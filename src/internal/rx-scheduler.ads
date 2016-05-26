@@ -1,14 +1,18 @@
-package Rx.Scheduler is
+with Ada.Real_Time.Timing_Events;
 
-   pragma Pure;
+package Rx.Scheduler is
 
    type Object is limited interface;
 
-   type Runnable is interface;
+   type Runnable is abstract tagged limited private;
 
-   procedure Run (This : Runnable) is null;
+   procedure Run (This : in out Runnable) is null;
 
    --  Schedule a code to be run at a certain point from now, in a certain scheduler (thread)
-   procedure Schedule (Where : in out Object; What : Runnable'Class; After : Duration := 0.0) is abstract;
+   procedure Schedule (Where : in out Object; What : in out Runnable'Class; After : Duration := 0.0) is abstract;
+
+private
+
+   type Runnable is abstract new Ada.Real_Time.Timing_Events.Timing_Event with null record;
 
 end Rx.Scheduler;

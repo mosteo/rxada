@@ -1,4 +1,3 @@
-with Ada.Exceptions;
 
 with Rx.Root;
 

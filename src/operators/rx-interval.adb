@@ -1,54 +1,30 @@
-with Rx.Root;
-with Rx.Scheduler;
+with Rx.Debug;
 
 package body Rx.Interval is
 
-   --     Instance : aliased Observable;
-
-   package Base is new Rx.Operator (Positive);
-
-   type Event is new Rx.Scheduler.Runnable with record
-      Count    : Positive;
-      Observer : access Root.Observer'Class;
-      Sched    : access Scheduler.Object'Class;
-   end record;
+   Instance : aliased Observable;
 
    overriding
-   procedure Run (E : Event);
-
-   overriding
-   procedure Run (E : Event) is
+   procedure Run (E : in out Event) is
    begin
-      E.Sched.Schedule (Event'(E.Count + 1, E.Observer, E.Sched), 1.0);
-      Base.Observer'Class (E.Observer.all).OnNext (E.Count);
+      E.Count := E.Count + 1;
+      E.Sched.Schedule (E, Pause);
+      E.Observer.OnNext (E.Count);
+   exception
+      when E : others =>
+         Rx.Debug.Print (E);
    end Run;
 
-   package body Producer is
-
-      overriding
-      procedure Subscribe (O : in out Observable;
-                           S : access Output.Observer'Class) is
-      begin
-         Scheduler.Schedule (Event'(1, S, Scheduler), 1.0);
-      end Subscribe;
-
-      Instance : aliased Observable;
-
+   overriding
+   procedure Subscribe (O : in out Observable;
+                        S : access Output.Observer'Class)
+   is
    begin
-      Output.Instance := Instance'Access;
-   end Producer;
+      O.E.Sched       := Scheduler;
+      O.E.Observer    := S;
+      Scheduler.Schedule (O.E, First_Pause);
+   end Subscribe;
 
-   ---------------
-   -- Subscribe --
-   ---------------
-
---     overriding
---     procedure Subscribe
---       (O : in out Observable;
---        S : access Base.Observer'Class)
---     is
---     begin
---        Scheduler.Schedule (Event'(1, S), 1.0);
---     end Subscribe;
-
+begin
+   Output.Instance := Instance'Access;
 end Rx.Interval;
