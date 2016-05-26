@@ -1,3 +1,4 @@
+with Rx.Scheduler.Immediate;
 with Rx.Scheduler.Monocore;
 use Rx.Scheduler;
 
@@ -8,8 +9,9 @@ package Rx.Schedulers is
    IO          : constant Object;
    Background  : constant Object;
    Computation : constant Object;
+   Immediate   : constant Object;
 
-   --  Still missing: NewThread, immediate, trampoline (yuks!)
+   --  Still missing: NewThread, trampoline (yuks!)
 
 private
 
@@ -21,5 +23,8 @@ private
 
    Real_Comp   : aliased Monocore.Object;
    Computation : constant Object := Real_Comp'Access;
+
+   Real_Immed  : aliased Scheduler.Immediate.Object;
+   Immediate   : constant Object := Real_Immed'Access;
 
 end Rx.Schedulers;
