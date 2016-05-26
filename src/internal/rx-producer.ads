@@ -11,7 +11,7 @@ package Rx.Producer is
 
    subtype Observer is Downstream.Observer;
 
-   type Observable is abstract new Root.Observable with null record;
+   type Observable is abstract limited new Root.Observable with null record;
 
    procedure Subscribe   (O : in out Observable;
                           S : access Observer'Class) is abstract;

@@ -17,12 +17,14 @@ package body Rx.Subscribe is
 
    overriding
    procedure OnNext (This : in out Observer; V : Observable.T) is
+      pragma Unreferenced (This);
    begin
       OnNext (V);
    end OnNext;
 
    overriding
    procedure OnCompleted (This : in out Observer) is
+      pragma Unreferenced (This);
    begin
       OnCompleted;
    end OnCompleted;

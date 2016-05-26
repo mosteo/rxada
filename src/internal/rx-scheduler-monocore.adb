@@ -4,24 +4,20 @@ with Rx.Debug;
 
 package body Rx.Scheduler.Monocore is
 
-   type Run_Event is new TE.Timing_Event with record
-      R : Runnable_Holder;
-      S : Object_Access;
-   end record;
-
    protected body Safe is
 
       procedure OnEvent (Event : in out TE.Timing_Event) is
-         RE : Run_Event renames Run_Event (TE.Timing_Event'Class (Event));
+         RE : Runnable'Class renames Runnable'Class (TE.Timing_Event'Class (Event));
       begin
-         Queue.Append (RE.R.Element);
+         Debug.Put_Line ("RING!");
+         Queue.Append (RE'Unchecked_Access);
       end OnEvent;
 
-      entry Get (R : out Runnable_Holder)
+      entry Get (R : out Runnable_Access)
         when not Queue.Is_Empty
       is
       begin
-         R := To_Holder (Queue.First_Element);
+         R := Queue.First_Element;
          Queue.Delete_First;
       end Get;
    end Safe;
@@ -31,13 +27,10 @@ package body Rx.Scheduler.Monocore is
    --------------
 
    overriding
-   procedure Schedule (Where : in out Object; What : Runnable'Class; After : Duration := 0.0)
+   procedure Schedule (Where : in out Object; What : in out Runnable'Class; After : Duration := 0.0)
    is
-      E : Run_Event;
    begin
-      E.R := To_Holder (What);
-      E.S := Where.Queue.Parent;
-      TE.Set_Handler (TE.Timing_Event (E),
+      TE.Set_Handler (TE.Timing_Event (What),
                       Ada.Real_Time.To_Time_Span (After),
                       Where.Queue.OnEvent'Unrestricted_Access); -- Shouldn't be a problem... as long as de Scheduler is not going to dissapear on us?
    end Schedule;
@@ -47,14 +40,18 @@ package body Rx.Scheduler.Monocore is
    ------------
 
    task body Runner is
-      R : Runnable_Holder;
+      R : Runnable_Access;
    begin
       loop
          begin
+            Debug.Put_Line ("About to run 1");
             Parent.Queue.Get (R);
-            R.Constant_Reference.Run;
+            Debug.Put_Line ("About to run 2");
+            R.Run;
+            Debug.Put_Line ("About to run 3");
          exception
             when E : others =>
+               Debug.Put_Line ("UH OH...");
                Debug.Print (E);
          end;
       end loop;

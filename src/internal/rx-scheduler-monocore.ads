@@ -1,7 +1,4 @@
-with Ada.Containers.Indefinite_Doubly_Linked_Lists;
-with Ada.Containers.Indefinite_Holders;
-with Ada.Containers.Synchronized_Queue_Interfaces;
-with Ada.Containers.Unbounded_Synchronized_Queues;
+with Ada.Containers.Doubly_Linked_Lists;
 with Ada.Real_Time.Timing_Events;
 
 package Rx.Scheduler.Monocore is
@@ -12,7 +9,7 @@ package Rx.Scheduler.Monocore is
 
    --  Schedule a code to be run at a certain point from now, in a certain scheduler (thread)
    overriding
-   procedure Schedule (Where : in out Object; What : Runnable'Class; After : Duration := 0.0);
+   procedure Schedule (Where : in out Object; What : in out Runnable'Class; After : Duration := 0.0);
 
 private
 
@@ -25,14 +22,13 @@ private
 
    use Ada.Containers;
 
-   package Runnable_Holders is new Indefinite_Holders (Runnable'Class);
-   type Runnable_Holder is new Runnable_Holders.Holder with null record;
+   type Runnable_Access is access all Runnable'Class;
 
-   package Runnable_Queues is new Indefinite_Doubly_Linked_Lists (Runnable'Class);
+   package Runnable_Queues is new Doubly_Linked_Lists (Runnable_Access);
 
    protected type Safe (Parent : access Object'Class) is
       procedure OnEvent (Event : in out TE.Timing_Event);
-      entry Get (R : out Runnable_Holder);
+      entry Get (R : out Runnable_Access);
    private
       Queue : Runnable_Queues.List;
    end Safe;
