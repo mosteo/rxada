@@ -1,6 +1,7 @@
+with Rx.Debug;
 package body Rx.Just is
 
-   Instance : aliased Observable := (V => Holder.Hold (Just.V));
+   Instance : aliased Observable := (V => Holder.Hold (Just.V), C => <>);
 
    ---------------
    -- Subscribe --
@@ -14,6 +15,11 @@ package body Rx.Just is
       S.OnNext (O.V.Element);
       S.OnCompleted;
    end Subscribe;
+
+   overriding procedure Finalize (X : in out Control) is
+   begin
+      Debug.Put_Line ("Final");
+   end Finalize;
 
 begin
    Output.Instance := Instance'Access;
