@@ -28,9 +28,19 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=2461;Pascal;0;EUTF-8;0;1;0;%2Fmedia%2Fjano%2F7C9B-6206%2FLa%20mazmorra%20de%20Antonio%2FMuestraProfesorCorregido.pas;0;8
-FILE_NAME_1=3006;Pascal;0;EISO-8859-1;0;1;0;%2Fhome%2Fjano%2Flocal%2Ffundinf%2Fproyectos%2Frpg%2Frpglib.pas;0;3
+current_page=3
+FILE_NAME_0=606;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Frx-knot.adb;0;3
+FILE_NAME_1=548;None;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Frxada.gpr;0;3
+FILE_NAME_2=416;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Finternal%2Frx-producer.ads;0;3
+FILE_NAME_3=178;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Frx-examples-basic.adb;0;3
+FILE_NAME_4=85;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Frx-examples.ads;0;3
+FILE_NAME_5=175;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Foperators%2Frx-just.ads;0;3
+FILE_NAME_6=438;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Frx-knot.ads;0;3
+FILE_NAME_7=295;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Foperators%2Frx-just.adb;0;3
+FILE_NAME_8=0;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Finternal%2Frx-scheduler.ads;0;3
+FILE_NAME_9=225;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Frx-subscribe.ads;0;3
+FILE_NAME_10=172;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Finternal%2Frx-consumer.ads;0;3
+FILE_NAME_11=133;Ada;0;EUTF-8;0;1;0;%2Fhome%2Fjano%2Flocal%2Frxada%2Fsrc%2Frx-subscribe.adb;0;3
 
 [VTE]
 last_dir=/home/jano
@@ -46,3 +56,6 @@ AdaFT_00_WD=%p
 PascalFT_00_LB=_Compile
 PascalFT_00_CM=fpc -gl "%f"
 PascalFT_00_WD=
+EX_00_LB=_Ejecutar
+EX_00_CM="./obj/%e"
+EX_00_WD=

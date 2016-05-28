@@ -14,7 +14,7 @@ package Rx.Knot is
    procedure Subscribe (O : in out Observable; 
                         S : access Binding.Observer'Class);                        
                         
-   procedure Subscribe (O : in out Observable;
+   procedure Subscribe (O : Observable;
                         A : Binding.Action := null);
    
 private

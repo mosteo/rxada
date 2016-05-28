@@ -12,5 +12,7 @@ procedure Rx.Examples.Basic is
    --  O : RxStrings.Observable'Class := RxStrings.Just ("");
 
 begin
-   RxStrings.Just ("").Subscribe (Ada.Text_IO.Put_Line'Access);
+   RxStrings
+      .Just ("Hello, world!")
+      .Subscribe (Ada.Text_IO.Put_Line'Access);
 end Rx.Examples.Basic;
