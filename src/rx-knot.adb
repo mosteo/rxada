@@ -19,11 +19,11 @@ package body Rx.Knot is
       O.Real.Subscribe (S);
    end Subscribe;
    
-   procedure Subscribe (O : in out Observable;
+   procedure Subscribe (O : Observable;
                         A : Binding.Action := null)
    is
    begin
-      O.Subscribe (RxSubscribe.Create (A));
+      O.Real.Subscribe (RxSubscribe.Create (A));
    end;
                         
    
