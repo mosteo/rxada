@@ -9,8 +9,6 @@ procedure Rx.Examples.Basic is
       Put_Line (I'Img);
    end Put_Line;   
 
-   --  O : RxStrings.Observable'Class := RxStrings.Just ("");
-
 begin
    RxStrings
       .Just ("Hello, world!")
