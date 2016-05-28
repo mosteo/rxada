@@ -1,5 +1,4 @@
 with Rx.Consumer;
-with Rx.Root;
 
 generic
    type T (<>) is private;
@@ -11,7 +10,7 @@ package Rx.Producer is
 
    subtype Observer is Downstream.Observer;
 
-   type Observable is abstract limited new Root.Observable with null record;
+   type Observable is interface;
 
    procedure Subscribe   (O : in out Observable;
                           S : access Observer'Class) is abstract;
