@@ -1,11 +1,20 @@
-with Rx.Operator;
+with Rx.Producer;
 
 generic
-   with package   Observable is new Rx.Operator (<>);
-   with procedure OnNext (V : Observable.T) is null;
-   with procedure OnCompleted is null;
+   with package   Binding is new Rx.Producer (<>);
 package Rx.Subscribe is
 
-   pragma Elaborate_Body;
+   type Observer is new Binding.Observer with private;
+   
+   function Create (A : Binding.Action) return not null access Observer;
+   
+private
+
+   type Observer is new Binding.Observer with record
+      A : Binding.Action;
+   end record;
+   
+   overriding
+   procedure OnNext (This : in out Observer; V : Binding.T);
 
 end Rx.Subscribe;

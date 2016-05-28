@@ -14,5 +14,7 @@ package Rx.Producer is
 
    procedure Subscribe   (O : in out Observable;
                           S : access Observer'Class) is abstract;
+                          
+   type Action is access procedure (Val : T);
 
 end Rx.Producer;

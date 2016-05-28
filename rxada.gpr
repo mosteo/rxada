@@ -18,7 +18,7 @@ project RxAda is
    end Builder;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatwal.fF", "-gnatVa", "-g", "-O2", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
+      for Default_Switches ("ada") use ("-gnatwal", "-gnatVa", "-g", "-O2", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
    end Compiler;
 
    package Binder is
