@@ -17,6 +17,16 @@ package Rx.Knot is
    procedure Subscribe (O : Observable;
                         A : Binding.Action := null);
    
+   generic
+      with package Downstream is new Rx.Producer (T);
+   package Operators is 
+      
+      type Operator is access function (Val : T) return Downstream.T;
+      
+      function Map (Op : Operator) return Downstream.Observable'Class;
+      
+   end Operators;
+   
 private
 
    type Observable (Real : not null access Binding.Observable'Class) is 
