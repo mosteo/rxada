@@ -2,25 +2,23 @@ package Rx.Interfaces is
 
    pragma Pure;
 
---  These should go to different files, but I'm lazy now
-
    type Value is interface;
-
    function Image (V : Value) return String is abstract;
 
 
-
    type Observer is interface;
-
-   procedure OnNext      (This : in out Observer; V : Value'Class) is abstract;
-
-   procedure OnCompleted (This : in out Observer) is null;
-
+   procedure OnNext      (This : Observer; V : Value'Class) is abstract;
+   procedure OnCompleted (This : Observer) is null;
 
 
    type Observable is interface;
+   procedure Subscribe (Producer : Observable;
+                        Consumer : Observer'Class) is abstract;
+   procedure Subscribe (Producer : Observable'Class);
 
-   procedure Subscribe   (O : in out Observable;
-                          S :        Observer'Class) is abstract;
+   type Operator is abstract new Observable and Observer with null record;
+
+   --  Using operators will force the use of the Rosen's trick
+   function "&" (Producer : Observable'Class; Consumer : Operator'Class) return Observable'Class;
 
 end Rx.Interfaces;

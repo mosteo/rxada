@@ -12,28 +12,22 @@ package Rx.Observable is
 
    function Subscribe (O : Observable) return I.Observer'Class;
 
-      type Operator is abstract new I.Observable and I.Observer with null record;
-
    generic
       type R (<>) is private;
    package To is
 
       type Mapper is access function (V : T) return R;
 
-      function Map (M : Mapper) return Operator'Class;
+      function Map (M : Mapper) return I.Operator'Class;
 
    end To;
-
-   function "&" (L : I.Observable'Class; R : Operator'Class) return I.Observable'Class;
-
-   procedure Assemble (X : I.Observable'Class);
 
 private
 
    type Observable is new I.Observable with null record;
 
    overriding
-   procedure Subscribe   (O : in out Observable;
-                          S :        I.Observer'Class) is null;
+   procedure Subscribe   (O : Observable;
+                          S : I.Observer'Class) is null;
 
 end Rx.Observable;

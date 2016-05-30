@@ -1,4 +1,5 @@
 with Rx.Debug; use Rx.Debug;
+with Rx.Interfaces;
 with Rx.Observable;
 
 procedure Rx.Test is
@@ -10,14 +11,20 @@ procedure Rx.Test is
 
    function Length (S : String) return Integer is (S'Length);
 
-   use Strings;
+   use Rx.Interfaces;
+
+   O : constant Interfaces.Observable'Class := Strings.Just ("XXX") & StrToInt.Map (Length'Access);
 
 begin
-   Assemble (
-             Strings.Just ("XXX") &
-               StrToInt.Map (Length'Access) &
-               IntToStr.Map (Integer'Image'Access)
-             );
+   Interfaces.Subscribe (Strings.Just ("XXX") & StrToInt.Map (Length'Access));
+
+   --  (Strings.Just ("XXX") & StrToInt.Map (Length'Access))
+   O.Subscribe;
+--     Assemble (
+--               Strings.Just ("XXX") &
+--                 StrToInt.Map (Length'Access) &
+--                 IntToStr.Map (Integer'Image'Access)
+--               );
 
 --     Strings.Just ("XXX") &
 --       Strings.Map (Length'Access) >
