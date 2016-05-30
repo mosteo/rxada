@@ -1,13 +1,13 @@
 with Ada.Containers.Indefinite_Holders;
 
-generic
-   type T (<>) is private;
+with Rx.Interfaces;
+
 package Rx.Holder is
 
---  Helpers for indefinite values
+   use type Rx.Interfaces.Value;
 
-   package  Holder is new Ada.Containers.Indefinite_Holders (T);
+   package  Holder is new Ada.Containers.Indefinite_Holders (Interfaces.Value'Class);
    type     TH     is new Holder.Holder with null record;
-   function Hold (V : T) return TH renames To_Holder;
+   function Hold (V : Interfaces.Value'Class) return TH renames To_Holder;
 
 end Rx.Holder;
