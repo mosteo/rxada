@@ -1,18 +1,17 @@
 with Rx.Base;
 with Rx.Holder;
-with Rx.Interfaces;
+with Rx.Subscribers;
+with Rx.Values;
 
 package Rx.Just is
 
-   package I renames Interfaces;
-
    type Observable is new Base.Observable with private;
 
-   function Create (V : I.Value'Class) return Observable;
+   function Create (V : Values.Value'Class) return Base.Observable'Class;
 
    overriding
-   procedure Subscribe (Producer : Observable;
-                        Consumer : I.Observer'Class);
+   procedure Subscribe (Producer : in out Observable;
+                        Consumer : Subscribers.Observer'Class);
 
 private
 

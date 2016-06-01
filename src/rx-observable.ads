@@ -1,27 +1,26 @@
+with Rx.Actions;
+with Rx.Actions.Typed;
 with Rx.Base;
-with Rx.Interfaces;
-with Rx.Typed_Values;
+with Rx.subscribers;
+with Rx.Values.Typed;
 
 generic
    type T (<>) is private;
-   with function Image (V : T) return String is <>;
 package Rx.Observable is
 
-   package I renames Rx.Interfaces;
-
-   package Values is new Typed_Values (T);
+   package Values   is new Rx.Values.Typed (T);
+   package TActions is new Rx.Actions.Typed (Values); use type TActions.Raw_Proc1;
 
    type Observable is new Base.Observable with null record;
 
-   function Just (V : T) return Observable'Class;
+   function Just (V : T) return Base.Observable'Class;
+
+   function Proc (P : TActions.Raw_Proc1) return Rx.Actions.Proc1'Class is (TActions.Proc1'(Raw => P));
 
 private
 
    overriding
-   procedure Subscribe (Producer : Observable;
-                        Consumer : I.Observer'Class) is null;
-
-   overriding
-   function Just (V : I.Value'Class) return Observable;
+   procedure Subscribe (Producer : in out Observable;
+                        Consumer : Subscribers.Observer'Class) is null;
 
 end Rx.Observable;
