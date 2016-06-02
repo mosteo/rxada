@@ -1,31 +1,18 @@
-with Rx.Map;
 with Rx.Subscribe;
 
 package body Rx.Base is
-
-   ---------
-   -- Map --
-   ---------
-
-   function Map
-     (O : Observable;
-      F : Rx.Actions.Func1'Class)
-      return Observable'Class
-   is
-   begin
-      return Rx.Map.Operator'(null record);
-   end Map;
 
    ---------------
    -- Subscribe --
    ---------------
 
    procedure Subscribe
-     (O : Observable;
-      P : Rx.Actions.Proc1'Class := Actions.No_Op)
+     (O       : Observable;
+      On_Next : Rx.Actions.Proc1'Class := Rx.Actions.No_Op)
    is
+      Actual : Observable'Class := O;
    begin
-      I.Observable'Class (O).Subscribe (Internal.Subscribe.As (P));
+      Actual.Subscribe (Rx.Subscribe.As (On_Next));
    end Subscribe;
 
 end Rx.Base;

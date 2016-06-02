@@ -1,5 +1,3 @@
-with Rx.I;
-
 package body Rx.Just is
 
    ----------
@@ -7,11 +5,11 @@ package body Rx.Just is
    ----------
 
    function Create
-     (V : I.V.Value'Class)
+     (V : Values.Value'Class)
       return Base.Observable'Class
    is
    begin
-      return Observable'(Base.Observable with Value => Holder.Hold (V));
+      return Observable'(Base.Observable with Value => Values.To_Holder (V));
    end Create;
 
    ---------------
@@ -21,7 +19,7 @@ package body Rx.Just is
    overriding
    procedure Subscribe
      (Producer : in out Observable;
-      Consumer : I.S.Observer'Class)
+      Consumer : Consumers.Observer'Class)
    is
    begin
       Consumer.OnNext (Producer.Value.Constant_Reference);

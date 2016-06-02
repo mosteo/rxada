@@ -2,8 +2,8 @@ with Rx.Values;
 
 package body Rx.Subscribe is
 
-   type Proc1_Observer is new Subscribers.Observer with record
-      On_Next : Base.A.H_Proc1.Holder;
+   type Proc1_Observer is new Consumers.Observer with record
+      On_Next : Actions.H_Proc1.Holder;
    end record;
 
    overriding
@@ -16,9 +16,9 @@ package body Rx.Subscribe is
    -- As --
    --------
 
-   function As (Proc1 : Base.A.Proc1'Class) return Subscribers.Observer'Class is
+   function As (Proc1 : Actions.Proc1'Class) return Consumers.Observer'Class is
    begin
-      return Proc1_Observer'(On_Next => Base.A.H_Proc1.To_Holder (Proc1));
+      return Proc1_Observer'(On_Next => Actions.H_Proc1.To_Holder (Proc1));
    end As;
 
 end Rx.Subscribe;

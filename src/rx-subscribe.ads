@@ -1,8 +1,8 @@
-with Rx.Base;
-with Rx.Subscribers;
+with Rx.Actions;
+with Rx.Consumers;
 
 package Rx.Subscribe is
 
-   function As (Proc1 : Base.A.Proc1'Class) return Subscribers.Observer'Class;
+   function As (Proc1 : Actions.Proc1'Class) return Consumers.Observer'Class;
 
 end Rx.Subscribe;

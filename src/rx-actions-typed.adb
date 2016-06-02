@@ -9,7 +9,9 @@ package body Rx.Actions.Typed is
       V : Value'Class)
    is
    begin
-      P.Raw (Values.Value'Class (V).Unwrap);
+      if P.Raw /= null then
+         P.Raw (Values.Value'Class (V).Unwrap);
+      end if;
    end Call;
 
 end Rx.Actions.Typed;
