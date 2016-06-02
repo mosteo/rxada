@@ -1,13 +1,15 @@
-with Rx.Subscribers;
+with Rx.Consumers;
+with Rx.Holders;
 
 package Rx.Producers is
 
-   pragma Pure;
+   pragma Preelaborate;
 
    type Observable is interface;
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : Subscribers.Observer'Class) is abstract;
+                        Consumer : Consumers.Observer'Class) is abstract;
 
-   subtype Observer is Subscribers.Observer'Class;
+   package Holders is new Rx.Holders (Observable'Class);
+   type Holder is new Holders.Definite with null record;
 
 end Rx.Producers;

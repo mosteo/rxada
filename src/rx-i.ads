@@ -1,6 +1,6 @@
 with Rx.Actions;
 with Rx.Producers;
-with Rx.Subscribers;
+with Rx.Consumers;
 with Rx.Values;
 
 package Rx.I is
@@ -9,7 +9,7 @@ package Rx.I is
 
    package A renames Rx.Actions;
    package P renames Rx.Producers;
-   package S renames Rx.Subscribers;
+   package C renames Rx.Consumers;
    package V renames Rx.Values;
 
 end Rx.I;

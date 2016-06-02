@@ -1,5 +1,4 @@
 with Rx.I;
-with Rx.Producers.Composite;
 
 package Rx.Operators is
 

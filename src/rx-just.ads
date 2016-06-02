@@ -1,6 +1,5 @@
 with Rx.Base;
-with Rx.Holder;
-with Rx.Subscribers;
+with Rx.Consumers;
 with Rx.Values;
 
 package Rx.Just is
@@ -11,12 +10,12 @@ package Rx.Just is
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : Subscribers.Observer'Class);
+                        Consumer : Consumers.Observer'Class);
 
 private
 
    type Observable is new Base.Observable with record
-      Value : Rx.Holder.TH;
+      Value : Values.Holder;
    end record;
 
 end Rx.Just;
