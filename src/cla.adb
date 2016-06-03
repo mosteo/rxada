@@ -27,5 +27,6 @@ begin
    M.Method;
 
    Op (1, 2).Method;  --  Fine
-   --  (1 & 2).Method;  --  Error: statement expected (gpl2015/16)
+   "&"(1, 2).Method;  --  Fine too
+   --(1 & 2).Method;  --  Error: statement expected (gpl2015/16)
 end Cla;
