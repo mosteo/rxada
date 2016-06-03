@@ -9,6 +9,8 @@ package Rx.Base is
 
    --   function Map (O : Observable; F : A.Func1'Class) return Observable'Class;
 
+   function "&" (L : Observable'Class; R : Observable'Class) return Observable'Class is (R);
+
    procedure Subscribe (O        : Observable;
                         On_Next  : Rx.Actions.Proc1'Class := Rx.Actions.No_Op);
 
