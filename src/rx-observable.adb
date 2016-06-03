@@ -5,7 +5,7 @@ with Rx.Subscribe;
 package body Rx.Observable is
 
    function Wrapped (O : Base.Observable'Class) return Observable'Class
-   is (Observable'(Base.Observable with Untyped => Producers.To_Holder (O)));
+   is (Observable'(Base.Observable with Untyped => Producers.To_Definite (O)));
 
    ----------
    -- Just --
@@ -30,7 +30,11 @@ package body Rx.Observable is
          raise Program_Error with "Subscribing to empty observable";
       else
          Debug.Put_Line ("EMPTY? " & Producer.Untyped.Is_Empty'Img);
-         Producer.Untyped.Ref.Subscribe (Consumer);
+         declare
+            P : Producers.Observable'Class := Producer.Untyped.Element;
+         begin
+            P.Subscribe (Consumer);
+         end;
       end if;
    end Subscribe;
 
@@ -54,7 +58,7 @@ package body Rx.Observable is
       if This.Untyped.Is_Empty then
          raise Program_Error with "OnNext call with empty consumer (shouldn't happen)";
       else
-         This.Untyped.CRef.OnNext (V);
+         This.Untyped.Element.OnNext (V);
       end if;
    end OnNext;
 
@@ -66,7 +70,7 @@ package body Rx.Observable is
    begin
       return Consumer'
         (Untyped =>
-           Consumers.To_Holder
+           Consumers.To_Definite
              (Rx.Subscribe.As
                   (Proc (On_Next))));
    end Subscribe;

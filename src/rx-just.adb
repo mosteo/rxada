@@ -9,7 +9,7 @@ package body Rx.Just is
       return Base.Observable'Class
    is
    begin
-      return Observable'(Base.Observable with Value => Values.To_Holder (V));
+      return Observable'(Base.Observable with Value => Values.To_Definite (V));
    end Create;
 
    ---------------
@@ -22,7 +22,7 @@ package body Rx.Just is
       Consumer : Consumers.Observer'Class)
    is
    begin
-      Consumer.OnNext (Producer.Value.Constant_Reference);
+      Consumer.OnNext (Producer.Value.Element);
       Consumer.OnCompleted;
    end Subscribe;
 

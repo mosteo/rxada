@@ -12,6 +12,8 @@ package Rx.Holders is
 
    function "+" (I : Indef) return Definite;
 
+   function To_Definite (I : Indef) return Definite renames "+";
+
    function Element  (I : Definite) return Indef;
 
 end Rx.Holders;
