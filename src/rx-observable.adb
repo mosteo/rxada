@@ -1,4 +1,6 @@
+with Rx.Debug;
 with Rx.Just;
+with Rx.Subscribe;
 
 package body Rx.Observable is
 
@@ -21,11 +23,13 @@ package body Rx.Observable is
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : Consumers.Observer'Class) is
+                        Consumer : Consumers.Observer'Class)
+   is
    begin
       if Producer.Untyped.Is_Empty then
          raise Program_Error with "Subscribing to empty observable";
       else
+         Debug.Put_Line ("EMPTY? " & Producer.Untyped.Is_Empty'Img);
          Producer.Untyped.Ref.Subscribe (Consumer);
       end if;
    end Subscribe;
@@ -39,5 +43,44 @@ package body Rx.Observable is
    begin
       Base.Observable (O).Subscribe (Proc (On_Next));
    end Subscribe;
+
+   ------------
+   -- OnNext --
+   ------------
+
+   overriding
+   procedure OnNext (This : Consumer; V : Rx.Values.Value'Class) is
+   begin
+      if This.Untyped.Is_Empty then
+         raise Program_Error with "OnNext call with empty consumer (shouldn't happen)";
+      else
+         This.Untyped.CRef.OnNext (V);
+      end if;
+   end OnNext;
+
+   ---------------
+   -- Subscribe --
+   ---------------
+
+   function Subscribe (On_Next  : Typed_Actions.Typed_Proc1 := null) return Consumer is
+   begin
+      return Consumer'
+        (Untyped =>
+           Consumers.To_Holder
+             (Rx.Subscribe.As
+                  (Proc (On_Next))));
+   end Subscribe;
+
+   ---------
+   -- "&" --
+   ---------
+
+   function "&" (L : Base.Observable'Class; R : Consumer) return Subscriptions.Subscription is
+      Actual : Producers.Observable'Class := L;
+   begin
+      Actual.Subscribe (R);
+--      Actual.Subscribe (R.Untyped.Element); -- Perhaps I could subscribe directly to the wrapped Untyped
+      return Chain;
+   end "&";
 
 end Rx.Observable;

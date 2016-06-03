@@ -1,4 +1,4 @@
-with Ada.Containers.Indefinite_Holders;
+with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 
 generic
    type Indef (<>) is private;
@@ -6,14 +6,12 @@ package Rx.Holders is
 
    pragma Preelaborate;
 
-   package Definites is new Ada.Containers.Indefinite_Holders (Indef);
+   package Definites is new Ada.Containers.Indefinite_Doubly_Linked_Lists (Indef);
 
-   type Definite is new Definites.Holder with null record;
+   type Definite is new Definites.List with null record;
 
-   function "+" (I : Indef) return Definite renames To_Holder;
+   function "+" (I : Indef) return Definite;
 
-   function Ref  (I : aliased in out Definite) return Definites.Reference_Type renames Reference;
-
-   function CRef (I : aliased Definite) return Definites.Constant_Reference_Type renames Constant_Reference;
+   function Element  (I : Definite) return Indef;
 
 end Rx.Holders;
