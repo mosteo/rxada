@@ -1,5 +1,7 @@
-with Rx.Producers;
+with Rx.Typed;
 
+generic
+   with package Typed is new Rx.Typed (<>);
 package Rx.Consumers.Subscribers is
 
    --  Root consumer

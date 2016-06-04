@@ -1,14 +1,9 @@
-with Rx.Base;
+with Rx.Transform;
 
-private package Rx.Map is
+generic
+   with package Typed is new Rx.Transform (<>);
+package Rx.Map is
 
-
-
-   overriding
-   procedure OnNext (This : Operator; V : Base.I.Value'Class) is null;
-
-private
-
-
+   function Create (F : Typed.Func1) return Typed.Operator'Class;
 
 end Rx.Map;

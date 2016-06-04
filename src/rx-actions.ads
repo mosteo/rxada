@@ -1,5 +1,5 @@
 generic
-   type T is private;
+   type T (<>) is private;
 package Rx.Actions is
 
    pragma Preelaborate;

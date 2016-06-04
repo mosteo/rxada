@@ -1,10 +1,9 @@
-with Rx.Actions;
-with Rx.Consumers;
+with Rx.Typed;
 
 generic
-   type T is private;
+   with package Typed is new Rx.Typed (<>);
 package Rx.Subscribe is
 
-   function As (Proc1 : Actions.Proc1'Class) return Consumers.Observer'Class;
+   function As (Proc1 : Typed.Actions.Proc1) return Typed.Consumers.Observer'Class;
 
 end Rx.Subscribe;

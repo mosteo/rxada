@@ -1,11 +1,16 @@
-with Rx.I;
+with Rx.Transform;
+with Rx.Observable;
 
+generic
+   with package From is new Rx.Observable (<>); -- Naming chosen for same lenght
+   with package Into is new Rx.Observable (<>);
 package Rx.Operators is
 
-   type Operator is abstract new Producers.Composite.Observable and I.S.Observer with null record;
+   package Typed is new Transform (From.Typed, Into.Typed);
 
-   overriding
-   procedure OnNext (This : Operator; V : I.V.Value'Class);
-   --  This will dispatch on all subscribers, so shouldn't be overriden lightly
+   function Map (F : Typed.Func1) return Typed.Operator'Class;
+
+   function "&" (L : From.Typed.Producers.Observable'Class;
+                 R : Into.Typed.Consumers.Observer'Class) return Typed.Operator'Class;
 
 end Rx.Operators;

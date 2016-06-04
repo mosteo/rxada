@@ -2,11 +2,14 @@ with Rx.Debug;
 
 procedure Rx.Examples.Basic is
    use Integers;
-
-   O : constant Integers.Producers.Observable'Class := Just (1);
+   use Strings;
+   use StrtoInt;
 
 begin
-   null;
+   Strings.Chain :=
+     Just ("Hello, world!") &
+     Map (Length'Access)   &
+     Subscribe (Debug.Put_Line'Access);
 exception
    when E : others =>
       Debug.Print (E);
