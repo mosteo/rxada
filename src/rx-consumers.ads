@@ -1,12 +1,13 @@
 with Rx.Holders;
-with Rx.Values;
 
+generic
+   type T is private;
 package Rx.Consumers is
 
    pragma Preelaborate;
 
    type Observer is interface;
-   procedure OnNext      (This : Observer; V : Values.Value'Class) is abstract;
+   procedure OnNext      (This : Observer; V : T) is abstract;
    procedure OnCompleted (This : Observer) is null;
 
    package Holders is new Rx.Holders (Observer'Class);
