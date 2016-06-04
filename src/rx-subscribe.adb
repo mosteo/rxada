@@ -1,24 +1,25 @@
-with Rx.Values;
-
 package body Rx.Subscribe is
 
-   type Proc1_Observer is new Consumers.Observer with record
-      On_Next : Actions.H_Proc1.Holder;
+   type Proc1_Observer is new Typed.Consumers.Observer with record
+      On_Next : Typed.Actions.Proc1;
    end record;
 
    overriding
-   procedure OnNext (This : Proc1_Observer; V : Rx.Values.Value'Class) is
+   procedure OnNext (This : Proc1_Observer; V : Typed.T) is
+      use Typed.Actions;
    begin
-      This.On_Next.Constant_Reference.Call (V);
+      if This.On_Next /= null then
+         This.On_Next (V);
+      end if;
    end OnNext;
 
    --------
    -- As --
    --------
 
-   function As (Proc1 : Actions.Proc1'Class) return Consumers.Observer'Class is
+   function As (Proc1 : Typed.Actions.Proc1) return Typed.Consumers.Observer'Class is
    begin
-      return Proc1_Observer'(On_Next => Actions.H_Proc1.To_Holder (Proc1));
+      return Proc1_Observer'(On_Next => Proc1);
    end As;
 
 end Rx.Subscribe;

@@ -1,34 +1,33 @@
-with Rx.Actions;
-with Rx.Producers;
 with Rx.Subscriptions;
+with Rx.Typed;
 
 generic
-   type T is private;
+   type T (<>) is private;
 package Rx.Observable is
 
-   package Actions   is new Rx.Actions (T);
-   package Producers is new Rx.Producers (T);
-   package Consumers renames Producers.Consumers;
+   package Typed is new Rx.Typed (T);
 
-   type Observable is new Producers.Observable with private;
+   subtype Observable is Typed.Producers.Observable'Class;
+   subtype Observer   is Typed.Consumers.Observer'Class;
 
-   function Just (V : T) return Producers.Observable'Class;
+   function Just (V : T) return Observable'Class;
 
---     procedure Subscribe (O        : Observable;
---                          On_Next  : Typed_Actions.Typed_Proc1 := null) is null;
+   function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Observer'Class;
 
    --  Last call, causes a subscription
---   function "&" (L : Base.Observable'Class; R : Consumer) return Subscriptions.Subscription;
+   function "&" (L : Observable'Class;
+                 R : Observer'Class)
+                 return Subscriptions.Subscription;
 
    Chain : Subscriptions.Subscription;
    -- Never used, but there since something has to be done with the result of &
 
 private
 
-   type Observable is new Producers.Observable with null record;
-
-   overriding
-   procedure Subscribe (Producer : in out Observable;
-                        Consumer : Consumers.Observer'Class) is null;
+--     type Observable is new Typed.Producers.Observable with null record;
+--
+--     overriding
+--     procedure Subscribe (Producer : in out Observable;
+--                          Consumer : Typed.Consumers.Observer'Class) is null;
 
 end Rx.Observable;

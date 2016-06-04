@@ -1,21 +1,21 @@
-with Rx.Producers;
+with Rx.Typed;
 
 generic
-   with package Producers is new Rx.Producers (<>);
+   with package Typed is new Rx.Typed (<>);
 package Rx.Just is
 
-   type Observable is new Producers.Observable with private;
+   type Observable is new Typed.Producers.Observable with private;
 
-   function Create (V : Producers.T) return Producers.Observable'Class;
+   function Create (V : Typed.T) return Typed.Producers.Observable'Class;
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : Producers.Consumers.Observer'Class);
+                        Consumer : Typed.Consumers.Observer'Class);
 
 private
 
-   type Observable is new Producers.Observable with record
-      Value : Producers.T;
+   type Observable is new Typed.Producers.Observable with record
+      Value : Typed.Holders.Definite;
    end record;
 
 end Rx.Just;

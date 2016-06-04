@@ -2,7 +2,7 @@ with Rx.Consumers;
 with Rx.Holders;
 
 generic
-   type T is private;
+   type T (<>) is private;
 package Rx.Producers is
 
    pragma Preelaborate;
