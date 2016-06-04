@@ -1,18 +1,12 @@
 with Rx.Debug;
 
 procedure Rx.Examples.Basic is
-   use Strings;
-begin
-   -- DOT NOTATION
-   Strings
-     .Just ("Hello, world!")
-     --     .Map (StrToInt.Func (Length'Access))
-     .Subscribe (Debug.Put_Line'Access);
+   use Integers;
 
-   -- CONCATENATION
-   Strings.Chain := -- Must match the final type
-     Just ("Jelly world!") &
-     Subscribe (Debug.Put_Line'Access);
+   O : constant Integers.Producers.Observable'Class := Just (1);
+
+begin
+   null;
 exception
    when E : others =>
       Debug.Print (E);
