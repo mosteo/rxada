@@ -10,7 +10,4 @@ package Rx.Operators is
 
    function Map (F : Typed.Func1) return Typed.Operator'Class;
 
-   function "&" (L : From.Typed.Producers.Observable'Class;
-                 R : Into.Typed.Consumers.Observer'Class) return Typed.Operator'Class;
-
 end Rx.Operators;
