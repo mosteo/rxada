@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Just;
 with Rx.Subscribe;
 
@@ -20,9 +21,12 @@ package body Rx.Observable is
    function "&" (L : Typed.Producers.Observable'Class; R : Typed.Consumers.Observer'Class)
                  return Subscriptions.Subscription
    is
-      Actual : Observable'Class := L;
+      use Debug;
+      Actual_L : Observable'Class := L;
+      Actual_R : Typed.Consumers.Observer'Class := R;
    begin
-      Actual.Subscribe (R);
+      Debug.Log ("subscribing to " & Image (L'Tag));
+      Actual_L.Subscribe (Actual_R);
       return Chain;
    end "&";
 

@@ -8,7 +8,7 @@ package body Rx.Just is
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : Typed.Consumers.Observer'Class) is
+                        Consumer : in out Typed.Consumers.Observer'Class) is
    begin
       Consumer.OnNext (Producer.Value.CRef);
       Consumer.OnCompleted;

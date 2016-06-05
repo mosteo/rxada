@@ -8,25 +8,33 @@ package Rx.Transform is
    type Func1 is access function (V : From.T) return Into.T;
 
    type Operator is abstract new
-     Into.Producers.Observable and
-     From.Producers.Subscriber and
-     From.Consumers.Observer
+     From.Producers.Subscriptor and
+     Into.Producers.Observable
    with private;
 
    overriding
-   procedure Set_Parent (This : in out Operator; Parent : From.Producers.Observable'Class);
+   procedure Subscribe (Producer : in out Operator;
+                        Consumer : in out Into.Consumers.Observer'Class);
 
    overriding
-   function  Get_Parent (This : Operator) return From.Producers.Observable'Class;
+   procedure OnNext (This : in out Operator; V : From.T);
+
+   not overriding
+   procedure On_Next (This  : in out Operator;
+                      Child : in out Into.Consumers.Observer'Class;
+                      V     : From.T) is abstract;
+
+   function "&" (L : From.Producers.Observable'Class;
+                 R : Operator'Class)
+                 return Into.Producers.Observable'Class;
 
 private
 
    type Operator is abstract new
-     Into.Producers.Observable and
-     From.Producers.Subscriber and
-     From.Consumers.Observer
+     From.Producers.Subscriptor and
+     Into.Producers.Observable
    with record
-      Parent : From.Producers.Holder;
+      Child : Into.Consumers.Holder;
    end record;
 
 end Rx.Transform;
