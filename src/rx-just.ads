@@ -1,30 +1,21 @@
-with Rx.Holder;
-with Rx.Operator;
-
-with Ada.Finalization;
+with Rx.Typed;
 
 generic
-   type T (<>) is private;
-   V : T;
+   with package Typed is new Rx.Typed (<>);
 package Rx.Just is
 
-   pragma Elaborate_Body;
+   type Observable is new Typed.Producers.Observable with private;
 
-   package Output is new Rx.Operator (T);
+   function Create (V : Typed.T) return Typed.Producers.Observable'Class;
+
+   overriding
+   procedure Subscribe (Producer : in out Observable;
+                        Consumer : in out Typed.Consumers.Observer'Class);
 
 private
 
-   package Holder is new Rx.Holder (T);
-
-   type Control (Parent : access Output.Observable'Class) is new Ada.Finalization.Limited_Controlled with null record;
-   overriding procedure Finalize (X : in out Control);
-
-   type Observable is new Output.Observable with record
-      V : Holder.TH;
-      C : Control (Observable'Access);
+   type Observable is new Typed.Producers.Observable with record
+      Value : Typed.Holders.Definite;
    end record;
-
-   overriding procedure Subscribe (O : in out Observable;
-                        S : access Output.Observer'Class);
 
 end Rx.Just;

@@ -1,39 +1,42 @@
-with Rx.Interfaces;
+with Rx.Subscriptions;
+with Rx.Typed;
 
 generic
    type T (<>) is private;
 package Rx.Observable is
 
-   package I renames Rx.Interfaces;
+   package Typed is new Rx.Typed (T);
 
-   type Observable is new I.Observable with private;
+   subtype Observable is Typed.Producers.Observable'Class;
+   subtype Observer   is Typed.Consumers.Observer'Class;
 
-   function Just (V : T) return Observable;
+--     type Mutator is abstract new -- a Mutator changes the values but not their type
+--       Typed.Producers.Subscriptor and
+--       Typed.Producers.Observable
+--     with null record; -- not sure i will be needing this
 
-   function Subscribe (O : Observable) return I.Observer'Class;
+   function Just (V : T) return Observable'Class; -- what does using 'Class here? 'Class'Class?
 
-      type Operator is abstract new I.Observable and I.Observer with null record;
+   function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Observer'Class;
 
-   generic
-      type R (<>) is private;
-   package To is
+   --  Not last call sets R parent to L
+--     function "&" (L : Observable'Class;
+--                   R : Mutator'Class) return Observable'Class;
 
-      type Mapper is access function (V : T) return R;
+   --  Last call, causes a subscription
+   function "&" (L : Observable'Class;
+                 R : Observer'Class)
+                 return Subscriptions.Subscription;
 
-      function Map (M : Mapper) return Operator'Class;
-
-   end To;
-
-   function "&" (L : I.Observable'Class; R : Operator'Class) return I.Observable'Class;
-
-   procedure Assemble (X : I.Observable'Class);
+   Chain : Subscriptions.Subscription;
+   -- Never used, but declared as convenience since something has to be done with the result of &
 
 private
 
-   type Observable is new I.Observable with null record;
-
-   overriding
-   procedure Subscribe   (O : in out Observable;
-                          S :        I.Observer'Class) is null;
+--     type Observable is new Typed.Producers.Observable with null record;
+--
+--     overriding
+--     procedure Subscribe (Producer : in out Observable;
+--                          Consumer : Typed.Consumers.Observer'Class) is null;
 
 end Rx.Observable;

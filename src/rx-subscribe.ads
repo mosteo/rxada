@@ -1,11 +1,9 @@
-with Rx.Operator;
+with Rx.Typed;
 
 generic
-   with package   Observable is new Rx.Operator (<>);
-   with procedure OnNext (V : Observable.T) is null;
-   with procedure OnCompleted is null;
+   with package Typed is new Rx.Typed (<>);
 package Rx.Subscribe is
 
-   pragma Elaborate_Body;
+   function As (Proc1 : Typed.Actions.Proc1) return Typed.Consumers.Observer'Class;
 
 end Rx.Subscribe;

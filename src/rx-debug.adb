@@ -2,6 +2,13 @@ with Gnat.Traceback.Symbolic;
 
 package body Rx.Debug is
 
+   procedure Log (S : String) is
+   begin
+      if Enabled then
+         Put_Line ("debug: " & S);
+      end if;
+   end Log;
+
    -----------
    -- Print --
    -----------
