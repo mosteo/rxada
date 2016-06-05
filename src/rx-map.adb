@@ -5,7 +5,7 @@ package body Rx.Map is
    overriding
    procedure On_Next (This : in out Op; Child : in out Typed.Into.Consumers.Observer'Class; V : Typed.From.T) is
    begin
-      Child.OnNext (This.F (V));
+      Child.On_Next (This.F (V));
    end On_Next;
 
    ------------

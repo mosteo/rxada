@@ -10,8 +10,8 @@ package body Rx.Just is
    procedure Subscribe (Producer : in out Observable;
                         Consumer : in out Typed.Consumers.Observer'Class) is
    begin
-      Consumer.OnNext (Producer.Value.CRef);
-      Consumer.OnCompleted;
+      Consumer.On_Next (Producer.Value.CRef);
+      Consumer.On_Completed;
    end Subscribe;
 
 end Rx.Just;
