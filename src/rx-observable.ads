@@ -31,12 +31,4 @@ package Rx.Observable is
    Chain : Subscriptions.Subscription;
    -- Never used, but declared as convenience since something has to be done with the result of &
 
-private
-
---     type Observable is new Typed.Producers.Observable with null record;
---
---     overriding
---     procedure Subscribe (Producer : in out Observable;
---                          Consumer : Typed.Consumers.Observer'Class) is null;
-
 end Rx.Observable;
