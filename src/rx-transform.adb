@@ -1,22 +1,41 @@
+with Rx.Debug;
+
 package body Rx.Transform is
 
-   ----------------
-   -- Set_Parent --
-   ----------------
+   ---------------
+   -- Subscribe --
+   ---------------
 
-   overriding
-   procedure Set_Parent
-     (This : in out Operator;
-      Parent : From.Producers.Observable'Class)
+   overriding procedure Subscribe
+     (Producer : in out Operator;
+      Consumer : in out Into.Consumers.Observer'Class)
+   is
+      Parent : From.Producers.Observable'Class := Producer.Get_Parent;
+   begin
+      Producer.Child := Into.Consumers.To_Holder (Consumer);
+      Parent.Subscribe (Producer);
+   end Subscribe;
+
+   overriding procedure OnNext (This : in out Operator; V : From.T)
    is
    begin
-      This.Parent := From.Producers.To_Holder (Parent);
-   end Set_Parent;
+      Operator'Class (This).On_Next (This.Child.Ref, V);
+   end OnNext;
 
-   overriding
-   function  Get_Parent (This : Operator) return From.Producers.Observable'Class is
+   ---------
+   -- "&" --
+   ---------
+
+   function "&" (L : From.Producers.Observable'Class;
+                 R : Operator'Class)
+                 return Into.Producers.Observable'Class
+   is
+      use Rx.Debug;
+      Actual : Operator'Class := R;
    begin
-      return This.Parent.Element;
-   end Get_Parent;
+      Debug.Log ("chaining " & Image (L'Tag) & " --> " & Image (R'Tag));
+      Actual.Set_Parent (L);
+      return Actual;
+   end "&";
 
 end Rx.Transform;

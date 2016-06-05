@@ -10,7 +10,7 @@ package Rx.Just is
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : Typed.Consumers.Observer'Class);
+                        Consumer : in out Typed.Consumers.Observer'Class);
 
 private
 

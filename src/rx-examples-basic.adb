@@ -6,9 +6,9 @@ procedure Rx.Examples.Basic is
    use StrtoInt;
 
 begin
-   Strings.Chain :=
+   Integers.Chain :=
      Just ("Hello, world!") &
-     Map (Length'Access)   &
+     Map (Length'Access) &
      Subscribe (Debug.Put_Line'Access);
 exception
    when E : others =>
