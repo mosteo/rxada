@@ -1,38 +1,20 @@
 package body Rx.Map is
 
-   Instance : aliased Operator;
+   type Op (F : Typed.Func1) is new Typed.Operator with null record;
+
+   overriding
+   procedure On_Next (This : in out Op; Child : in out Typed.Into.Consumers.Observer'Class; V : Typed.From.T) is
+   begin
+      Child.On_Next (This.F (V));
+   end On_Next;
 
    ------------
-   -- OnNext --
+   -- Create --
    ------------
 
-   overriding procedure OnNext
-     (This : in out Operator;
-      V : Input.T)
-   is
+   function Create (F : Typed.Func1) return Typed.Operator'Class is
    begin
-      for Subscriber of This.Subscribers loop
-         declare
-            R : constant Result := Transform (V);
-         begin
-            Subscriber.OnNext (R);
-         end;
-      end loop;
-   end OnNext;
+      return Op'(Typed.Operator with F => F);
+   end Create;
 
-   ---------------
-   -- Subscribe --
-   ---------------
-
-   overriding procedure Subscribe
-     (O : in out Operator;
-      S : access Output.Observer'Class)
-   is
-   begin
-      O.Subscribers.Append (S);
-      Input.Instance.Subscribe(O'Access);
-   end Subscribe;
-
-begin
-   Output.Instance := Instance'Access;
 end Rx.Map;

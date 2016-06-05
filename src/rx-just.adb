@@ -1,27 +1,17 @@
-with Rx.Debug;
 package body Rx.Just is
 
-   Instance : aliased Observable := (V => Holder.Hold (Just.V), C => <>);
-
-   ---------------
-   -- Subscribe --
-   ---------------
-
-   overriding procedure Subscribe
-     (O : in out Observable;
-      S : access Output.Observer'Class)
-   is
+   function Create (V : Typed.T) return Typed.Producers.Observable'Class is
+      use Typed.Holders;
    begin
-      S.OnNext (O.V.Element);
-      S.OnCompleted;
+      return Observable'(Typed.Producers.Observable with Value => +V);
+   end Create;
+
+   overriding
+   procedure Subscribe (Producer : in out Observable;
+                        Consumer : in out Typed.Consumers.Observer'Class) is
+   begin
+      Consumer.On_Next (Producer.Value.CRef);
+      Consumer.On_Completed;
    end Subscribe;
 
-   overriding procedure Finalize (X : in out Control) is
-   begin
-      Debug.Put_Line ("Final");
-   end Finalize;
-
-begin
-   Output.Instance := Instance'Access;
-   -- No memory allocation, so no leak... but I bet this is thoroughly broken for concurrent access
 end Rx.Just;

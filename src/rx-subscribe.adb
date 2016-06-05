@@ -1,37 +1,25 @@
-with Ada.Tags;
-with Ada.Text_IO; use Ada.Text_IO;
-
 package body Rx.Subscribe is
 
-   --  SPEC
-
-   type Observer is new Observable.Observer with null record;
-
-   overriding
-   procedure OnNext (This : in out Observer; V : Observable.T);
+   type Proc1_Observer is new Typed.Consumers.Observer with record
+      On_Next : Typed.Actions.Proc1;
+   end record;
 
    overriding
-   procedure OnCompleted (This : in out Observer);
-
-   --  BODY
-
-   overriding
-   procedure OnNext (This : in out Observer; V : Observable.T) is
-      pragma Unreferenced (This);
+   procedure On_Next (This : in out Proc1_Observer; V : Typed.T) is
+      use Typed.Actions;
    begin
-      OnNext (V);
-   end OnNext;
+      if This.On_Next /= null then
+         This.On_Next (V);
+      end if;
+   end On_Next;
 
-   overriding
-   procedure OnCompleted (This : in out Observer) is
-      pragma Unreferenced (This);
+   --------
+   -- As --
+   --------
+
+   function As (Proc1 : Typed.Actions.Proc1) return Typed.Consumers.Observer'Class is
    begin
-      OnCompleted;
-   end OnCompleted;
+      return Proc1_Observer'(On_Next => Proc1);
+   end As;
 
-   O : aliased Observer;
-
-begin
-   Put_Line ("Subscribing: " & Ada.Tags.Expanded_Name (Observable.Instance'Tag));
-   Observable.Instance.Subscribe (O'Access);
 end Rx.Subscribe;
