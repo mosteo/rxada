@@ -2,7 +2,7 @@ with Rx.Transform;
 with Rx.Observable;
 
 generic
-   with package From is new Rx.Observable (<>); -- Naming chosen for same lenght
+   with package From is new Rx.Observable (<>); -- Naming chosen for same length
    with package Into is new Rx.Observable (<>);
 package Rx.Operators is
 
