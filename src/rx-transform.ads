@@ -17,7 +17,7 @@ package Rx.Transform is
                         Consumer : in out Into.Consumers.Observer'Class);
 
    overriding
-   procedure OnNext (This : in out Operator; V : From.T);
+   procedure On_Next (This : in out Operator; V : From.T);
 
    not overriding
    procedure On_Next (This  : in out Operator;

@@ -23,7 +23,7 @@ package Rx.Producers is
    procedure Set_Parent (This : in out Subscriber; Parent : Observable'Class) is abstract;
    function  Get_Parent (This :        Subscriber) return Observable'Class is abstract;
 
-   -- Convenience type since we'll need all observers to be also subscribers
+   -- Convenience type since we'll need all observers to also be subscribers
    type Subscriptor is abstract new Consumers.Observer and Subscriber with private;
 
    overriding

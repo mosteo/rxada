@@ -5,13 +5,13 @@ package body Rx.Subscribe is
    end record;
 
    overriding
-   procedure OnNext (This : in out Proc1_Observer; V : Typed.T) is
+   procedure On_Next (This : in out Proc1_Observer; V : Typed.T) is
       use Typed.Actions;
    begin
       if This.On_Next /= null then
          This.On_Next (V);
       end if;
-   end OnNext;
+   end On_Next;
 
    --------
    -- As --
