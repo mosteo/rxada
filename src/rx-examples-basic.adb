@@ -3,10 +3,10 @@ with Rx.Debug;
 procedure Rx.Examples.Basic is
    use Integers;
    use Strings;
-   use StrtoInt;
+   use StrToInt;
    use IntToStr;
 begin
-   Integers.Chain :=
+   Strings.Chain :=
      Just ("Hello, world!") &
      Map (Length'Access) &
      Map (Image'Access) &
