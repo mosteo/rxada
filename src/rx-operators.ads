@@ -1,9 +1,9 @@
 with Rx.Transform;
-with Rx.Observable;
+with Rx.Types;
 
 generic
-   with package From is new Rx.Observable (<>); -- Naming chosen for same lenght
-   with package Into is new Rx.Observable (<>);
+   with package From is new Rx.Types (<>); -- Naming chosen for same length
+   with package Into is new Rx.Types (<>);
 package Rx.Operators is
 
    package Typed is new Transform (From.Typed, Into.Typed);

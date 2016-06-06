@@ -3,7 +3,7 @@ with Rx.Holders;
 with Rx.Producers;
 
 generic
-   type T (<>) is private;
+   type T (<>) is private; -- User type
 package Rx.Typed is
 
    package Actions   is new Rx.Actions (T);
