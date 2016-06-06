@@ -1,7 +1,7 @@
 with Rx.Typed;
 
 generic
-   with package From is new Rx.Typed (<>); -- Naming chosen for same lenght
+   with package From is new Rx.Typed (<>); -- Naming chosen for same length
    with package Into is new Rx.Typed (<>);
 package Rx.Transform is
 

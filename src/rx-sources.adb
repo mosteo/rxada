@@ -2,17 +2,17 @@ with Rx.Debug;
 with Rx.Just;
 with Rx.Subscribe;
 
-package body Rx.Observable is
+package body Rx.Sources is
 
    package RxJust      is new Rx.Just (Typed);
    package RxSubscribe is new Rx.Subscribe (Typed);
 
-   function Just (V : T) return Observable'Class is
+   function Just (V : Typed.T) return Typed.Producers.Observable'Class is
    begin
       return RxJust.Create (V);
    end Just;
 
-   function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Observer'Class is
+   function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Typed.Consumers.Observer'Class is
    begin
       return RxSubscribe.As (On_Next);
    end Subscribe;
@@ -22,12 +22,12 @@ package body Rx.Observable is
                  return Subscriptions.Subscription
    is
       use Debug;
-      Actual_L : Observable'Class := L;
-      Actual_R : Typed.Consumers.Observer'Class := R;
+      Actual_L : Typed.Producers.Observable'Class := L;
+      Actual_R : Typed.Consumers.Observer'Class   := R;
    begin
       Debug.Log ("subscribing to " & Image (L'Tag));
       Actual_L.Subscribe (Actual_R);
-      return Chain;
+      return Subscriptions.Subscription'(null record);
    end "&";
 
-end Rx.Observable;
+end Rx.Sources;
