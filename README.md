@@ -38,7 +38,7 @@ You need to instantiate a package for each type you want to use in a Rx chain, a
 
 package Strings  is new Rx.Observable (String);
 package Integers is new Rx.Observable (Integer);
-package StrToInt is new Rx.Operators (String, Integer);
+package StrToInt is new Rx.Operators (Strings, Integers);
 ```
 
 And you have to "use" them so its "&" function becomes visible. As a side effect, Rx operators become visible too, although they can be prefixed with their package for clarity, if one preferred.
