@@ -1,5 +1,6 @@
 with Rx.From;
 with Rx.Subscriptions;
+with Rx.Traits.Arrays;
 with Rx.Typed;
 
 generic
@@ -18,11 +19,10 @@ package Rx.Observables is
    -- From --
    ----------
 
-   package Default_From is new Rx.From (Typed);
-   package From_Array is new Default_From.From_Array (Integer);
+   package Default_Arrays is new Rx.Traits.Arrays (Typed, Integer);
 
    -- Observable from an array of values, useful for literal arrays
-   function From (A : From_Array.Array_Type) return Typed.Producers.Observable'Class renames From_Array.From;
+   function From (A : Default_Arrays.Typed_Array) return Typed.Producers.Observable'Class;
 
    ---------------
    -- Subscribe --
@@ -33,5 +33,11 @@ package Rx.Observables is
    function "&" (L : Typed.Producers.Observable'Class;
                  R : Typed.Consumers.Observer'Class)
                  return Subscriptions.Subscription;
+
+private
+
+   package From_Arrays is new Rx.From.From_Array (Default_Arrays);
+   function From (A : Default_Arrays.Typed_Array) return Typed.Producers.Observable'Class
+     renames From_Arrays.From;
 
 end Rx.Observables;
