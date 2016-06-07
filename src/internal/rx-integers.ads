@@ -1,3 +1,3 @@
-with Rx.Types;
+with Rx.Definites;
 
-package Rx.Integers is new Rx.Types (Integer);
+package Rx.Integers is new Rx.Definites (Integer);

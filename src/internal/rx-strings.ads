@@ -1,3 +1,3 @@
-with Rx.Types;
+with Rx.Indefinites;
 
-package Rx.Strings is new Rx.Types (String);
+package Rx.Strings is new Rx.Indefinites (String);

@@ -1,17 +1,16 @@
 with Rx.Sources;
-with Rx.Subscriptions;
+with Rx.Traits.Types;
 with Rx.Typed;
 
--- Entry point for a user to declare a new type to be used in Rx shenanigans
+-- Entry point for a user to declare a new Rx-processed type, with full traits control
+-- For simpler instantiations take a look at Rx.Definites and Rx.Indefinites
 generic
-   type T (<>) is private;
+   with package Type_Traits is new Rx.Traits.Types (<>);
 package Rx.Types is
 
-   package Typed   is new Rx.Typed (T);
-   package Sources is new Rx.Sources (Typed);
+   package Typed is new Rx.Typed (Type_Traits);
 
-   --  Make visible the "&" here so only this unit has to be use'd
-   function "&" (L : Typed.Producers.Observable'Class;
-                 R : Typed.Consumers.Observer'Class) return Subscriptions.Subscription renames Sources."&";
+   --  This is the package to be use'd in user code
+   package Observables is new Rx.Sources (Typed);
 
 end Rx.Types;

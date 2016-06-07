@@ -9,6 +9,6 @@ package Rx.Traits.Definite_Defaults is
    function To_Definite   (V : T) return D is (D (V));
    function To_Indefinite (V : D) return T is (T (V));
 
-   package Types is new Traits.Types (T, D);
+   package Type_Traits is new Traits.Types (T, D);
 
 end Rx.Traits.Definite_Defaults;
