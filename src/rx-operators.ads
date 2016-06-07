@@ -1,10 +1,10 @@
-with Rx.Sources;
+with Rx.Observables;
 with Rx.Transform;
 
 generic
    --  These could well be trait packages, but using those the user only has to know about "observables" packages
-   with package From is new Rx.Sources (<>); -- Naming chosen for same length
-   with package Into is new Rx.Sources (<>);
+   with package From is new Rx.Observables (<>); -- Naming chosen for same length
+   with package Into is new Rx.Observables (<>);
 package Rx.Operators is
 
    package Typed is new Transform (From.Typed, Into.Typed);

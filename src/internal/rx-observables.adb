@@ -2,7 +2,7 @@ with Rx.Debug;
 with Rx.Just;
 with Rx.Subscribe;
 
-package body Rx.Sources is
+package body Rx.Observables is
 
    package RxJust      is new Rx.Just (Typed);
    package RxSubscribe is new Rx.Subscribe (Typed);
@@ -30,4 +30,4 @@ package body Rx.Sources is
       return Subscriptions.Subscription'(null record);
    end "&";
 
-end Rx.Sources;
+end Rx.Observables;

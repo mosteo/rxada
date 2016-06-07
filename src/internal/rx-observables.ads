@@ -3,7 +3,7 @@ with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
-package Rx.Sources is
+package Rx.Observables is
 
    function Just (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class;
 
@@ -14,4 +14,4 @@ package Rx.Sources is
                  R : Typed.Consumers.Observer'Class)
                  return Subscriptions.Subscription;
 
-end Rx.Sources;
+end Rx.Observables;
