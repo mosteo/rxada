@@ -4,7 +4,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 package Rx.Debug is
 
-   Enabled : constant Boolean := True;
+   Enabled : constant Boolean := False;
 
    procedure Print (E : Ada.Exceptions.Exception_Occurrence);
 
