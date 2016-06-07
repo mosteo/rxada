@@ -1,3 +1,4 @@
+with Rx.Traits.Iterable;
 with Rx.Typed;
 
 generic
@@ -13,5 +14,11 @@ package Rx.From is
       function From (A : Array_Type) return Typed.Producers.Observable'Class;
 
    end From_Array;
+
+   generic
+      with package Iterable is new Rx.Traits.Iterable (<>);
+   package From_Iterable is
+      function From (C : Iterable.Container) return Iterable.Typed.Producers.Observable'Class;
+   end From_Iterable;
 
 end Rx.From;
