@@ -3,7 +3,9 @@ package body Rx.Map is
    type Op (F : Typed.Func1) is new Typed.Operator with null record;
 
    overriding
-   procedure On_Next (This : in out Op; Child : in out Typed.Into.Consumers.Observer'Class; V : Typed.From.T) is
+   procedure On_Next (This  : in out Op;
+                      Child : in out Typed.Into.Consumers.Observer'Class;
+                      V     : Typed.From.Type_Traits.T) is
    begin
       Child.On_Next (This.F (V));
    end On_Next;

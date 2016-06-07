@@ -16,7 +16,7 @@ package body Rx.Transform is
       Parent.Subscribe (Producer);
    end Subscribe;
 
-   overriding procedure On_Next (This : in out Operator; V : From.T)
+   overriding procedure On_Next (This : in out Operator; V : From.Type_Traits.T)
    is
    begin
       Operator'Class (This).On_Next (This.Child.Ref, V);
