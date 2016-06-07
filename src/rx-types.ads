@@ -1,4 +1,4 @@
-with Rx.Sources;
+with Rx.Observables;
 with Rx.Traits.Types;
 with Rx.Typed;
 
@@ -11,6 +11,6 @@ package Rx.Types is
    package Typed is new Rx.Typed (Type_Traits);
 
    --  This is the package to be use'd in user code
-   package Observables is new Rx.Sources (Typed);
+   package Observables is new Rx.Observables (Typed);
 
 end Rx.Types;
