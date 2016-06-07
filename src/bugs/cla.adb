@@ -3,9 +3,9 @@ procedure Cla is
    generic
    package Nested is
 
-         type Object is tagged null record;
+      type Object is tagged null record;
 
-	 procedure Method (O : Object) is null;
+      procedure Method (O : Object) is null;
 
    end Nested;
 
@@ -27,6 +27,6 @@ begin
    M.Method;
 
    Op (1, 2).Method;  --  Fine
-   "&"(1, 2).Method;  --  Fine too
+   "&" (1, 2).Method;  --  Fine too
    --(1 & 2).Method;  --  Error: statement expected (gpl2015/16)
 end Cla;
