@@ -6,7 +6,7 @@ package Rx.Just is
 
    type Observable is new Typed.Producers.Observable with private;
 
-   function Create (V : Typed.T) return Typed.Producers.Observable'Class;
+   function Create (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class;
 
    overriding
    procedure Subscribe (Producer : in out Observable;
@@ -15,7 +15,7 @@ package Rx.Just is
 private
 
    type Observable is new Typed.Producers.Observable with record
-      Value : Typed.Holders.Definite;
+      Value : Typed.Type_Traits.D;
    end record;
 
 end Rx.Just;

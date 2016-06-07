@@ -1,17 +1,17 @@
 with Rx.Debug;
 
 procedure Rx.Examples.Basic is
-   use Integers;
-   use Strings;
-   use StrtoInt;
+   use Integers.Observables;
+   use Strings.Observables;
+   use StrToInt;
    use IntToStr;
 begin
    Chain :=
-     Strings.Sources.Just ("Hello, world!") &
+     Just ("Hello, world!") &
      Map (Length'Access) &
      Map (Image'Access) &
      Map (Length'Access) &
-     Integers.Sources.Subscribe (Debug.Put_Line'Access);
+     Subscribe (Debug.Put_Line'Access);
    --  This should print " 3":
    -- "Hello, world!" --> 13 --> " 13" --> 3 --> Integer'Image (3)
 exception

@@ -7,7 +7,7 @@ package body Rx.Sources is
    package RxJust      is new Rx.Just (Typed);
    package RxSubscribe is new Rx.Subscribe (Typed);
 
-   function Just (V : Typed.T) return Typed.Producers.Observable'Class is
+   function Just (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class is
    begin
       return RxJust.Create (V);
    end Just;

@@ -5,8 +5,8 @@ with Rx.Subscriptions;
 
 package Rx.Examples is
 
-   package StrToInt is new Rx.Operators (Strings, Integers);
-   package IntToStr is new Rx.Operators (Integers, Strings);
+   package StrToInt is new Rx.Operators (Strings.Observables, Integers.Observables);
+   package IntToStr is new Rx.Operators (Integers.Observables, Strings.Observables);
 
    function Length (S : String) return Integer is (S'Length);
    function Image  (I : Integer) return String is (I'Img);

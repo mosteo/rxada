@@ -5,7 +5,7 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Sources is
 
-   function Just (V : Typed.T) return Typed.Producers.Observable'Class;
+   function Just (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class;
 
    function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Typed.Consumers.Observer'Class;
 
