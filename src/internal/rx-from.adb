@@ -1,3 +1,5 @@
+with Rx.Sources.Stateless;
+
 package body Rx.From is
 
    ----------------
@@ -33,5 +35,28 @@ package body Rx.From is
       end From;
 
    end From_Array;
+
+   package body From_Iterable is
+
+      procedure On_Subscribe (State    : Iterable.Cursor;
+                              Consumer : in out Iterable.Typed.Consumers.Observer'Class)
+      is
+         use Iterable;
+         I : Cursor := State;
+      begin
+         while Has_Element (I) loop
+            Consumer.On_Next (Element (I));
+            I := Next (I);
+         end loop;
+      end On_Subscribe;
+
+      package Iterables is new Rx.Sources.Stateless (Iterable.Typed, Iterable.Cursor, On_Subscribe);
+
+      function From (C : Iterable.Container) return Iterable.Typed.Producers.Observable'Class is
+      begin
+         return Iterables.Create (Iterable.First (C));
+      end From;
+
+   end From_Iterable;
 
 end Rx.From;
