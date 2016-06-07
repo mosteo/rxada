@@ -1,3 +1,4 @@
+with Rx.Holders;
 with Rx.Sources.Stateless;
 
 package body Rx.From is
@@ -8,33 +9,29 @@ package body Rx.From is
 
    package body From_Array is
 
-      type Observable (First, Last : Index_Type) is new Typed.Producers.Observable with record
-         Values : Array_Type (First .. Last);
-      end record;
+      package State is new Holders (Arrays.Typed_Array);
 
-      overriding
-      procedure Subscribe (Producer : in out Observable;
-                           Consumer : in out Typed.Consumers.Observer'Class) is
+      procedure On_Subscribe (S : State.Definite;
+                              Consumer : in out Arrays.Typed.Consumers.Observer'Class) is
       begin
-         for E of Producer.Values loop
-            Consumer.On_Next (Typed.Type_Traits.To_Indefinite (E));
+         for E of S.Constant_Reference loop
+            Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
          end loop;
-         Consumer.On_Completed;
-      end Subscribe;
+      end On_Subscribe;
 
-      ----------
-      -- From --
-      ----------
+      package Arrayed is new Sources.Stateless (Arrays.Typed, State.Definite, On_Subscribe);
 
-      function From
-        (A : Array_Type)
-         return Typed.Producers.Observable'Class
+      function From (A : Arrays.Typed_Array) return Arrays.Typed.Producers.Observable'Class
       is
       begin
-         return Observable'(First => A'First, Last => A'Last, Values => A);
+         return Arrayed.Create (State.To_Holder (A));
       end From;
 
    end From_Array;
+
+   -------------------
+   -- From_Iterable --
+   -------------------
 
    package body From_Iterable is
 
