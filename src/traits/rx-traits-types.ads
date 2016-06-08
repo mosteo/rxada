@@ -1,3 +1,5 @@
+pragma Warnings (Off);
+
 generic
    type T (<>) is private; -- The user-facing type
    type D      is private; -- Definite type for storage of T

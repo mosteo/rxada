@@ -1,5 +1,6 @@
 with Rx.Typed;
 
+pragma Warnings (Off);
 generic
    with package Typed is new Rx.Typed (<>);
 

@@ -20,6 +20,11 @@ begin
    Chain :=
      Integers.Observables.From ((5, 4, 3, 2, 1)) &
      Subscribe (Debug.Put_Line'Access);
+
+   Debug.Put_Line ("Count test");
+   Chain :=
+     StrToInt."&" (Just ("xxx"), Strings.Instance.Count (0)) &
+     Subscribe (Debug.Put_Line'Access);
 exception
    when E : others =>
       Debug.Print (E);

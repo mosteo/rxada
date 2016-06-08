@@ -7,7 +7,6 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Observables is
 
-
    ----------
    -- Just --
    ----------
