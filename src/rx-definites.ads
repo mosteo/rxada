@@ -14,4 +14,6 @@ package Rx.Definites is
    -- Actually usable package
    package Observables renames Instance.Observables;
 
+   subtype Observable is Instance.Observable;
+
 end Rx.Definites;
