@@ -3,6 +3,7 @@ with Rx.Debug;
 procedure Rx.Examples.Basic is
    use Integers.Observables;
    use Strings.Observables;
+   use IntToInt;
    use StrToInt;
    use IntToStr;
 begin
@@ -23,7 +24,8 @@ begin
 
    Debug.Put_Line ("Count test");
    Chain :=
-     StrToInt."&" (Just ("xxx"), Strings.Instance.Count (0)) &
+     From ((0, 1, 2, 3)) &
+     IntCount.Count (First => 0) &
      Subscribe (Debug.Put_Line'Access);
 exception
    when E : others =>

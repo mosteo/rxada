@@ -12,6 +12,18 @@ package Rx.Transform is
      Into.Producers.Observable
    with private;
 
+   function "&" (L : From.Producers.Observable'Class;
+                 R : Operator'Class)
+                 return Into.Producers.Observable'Class;
+
+   not overriding
+   procedure On_Next (This  : in out Operator;
+                      Child : in out Into.Consumers.Observer'Class;
+                      V     : From.Type_Traits.T) is abstract;
+
+   not overriding
+   procedure On_Completed (This : in out Operator; Child : in out Into.Consumers.Observer'Class) is null;
+
    overriding
    procedure Subscribe (Producer : in out Operator;
                         Consumer : in out Into.Consumers.Observer'Class);
@@ -19,14 +31,8 @@ package Rx.Transform is
    overriding
    procedure On_Next (This : in out Operator; V : From.Type_Traits.T);
 
-   not overriding
-   procedure On_Next (This  : in out Operator;
-                      Child : in out Into.Consumers.Observer'Class;
-                      V     : From.Type_Traits.T) is abstract;
-
-   function "&" (L : From.Producers.Observable'Class;
-                 R : Operator'Class)
-                 return Into.Producers.Observable'Class;
+   overriding
+   procedure On_Completed (This : in out Operator);
 
 private
 
