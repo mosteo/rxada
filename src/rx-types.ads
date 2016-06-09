@@ -13,4 +13,6 @@ package Rx.Types is
    --  This is the package to be use'd in user code
    package Observables is new Rx.Observables (Typed);
 
+   subtype Observable is Typed.Producers.Observable'Class;
+
 end Rx.Types;

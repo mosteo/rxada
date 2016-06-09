@@ -1,7 +1,7 @@
-with Rx.Debug;
+with Rx.Debug; use Rx.Debug;
 with Rx.Integers;
 with Rx.Strings;
-with Rx.Tests; use Rx.Tests;
+with Rx.Tests;
 
 procedure Rx.Examples.Basic is
    use Integers.Observables;
@@ -10,6 +10,9 @@ procedure Rx.Examples.Basic is
    use StrToInt;
    use IntToStr;
 begin
+   --  Begin with self-checks
+   pragma Assert (Tests.Basic_Tests);
+
    Debug.Put_Line("Just example");
    Chain :=
      Just ("Hello, world!") &
@@ -30,6 +33,17 @@ begin
      From ((0, 1, 2, 3)) &
      IntCount.Count (First => 0) &
      Subscribe (Debug.Put_Line'Access);
+
+   Debug.Put_Line ("Count reset example");
+   declare
+      use IntCount;
+      Ob : constant Integers.Observable :=
+             From ((0, 1, 2, 3)) &
+             Count (First => 0);
+   begin
+      Chain := Ob & Subscribe (Put_Line'Access); -- Must both output 4
+      Chain := Ob & Subscribe (Put_Line'Access); -- Must both output 4
+   end;
 exception
    when E : others =>
       Debug.Print (E);
