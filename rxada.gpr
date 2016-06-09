@@ -29,5 +29,10 @@ project RxAda is
       for Default_Switches ("ada") use ("-g");
    end Linker;
 
+   package Gnattest is
+      for Tests_Dir use "../aunit";
+      for Stubs_Default use "pass";
+   end Gnattest;
+
 end RxAda;
 
