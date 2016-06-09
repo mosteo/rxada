@@ -16,11 +16,24 @@ package body Rx.Transform is
       Parent.Subscribe (Producer);
    end Subscribe;
 
+   -------------
+   -- On_Next --
+   -------------
+
    overriding procedure On_Next (This : in out Operator; V : From.Type_Traits.T)
    is
    begin
       Operator'Class (This).On_Next (This.Child.Ref, V);
    end On_Next;
+
+   ------------------
+   -- On_Completed --
+   ------------------
+
+   overriding procedure On_Completed (This : in out Operator) is
+   begin
+      Operator'Class (This).On_Completed (This.Child.Ref);
+   end On_Completed;
 
    ---------
    -- "&" --
