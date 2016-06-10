@@ -1,4 +1,5 @@
 with Rx.From;
+with Rx.Schedulers;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
 with Rx.Typed;
@@ -6,13 +7,6 @@ with Rx.Typed;
 generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Observables is
-
-   ----------
-   -- Just --
-   ----------
-
-   -- Observable from single value
-   function Just (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class;
 
    ----------
    -- From --
@@ -23,12 +17,35 @@ package Rx.Observables is
    -- Observable from an array of values, useful for literal arrays
    function From (A : Default_Arrays.Typed_Array) return Typed.Producers.Observable'Class;
 
+   ----------
+   -- Just --
+   ----------
+
+   -- Observable from single value
+   function Just (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class;
+
+   ----------------
+   -- Observe_On --
+   ----------------
+
+   function Observe_On (Scheduler : Schedulers.Scheduler) return Typed.Mutator'Class;
+
    ---------------
    -- Subscribe --
    ---------------
 
    function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Typed.Consumers.Observer'Class;
 
+   ---------
+   -- "&" --
+   ---------
+
+--     --  Chain preparation
+   function "&" (L : Typed.Producers.Observable'Class;
+                 R : Typed.Consumers.Observer'Class)
+                 return Typed.Producers.Observable'Class;
+
+   --  Subscribe
    function "&" (L : Typed.Producers.Observable'Class;
                  R : Typed.Consumers.Observer'Class)
                  return Subscriptions.Subscription;

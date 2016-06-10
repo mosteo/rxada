@@ -1,3 +1,4 @@
+with Rx.Errors;
 with Rx.Typed;
 
 generic
@@ -5,16 +6,26 @@ generic
 package Rx.Shared is
 
    --  In essence this is a ref counting carcass for a held observer
-   type Detached_Observable is new Typed.Mutator with private;
+   type Observer is new Typed.Consumers.Observer with private;
+
+   function Create (Held : Typed.Consumers.Observer'Class) return Observer;
+   procedure Release (This : in out Observer);
+
+   overriding procedure On_Next      (This : in out Observer; V : Typed.Type_Traits.T);
+   overriding procedure On_Completed (This : in out Observer);
+   overriding procedure On_Error     (This : in out Observer; Error : Errors.Occurrence);
+
+   Null_Observer : constant Observer;
 
 private
 
-   type Detached_Observable is new Typed.Mutator with record
-      Actual : access Typed.Consumers.Observer'Class;
+   type Observer_Access is access Typed.Consumers.Observer'Class;
 
-      --  We need a queue of pending calls, that's shared and protected? no, that has to be on the scheduler
-      --  Basicly, the Observe_On observable stores a pointer to a Scheduler, that can't go out of scope,
-      --  and relays values to the Scheduler together with a shared pointer to an observer
+   pragma Compile_Time_Warning (True, "Memory deallocation unimplemented");
+   type Observer is new Typed.Consumers.Observer with record
+      Actual : Observer_Access;
    end record;
+
+   Null_Observer : constant Observer := (Typed.Consumers.Observer with Actual => null);
 
 end Rx.Shared;

@@ -1,30 +1,39 @@
+private with Ada.Task_Identification;
+
 with Rx.Scheduler.Immediate;
 with Rx.Scheduler.Monocore;
-use Rx.Scheduler;
 
 package Rx.Schedulers is
 
-   Type Object is access all Rx.Scheduler.Object'Class;
+   Type Scheduler is access all Rx.Scheduler.Object'Class;
 
-   IO          : constant Object;
-   Background  : constant Object;
-   Computation : constant Object;
-   Immediate   : constant Object;
+   IO          : constant Scheduler;
+   Background  : constant Scheduler;
+   Computation : constant Scheduler;
+   Immediate   : constant Scheduler;
 
    --  Still missing: NewThread, trampoline (yuks!)
 
+   --  Shortcut for Ada.Task_Identification
+   function Current_Task_Id return String;
+
 private
 
+   use Rx.Scheduler;
+
    Real_IO     : aliased Monocore.Object;
-   IO          : constant Object := Real_IO'Access;
+   IO          : constant Scheduler := Real_IO'Access;
 
    Real_BG     : aliased Monocore.Object;
-   Background  : constant Object := Real_BG'Access;
+   Background  : constant Scheduler := Real_BG'Access;
 
    Real_Comp   : aliased Monocore.Object;
-   Computation : constant Object := Real_Comp'Access;
+   Computation : constant Scheduler := Real_Comp'Access;
 
-   Real_Immed  : aliased Scheduler.Immediate.Object;
-   Immediate   : constant Object := Real_Immed'Access;
+   Real_Immed  : aliased Rx.Scheduler.Immediate.Object;
+   Immediate   : constant Scheduler := Real_Immed'Access;
+
+   use Ada.Task_Identification;
+   function Current_Task_Id return String is (Image (Current_Task));
 
 end Rx.Schedulers;
