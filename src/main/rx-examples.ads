@@ -15,6 +15,7 @@ package Rx.Examples is
 
    function Length (S : String) return Integer is (S'Length);
    function Image  (I : Integer) return String is (I'Img);
+   function Inc (I : Integer) return Integer is (I+1);
 
    Chain : Subscriptions.Subscription;
 
