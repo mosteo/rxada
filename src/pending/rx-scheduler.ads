@@ -1,18 +1,28 @@
-with Ada.Real_Time.Timing_Events;
+with Rx.Errors;
+with Rx.Shared;
+with Rx.Typed;
 
 package Rx.Scheduler is
 
    type Object is limited interface;
 
-   type Runnable is abstract tagged limited private;
+   type Runnable is interface;
 
-   procedure Run (This : in out Runnable) is null;
+   procedure Run (This : Runnable) is null;
 
    --  Schedule a code to be run at a certain point from now, in a certain scheduler (thread)
    procedure Schedule (Where : in out Object; What : in out Runnable'Class; After : Duration := 0.0) is abstract;
 
-private
+   generic
+      with package Typed is new Rx.Typed (<>);
+   package Events is
 
-   type Runnable is abstract new Ada.Real_Time.Timing_Events.Timing_Event with null record;
+      package Shared is new Rx.Shared (Typed);
+
+      procedure On_Next      (Sched : in out Object'Class; Observer : Shared.Observer; V : Typed.Type_Traits.T);
+      procedure On_Completed (Sched : in out Object'Class; Observer : Shared.Observer);
+      procedure On_Error     (Sched : in out Object'Class; Observer : Shared.Observer; E : Rx.Errors.Occurrence);
+
+   end Events;
 
 end Rx.Scheduler;
