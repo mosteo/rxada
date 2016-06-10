@@ -1,13 +1,11 @@
-with Rx.Debug;
-
-package body Rx.Transform is
+package body Rx.Links is
 
    ---------------
    -- Subscribe --
    ---------------
 
    overriding procedure Subscribe
-     (Producer : in out Operator;
+     (Producer : in out Link;
       Consumer : in out Into.Consumers.Observer'Class)
    is
       Parent : From.Producers.Observable'Class := Producer.Get_Parent;
@@ -20,19 +18,19 @@ package body Rx.Transform is
    -- On_Next --
    -------------
 
-   overriding procedure On_Next (This : in out Operator; V : From.Type_Traits.T)
+   overriding procedure On_Next (This : in out Link; V : From.Type_Traits.T)
    is
    begin
-      Operator'Class (This).On_Next (This.Child.Ref, V);
+      Link'Class (This).On_Next (This.Child.Ref, V);
    end On_Next;
 
    ------------------
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This : in out Operator) is
+   overriding procedure On_Completed (This : in out Link) is
    begin
-      Operator'Class (This).On_Completed (This.Child.Ref);
+      Link'Class (This).On_Completed (This.Child.Ref);
    end On_Completed;
 
    ---------
@@ -40,15 +38,13 @@ package body Rx.Transform is
    ---------
 
    function "&" (L : From.Producers.Observable'Class;
-                 R : Operator'Class)
+                 R : Link'Class)
                  return Into.Producers.Observable'Class
    is
-      use Rx.Debug;
-      Actual : Operator'Class := R;
+      Actual : Link'Class := R;
    begin
-      Debug.Log ("chaining " & Image (L'Tag) & " --> " & Image (R'Tag));
       Actual.Set_Parent (L);
       return Actual;
    end "&";
 
-end Rx.Transform;
+end Rx.Links;

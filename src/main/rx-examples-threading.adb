@@ -5,7 +5,6 @@ with Rx.Schedulers;
 procedure Rx.Examples.Threading is
    use Integers.Observables;
    use Strings.Observables;
-   use IntToInt;
    use IntToStr;
    use StrToInt;
 begin
@@ -13,8 +12,6 @@ begin
      Integers.Observables.From ((1, 2, 3, 4, 5))
      &
      Observe_On (Schedulers.Background)
-     &
-     Map (Inc'Access)
      &
      Map (Image'Access)
      &

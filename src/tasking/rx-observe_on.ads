@@ -1,10 +1,10 @@
+with Rx.Operate;
 with Rx.Schedulers;
-with Rx.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Operate is new Rx.Operate (<>);
 package Rx.Observe_On is
 
-   function Create (Scheduler : Schedulers.Scheduler) return Typed.Mutator'Class;
+   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator;
 
 end Rx.Observe_On;

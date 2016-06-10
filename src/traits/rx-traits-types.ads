@@ -7,6 +7,8 @@ generic
    with function To_Indefinite (V : D) return T is <>;
 package Rx.Traits.Types is
 
+   pragma Preelaborate;
+
    function "+" (V : T) return D renames To_Definite;
    function "+" (V : D) return T renames To_Indefinite;
 

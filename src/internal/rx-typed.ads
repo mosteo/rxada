@@ -6,12 +6,15 @@ generic
    with package Type_Traits is new Rx.Traits.Types (<>);
 package Rx.Typed is
 
+   pragma Preelaborate;
+
    package Actions   is new Rx.Actions   (Type_Traits.T);
    package Producers is new Rx.Producers (Type_Traits.T);
    package Consumers renames Producers.Consumers;
 
-   -- Middle-chain operator that does not transform types but only does something with values.
-   -- E.g., Observe_On
-   type Mutator is abstract new Producers.Subscriptor and Producers.Observable with null record;
+   -- Shortcuts
+   subtype T is Type_Traits.T;
+   subtype Observable is Producers.Observable'Class;
+   subtype Observer   is Consumers.Observer'Class;
 
 end Rx.Typed;

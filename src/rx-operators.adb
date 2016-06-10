@@ -2,11 +2,11 @@ with Rx.Map;
 
 package body Rx.Operators is
 
-   package RxMap is new Rx.Map (Typed);
-
    ---------
    -- Map --
    ---------
+
+   package RxMap is new Rx.Map (Typed);
 
    function Map (F : Typed.Func1) return Typed.Operator'Class is
    begin
