@@ -3,6 +3,8 @@ with Rx.Traits.Iterable;
 
 package Rx.From is
 
+   pragma Preelaborate;
+
    generic
       with package Arrays is new Rx.Traits.Arrays (<>);
    package From_Array is

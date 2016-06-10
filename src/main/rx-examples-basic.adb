@@ -6,7 +6,7 @@ with Rx.Tests;
 procedure Rx.Examples.Basic is
    use Integers.Observables;
    use Strings.Observables;
-   use IntToInt;
+--   use IntToInt;
    use StrToInt;
    use IntToStr;
 begin
@@ -16,9 +16,9 @@ begin
    Debug.Put_Line("Just example");
    Chain :=
      Just ("Hello, world!") &
---       Map (Length'Access) &
---       Map (Image'Access) &
---       Map (Length'Access) &
+     Map (Length'Access) &
+     Map (Image'Access) &
+     Map (Length'Access) &
      Subscribe (Debug.Put_Line'Access);
    --  This should print " 3":
    -- "Hello, world!" --> 13 --> " 13" --> 3 --> Integer'Image (3)
@@ -30,15 +30,14 @@ begin
 
    Debug.Put_Line ("Count example");
    Chain :=
-     From ((0, 1, 2, 3)) &
-     IntCount.Count (First => 0) &
+     Integers.Observables.From ((0, 1, 2, 3)) &
+     Count (First => 0) &
      Subscribe (Debug.Put_Line'Access);
 
    Debug.Put_Line ("Count reset example");
    declare
-      use IntCount;
       Ob : constant Integers.Observable :=
-             From ((0, 1, 2, 3)) &
+             Integers.Observables.From ((0, 1, 2, 3)) &
              Count (First => 0);
    begin
       Chain := Ob & Subscribe (Put_Line'Access); -- Must both output 4

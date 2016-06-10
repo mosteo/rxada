@@ -1,31 +1,63 @@
-with Rx.Debug;
+with Rx.Count;
 with Rx.Just;
+with Rx.Observe_On;
 with Rx.Subscribe;
 
 package body Rx.Observables is
 
-   package RxJust      is new Rx.Just (Typed);
-   package RxSubscribe is new Rx.Subscribe (Typed);
+   -----------
+   -- Count --
+   -----------
+
+   function Count (First : T) return Operator is
+      package Self_Count is new Rx.Count (Operate.Transform, Succ); -- Will fail on accessibility check
+   begin
+      return Self_Count.Count (First);
+   end Count;
+
+   ----------
+   -- Just --
+   ----------
+
+   package RxJust is new Rx.Just (Typed);
 
    function Just (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class is
    begin
       return RxJust.Create (V);
    end Just;
 
-   function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Typed.Consumers.Observer'Class is
+   ----------------
+   -- Observe_On --
+   ----------------
+
+   package RxObserveOn is new Rx.Observe_On (Operate);
+
+   function Observe_On (Scheduler : Schedulers.Scheduler) return Operator is
+   begin
+      return RxObserveOn.Create (Scheduler);
+   end Observe_On;
+
+   ---------------
+   -- Subscribe --
+   ---------------
+
+   package RxSubscribe is new Rx.Subscribe (Typed);
+
+   function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Observer is
    begin
       return RxSubscribe.As (On_Next);
    end Subscribe;
 
-   --  Last call, causes a subscription
+   ---------
+   -- "&" --
+   ---------
+
    function "&" (L : Typed.Producers.Observable'Class; R : Typed.Consumers.Observer'Class)
                  return Subscriptions.Subscription
    is
-      use Debug;
       Actual_L : Typed.Producers.Observable'Class := L;
       Actual_R : Typed.Consumers.Observer'Class   := R;
    begin
-      Debug.Log ("subscribing to " & Image (L'Tag));
       Actual_L.Subscribe (Actual_R);
       return Subscriptions.Subscription'(null record);
    end "&";
