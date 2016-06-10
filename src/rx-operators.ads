@@ -1,3 +1,5 @@
+with Rx.Count;
+with Rx.Map;
 with Rx.Observables;
 with Rx.Transform;
 
@@ -12,17 +14,35 @@ package Rx.Operators is
 
    package Typed is new Rx.Transform (From.Typed, Into.Typed);
 
+   subtype Operator Is Typed.Operator'Class;
+
    ---------
    -- "&" --
    ---------
 
-   function "&" (L : From.Observable; R : Typed.Operator'Class) return Into.Observable
+   function "&" (L : From.Observable; R : Operator) return Into.Observable
      renames Typed."&";
+
+   --------------
+   -- Counters --
+   --------------
+
+   generic
+      with function Succ (V : Into.T) return Into.T;
+   package Counters is
+      package Pkg_Count is new Rx.Count (Typed, Succ);
+      function Count (First : Into.T) return Operator renames Pkg_Count.Count;
+   end Counters;
 
    ---------
    -- Map --
    ---------
 
-   function Map (F : Typed.Func1) return Typed.Operator'Class;
+   function Map (F : Typed.Func1) return Operator;
+
+private
+
+   package RxMap is new Rx.Map (Typed);
+   function Map (F : Typed.Func1) return Operator renames RxMap.Create;
 
 end Rx.Operators;
