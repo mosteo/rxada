@@ -14,6 +14,7 @@ package Rx.Typed is
 
    -- Shortcuts
    subtype T is Type_Traits.T;
+   subtype D is Type_Traits.D;
    subtype Observable is Producers.Observable'Class;
    subtype Observer   is Consumers.Observer'Class;
 

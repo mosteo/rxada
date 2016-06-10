@@ -8,10 +8,10 @@ package Rx.Scheduler is
 
    type Runnable is interface;
 
-   procedure Run (This : Runnable) is null;
+   procedure Run (This : in out Runnable) is abstract;
 
    --  Schedule a code to be run at a certain point from now, in a certain scheduler (thread)
-   procedure Schedule (Where : in out Object; What : in out Runnable'Class; After : Duration := 0.0) is abstract;
+   procedure Schedule (Where : in out Object; What : Runnable'Class; After : Duration := 0.0) is abstract;
 
    generic
       with package Typed is new Rx.Typed (<>);

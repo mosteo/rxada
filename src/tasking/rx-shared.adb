@@ -40,6 +40,7 @@ package body Rx.Shared is
    overriding procedure On_Completed (This : in out Observer) is
    begin
       This.Actual.On_Completed;
+      This.Release;
    end On_Completed;
 
    --------------
@@ -52,6 +53,7 @@ package body Rx.Shared is
    is
    begin
       This.Actual.On_Error (Error);
+      This.Release;
    end On_Error;
 
 end Rx.Shared;

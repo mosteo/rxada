@@ -1,10 +1,11 @@
 with Ada.Exceptions;
+with Ada.Finalization;
 
 package Rx.Errors is
 
    pragma Preelaborate;
 
-   type Occurrence is tagged limited private;
+   type Occurrence is new Ada.Finalization.Controlled with private;
 
    procedure Fill (Error : out Occurrence;
                    From  :     Ada.Exceptions.Exception_Occurrence);
@@ -17,9 +18,14 @@ package Rx.Errors is
 
 private
 
-   type Occurrence is tagged limited record
-      Instance : Ada.Exceptions.Exception_Occurrence;
+   type Except_Access is access Ada.Exceptions.Exception_Occurrence;
+
+   type Occurrence is new Ada.Finalization.Controlled with record
+      Instance : Except_Access;
       Handled  : Boolean := False;
    end record;
+
+   overriding procedure Finalize   (E : in out Occurrence);
+   overriding procedure Adjust     (E : in out Occurrence);
 
 end Rx.Errors;

@@ -33,6 +33,15 @@ package body Rx.Links is
       Link'Class (This).On_Completed (This.Child.Ref);
    end On_Completed;
 
+   --------------
+   -- On_Error --
+   --------------
+
+   overriding procedure On_Error (This : in out Link; Error : Errors.Occurrence) is
+   begin
+      This.Child.Ref.On_Error (Error); -- Pass it down
+   end On_Error;
+
    ---------
    -- "&" --
    ---------
