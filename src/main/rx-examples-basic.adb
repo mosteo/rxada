@@ -6,9 +6,9 @@ with Rx.Tests;
 procedure Rx.Examples.Basic is
    use Integers.Observables;
    use Strings.Observables;
---   use IntToInt;
    use StrToInt;
    use IntToStr;
+   use IntCount;
 begin
    --  Begin with self-checks
    pragma Assert (Tests.Basic_Tests);
