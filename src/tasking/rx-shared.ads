@@ -21,7 +21,6 @@ private
 
    type Observer_Access is access Typed.Consumers.Observer'Class;
 
-   pragma Compile_Time_Warning (True, "Memory deallocation unimplemented");
    type Observer is new Typed.Consumers.Observer with record
       Actual : Observer_Access;
    end record;

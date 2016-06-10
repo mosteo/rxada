@@ -1,3 +1,4 @@
+with Rx.Errors;
 with Rx.Typed;
 
 generic
@@ -38,7 +39,8 @@ package Rx.Links is
    overriding
    procedure On_Completed (This : in out Link);
 
-   pragma Compile_Time_Warning (True, "On_Error unimplemented");
+   overriding
+   procedure On_Error (This : in out Link; Error : Errors.Occurrence);
 
 private
 

@@ -11,29 +11,52 @@ package body Rx.Observe_On is
       Child : Shared.Observer; -- The regular child in Transform.Operator is not useful in this special case
    end record;
 
-   pragma Compile_Time_Warning (True, "On_Error unimplemented");
+   overriding procedure On_Next      (This : in out Op; V : Operate.T);
+   overriding procedure On_Completed (This : in out Op);
+   overriding procedure On_Error     (This : in out Op; Error : Rx.Errors.Occurrence);
 
+   --  Those shouldn't be called anyway
    overriding procedure On_Next      (This : in out Op; Child : in out Operate.Observer; V : Operate.T);
    overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer);
+
    overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Observer);
 
    -------------
    -- On_Next --
    -------------
 
-   overriding procedure On_Next (This : in out Op; Child : in out Operate.Observer; V : Operate.T) is
+   overriding procedure On_Next      (This : in out Op; V : Operate.T) is
    begin
       Events.On_Next (This.Sched.all, This.Child, V);
+   end On_Next;
+
+   overriding procedure On_Next (This : in out Op; Child : in out Operate.Observer; V : Operate.T) is
+   begin
+      This.On_Next (V); -- Just in case
    end On_Next;
 
    ------------------
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer) is
+   overriding procedure On_Completed (This : in out Op) is
    begin
       Events.On_Completed (This.Sched.all, This.Child);
    end On_Completed;
+
+   overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer) is
+   begin
+      This.On_Completed;
+   end On_Completed;
+
+   --------------
+   -- On_Error --
+   --------------
+
+   overriding procedure On_Error (This : in out Op; Error : Rx.Errors.Occurrence) is
+   begin
+      Events.On_Error (This.Sched.all, This.Child, Error);
+   end On_Error;
 
    ---------------
    -- Subscribe --

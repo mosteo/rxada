@@ -1,11 +1,17 @@
+with Rx.Errors;
+
 package body Rx.Subscribe is
 
-   type Proc1_Observer is new Typed.Consumers.Observer with record
+   type Obs is new Typed.Consumers.Observer with record
       On_Next : Typed.Actions.Proc1;
    end record;
 
+   pragma Compile_Time_Warning (True, "Methods unimplemented");
+   overriding procedure On_Completed (This : in out Obs) is null;
+   overriding procedure On_Error (This : in out Obs; Error : Errors.Occurrence) is null;
+
    overriding
-   procedure On_Next (This : in out Proc1_Observer; V : Typed.Type_Traits.T) is
+   procedure On_Next (This : in out Obs; V : Typed.Type_Traits.T) is
       use Typed.Actions;
    begin
       if This.On_Next /= null then
@@ -19,7 +25,7 @@ package body Rx.Subscribe is
 
    function As (Proc1 : Typed.Actions.Proc1) return Typed.Consumers.Observer'Class is
    begin
-      return Proc1_Observer'(On_Next => Proc1);
+      return Obs'(On_Next => Proc1);
    end As;
 
 end Rx.Subscribe;
