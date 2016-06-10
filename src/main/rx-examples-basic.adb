@@ -16,9 +16,9 @@ begin
    Debug.Put_Line("Just example");
    Chain :=
      Just ("Hello, world!") &
-     Map (Length'Access) &
-     Map (Image'Access) &
-     Map (Length'Access) &
+--       Map (Length'Access) &
+--       Map (Image'Access) &
+--       Map (Length'Access) &
      Subscribe (Debug.Put_Line'Access);
    --  This should print " 3":
    -- "Hello, world!" --> 13 --> " 13" --> 3 --> Integer'Image (3)

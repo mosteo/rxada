@@ -1,5 +1,4 @@
 with Rx.From;
-with Rx.Schedulers;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
 with Rx.Typed;
@@ -24,12 +23,6 @@ package Rx.Observables is
    -- Observable from single value
    function Just (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class;
 
-   ----------------
-   -- Observe_On --
-   ----------------
-
-   function Observe_On (Scheduler : Schedulers.Scheduler) return Typed.Mutator'Class;
-
    ---------------
    -- Subscribe --
    ---------------
@@ -39,11 +32,6 @@ package Rx.Observables is
    ---------
    -- "&" --
    ---------
-
---     --  Chain preparation
-   function "&" (L : Typed.Producers.Observable'Class;
-                 R : Typed.Consumers.Observer'Class)
-                 return Typed.Producers.Observable'Class;
 
    --  Subscribe
    function "&" (L : Typed.Producers.Observable'Class;
