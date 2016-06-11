@@ -7,6 +7,8 @@ package Rx.Scheduler.Monocore is
 
    type Object is limited new Scheduler.Object with private;
 
+   type Ptr is access Object;
+
    --  Schedule a code to be run at a certain point from now, in a certain scheduler (thread)
    overriding
    procedure Schedule (Where : in out Object; What : in out Runnable'Class; After : Duration := 0.0);
