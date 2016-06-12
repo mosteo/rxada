@@ -48,8 +48,8 @@ package body Rx.Shared is
    --------------
 
    overriding procedure On_Error
-     (This : in out Observer;
-      Error : Errors.Occurrence)
+     (This  : in out Observer;
+      Error : in out  Errors.Occurrence)
    is
    begin
       This.Actual.On_Error (Error);

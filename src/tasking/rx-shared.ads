@@ -15,7 +15,7 @@ package Rx.Shared is
 
    overriding procedure On_Next      (This : in out Observer; V : Typed.Type_Traits.T);
    overriding procedure On_Completed (This : in out Observer);
-   overriding procedure On_Error     (This : in out Observer; Error : Errors.Occurrence);
+   overriding procedure On_Error     (This : in out Observer; Error : in out Errors.Occurrence);
 
    Null_Observer : constant Observer;
 

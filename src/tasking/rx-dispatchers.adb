@@ -1,3 +1,5 @@
+with Rx.Errors;
+
 package body Rx.Dispatchers is
 
    ------------
@@ -28,8 +30,13 @@ package body Rx.Dispatchers is
                   when E : others =>
                      Typed.Consumers.Default_Error_Handler (R.Child, E);
                end;
-            when On_Error     => R.Child.On_Error (R.E);
-            when On_Completed => R.Child.On_Completed;
+            when On_Error     =>
+               R.Child.On_Error (R.E);
+               if not R.E.Is_Handled then
+                  R.E.Reraise; -- Because we are in a new thread, the Error won't go any further
+               end if;
+            when On_Completed =>
+               R.Child.On_Completed;
          end case;
       end Run;
 
@@ -56,10 +63,9 @@ package body Rx.Dispatchers is
         (Sched : in out Dispatcher'Class;
          Observer : Shared.Observer)
       is
+         R : Runner := (On_Completed, Observer);
       begin
-         --  Generated stub: replace with real body!
-         pragma Compile_Time_Warning (Standard.True, "On_Completed unimplemented");
-         raise Program_Error with "Unimplemented procedure On_Completed";
+         Sched.Schedule (R);
       end On_Completed;
 
       --------------
@@ -71,10 +77,9 @@ package body Rx.Dispatchers is
          Observer : Shared.Observer;
          E : Rx.Errors.Occurrence)
       is
+         R : Runner := (On_Error, Observer, E);
       begin
-         --  Generated stub: replace with real body!
-         pragma Compile_Time_Warning (Standard.True, "On_Error unimplemented");
-         raise Program_Error with "Unimplemented procedure On_Error";
+         Sched.Schedule (R);
       end On_Error;
 
    end Events;

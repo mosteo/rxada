@@ -12,7 +12,7 @@ package Rx.Consumers is
    type Observer is interface;
    procedure On_Next      (This : in out Observer; V : T) is abstract;
    procedure On_Completed (This : in out Observer) is abstract;
-   procedure On_Error     (This : in out Observer; Error : Errors.Occurrence) is abstract;
+   procedure On_Error     (This : in out Observer; Error : in out Errors.Occurrence) is abstract;
 
    package Holders is new Rx.Holders (Observer'Class);
    type Holder is new Holders.Definite with null record;

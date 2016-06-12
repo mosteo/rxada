@@ -37,7 +37,7 @@ package body Rx.Links is
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Link; Error : Errors.Occurrence) is
+   overriding procedure On_Error (This : in out Link; Error : in out Errors.Occurrence) is
    begin
       This.Child.Ref.On_Error (Error); -- Pass it down
    end On_Error;

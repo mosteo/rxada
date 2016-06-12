@@ -40,7 +40,7 @@ package Rx.Links is
    procedure On_Completed (This : in out Link);
 
    overriding
-   procedure On_Error (This : in out Link; Error : Errors.Occurrence);
+   procedure On_Error (This : in out Link; Error : in out Errors.Occurrence);
 
 private
 
