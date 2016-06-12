@@ -1,9 +1,9 @@
+with Rx.Dispatchers;
 with Rx.Errors;
-with Rx.Scheduler;
 
 package body Rx.Observe_On is
 
-   package Events is new Scheduler.Events (Operate.Typed);
+   package Events is new Dispatchers.Events (Operate.Typed);
    package Shared renames Events.Shared;
 
    type Op is new Operate.Transform.Operator with record

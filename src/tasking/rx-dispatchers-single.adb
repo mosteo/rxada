@@ -1,38 +1,23 @@
-with Ada.Real_Time;
-
 with Rx.Debug;
 
-package body Rx.Scheduler.Monocore is
-
-   protected body Safe is
-
-      procedure OnEvent (Event : in out TE.Timing_Event) is
-         RE : Runnable'Class renames Runnable'Class (TE.Timing_Event'Class (Event));
-      begin
-         Debug.Put_Line ("RING!");
-         Queue.Append (RE'Unchecked_Access);
-      end OnEvent;
-
-      entry Get (R : out Runnable_Access)
-        when not Queue.Is_Empty
-      is
-      begin
-         R := Queue.First_Element;
-         Queue.Delete_First;
-      end Get;
-   end Safe;
+package body Rx.Dispatchers.Single is
 
    --------------
    -- Schedule --
    --------------
 
-   overriding
-   procedure Schedule (Where : in out Object; What : in out Runnable'Class; After : Duration := 0.0)
+   overriding procedure Schedule
+     (Where : in out Dispatcher;
+      What : in out Runnable'Class;
+      After : Duration := 0.0)
    is
+      use Ada.Calendar;
+      Must_Notify : Boolean;
    begin
-      TE.Set_Handler (TE.Timing_Event (What),
-                      Ada.Real_Time.To_Time_Span (After),
-                      Where.Queue.OnEvent'Unrestricted_Access); -- Shouldn't be a problem... as long as de Scheduler is not going to dissapear on us?
+      Where.Queue.Enqueue (What, Clock + After, Must_Notify);
+      if Must_Notify then
+         Where.Thread.Notify;
+      end if;
    end Schedule;
 
    ------------
@@ -40,21 +25,76 @@ package body Rx.Scheduler.Monocore is
    ------------
 
    task body Runner is
-      R : Runnable_Access;
    begin
       loop
+         declare
+            use Ada.Calendar;
+            use Runnable_Holders;
+            Exists  : Boolean;
+            Ev      : Event;
+            Ignore  : Boolean;
          begin
-            Debug.Put_Line ("About to run 1");
-            Parent.Queue.Get (R);
-            Debug.Put_Line ("About to run 2");
-            R.Run;
-            Debug.Put_Line ("About to run 3");
+            Parent.Queue.Dequeue (Ev, Exists);
+            if Exists then
+               select
+                  -- An earlier event has arrived, so requeue
+                  accept Notify;
+                  Parent.Queue.Enqueue (+Ev.Code, Ev.Time, Ignore);
+               or
+                  delay until Ev.Time; -- This wait may perfectly well be 0
+                  Ev.Code.Reference.Run;
+               end select;
+            else
+               select
+                  accept Notify;
+               or
+                  terminate;
+               end select;
+            end if;
          exception
             when E : others =>
-               Debug.Put_Line ("UH OH...");
                Debug.Print (E);
          end;
       end loop;
    end Runner;
 
-end Rx.Scheduler.Monocore;
+   ----------
+   -- Safe --
+   ----------
+
+   protected body Safe is
+
+      -------------
+      -- Enqueue --
+      -------------
+
+      procedure Enqueue
+        (R : Runnable'Class;
+         Time : Ada.Calendar.Time;
+         Notify : out Boolean)
+      is
+         use Ada.Calendar;
+         use Runnable_Holders;
+      begin
+         if Queue.Is_Empty or else Queue.Constant_Reference (Queue.First).Time > Time then
+            Notify := True;
+         end if;
+         Queue.Insert ((Time, +R));
+      end Enqueue;
+
+      -------------
+      -- Dequeue --
+      -------------
+
+      procedure Dequeue (E : out Event; Exists : out Boolean) is
+      begin
+         Exists := not Queue.Is_Empty;
+         if Exists then
+            E := Queue.First_Element;
+            Queue.Delete_First;
+         end if;
+      end Dequeue;
+
+   end Safe;
+
+end Rx.Dispatchers.Single;

@@ -11,6 +11,7 @@ package Rx.Holders is
    type Definite is new Definites.Holder with null record;
 
    function "+" (I : Indef) return Definite renames To_Holder;
+   function "+" (D : Definite) return Indef renames Element;
 
    function Ref  (I : aliased in out Definite) return Definites.Reference_Type renames Reference;
 
