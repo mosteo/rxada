@@ -4,7 +4,9 @@ private with Rx.Holders;
 
 package Rx.Dispatchers.Single is
 
-   type Dispatcher is new Dispatchers.Dispatcher with private;
+   pragma Elaborate_Body;
+
+   type Dispatcher is limited new Dispatchers.Dispatcher with private;
 
    type Ptr is access Dispatcher;
 
@@ -24,7 +26,7 @@ private
    type Dispatcher_Access is access all Dispatcher;
 
    package Runnable_Holders is new Rx.Holders (Runnable'Class);
-
+--
    type Event is record -- Needed To Hold It in The Ordered_Multiset
       Time : Ada.Calendar.Time;
       Code : Runnable_Holders.Definite;
@@ -34,14 +36,22 @@ private
 
    package Event_Queues is new Ordered_Multisets (Event);
 
-   task type Runner (Parent : access Dispatcher);
+   task type Runner (Parent : access Dispatcher) is
+      entry Notify; -- Tell the runner there are events to run, or a new more recent one
+   end Runner;
 
    protected type Safe (Parent : access Dispatcher) is
+      procedure Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time; Notify : out Boolean);
+      --  Add a runnable to be run at a certain time
+
+      procedure Dequeue (E : out Event; Exists : out Boolean);
+      --  Dequeue next event, if it exists
+
    private
       Queue : Event_Queues.Set;
    end Safe;
 
-   type Dispatcher is limited new Dispatcher.Dispatcher with record
+   type Dispatcher is limited new Dispatchers.Dispatcher with record
       Thread  : Runner (Dispatcher'Access);
       Queue   : Safe (Dispatcher'Access);
    end record;

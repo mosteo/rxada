@@ -1,12 +1,12 @@
 private with Ada.Finalization;
 
 generic
-   type Content is private; -- Must have proper defaults
+   type Content is limited private; -- Must have proper defaults
    type Ptr is access Content;
 package Rx.Lazy is
 
 --  Protected wrapper around a type that is created on first use
-   type Lazy is limited private;
+   type Lazy is tagged limited private;
 
    function Get (This : in out Rx.Lazy.Lazy) return Ptr;
 

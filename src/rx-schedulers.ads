@@ -1,30 +1,40 @@
 private with Ada.Task_Identification;
 
+with Rx.Dispatchers;
+private with Rx.Dispatchers.Immediate;
+private with Rx.Dispatchers.Single;
 private with Rx.Lazy;
-with Rx.Scheduler.Immediate;
-with Rx.Scheduler.Monocore;
 
 package Rx.Schedulers is
 
-   Type Scheduler is access all Rx.Scheduler.Object'Class;
+   Type Scheduler is access all Rx.Dispatchers.Dispatcher'Class;
 
    function IO 		return Scheduler;
    function Background 	return Scheduler;
    function Computation return Scheduler;
    function Immediate 	return Scheduler;
-   function New_Thread  return Scheduler;
+--   function New_Thread  return Scheduler;
 
    --  Shortcut for Ada.Task_Identification
    function Current_Thread_Id return String;
 
 private
 
-   use Rx.Scheduler;
+   use Rx.Dispatchers;
 
-   type Lazy_Single is new Rx.Lazy (Rx.Scheduler.Monocore.Object, Rx.Scheduler.Monocore.Ptr);
+   package Lazy_Single is new Rx.Lazy (Rx.Dispatchers.Single.Dispatcher, Rx.Dispatchers.Single.Ptr);
 
-   Real_Immed  : aliased Rx.Scheduler.Immediate.Object;
+   Real_Immed : aliased Dispatchers.Immediate.Dispatcher;
    function Immediate return Scheduler is (Real_Immed'Access);
+
+   Real_IO : Lazy_Single.Lazy;
+   function IO return Scheduler is (Scheduler (Real_IO.Get));
+
+   Real_Background : Lazy_Single.Lazy;
+   function Background return Scheduler is (Scheduler (Real_Background.Get));
+
+   Real_Computation : Lazy_Single.Lazy;
+   function Computation return Scheduler is (Scheduler (Real_Computation.Get));
 
    use Ada.Task_Identification;
    function Current_Thread_Id return String is (Image (Current_Task));
