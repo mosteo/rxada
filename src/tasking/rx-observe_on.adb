@@ -13,7 +13,7 @@ package body Rx.Observe_On is
 
    overriding procedure On_Next      (This : in out Op; V : Operate.T);
    overriding procedure On_Completed (This : in out Op);
-   overriding procedure On_Error     (This : in out Op; Error : Rx.Errors.Occurrence);
+   overriding procedure On_Error     (This : in out Op; Error : in out Rx.Errors.Occurrence);
 
    --  Those shouldn't be called anyway
    overriding procedure On_Next      (This : in out Op; Child : in out Operate.Observer; V : Operate.T);
@@ -53,9 +53,12 @@ package body Rx.Observe_On is
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Op; Error : Rx.Errors.Occurrence) is
+   overriding procedure On_Error (This : in out Op; Error : in out Rx.Errors.Occurrence) is
    begin
       Events.On_Error (This.Sched.all, This.Child, Error);
+      --  Since the error is now in another thread, and we won't know if it has been handled,
+      --  we are done here:
+      Error.Set_Handled;
    end On_Error;
 
    ---------------

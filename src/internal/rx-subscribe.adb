@@ -8,7 +8,7 @@ package body Rx.Subscribe is
 
    pragma Compile_Time_Warning (True, "Methods unimplemented");
    overriding procedure On_Completed (This : in out Obs) is null;
-   overriding procedure On_Error (This : in out Obs; Error : Errors.Occurrence) is null;
+   overriding procedure On_Error (This : in out Obs; Error : in out Errors.Occurrence) is null;
 
    overriding
    procedure On_Next (This : in out Obs; V : Typed.Type_Traits.T) is

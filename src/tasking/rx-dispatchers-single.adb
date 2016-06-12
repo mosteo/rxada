@@ -1,4 +1,4 @@
-with Rx.Debug;
+with Rx.Debug; use Rx.Debug;
 
 package body Rx.Dispatchers.Single is
 
@@ -32,16 +32,16 @@ package body Rx.Dispatchers.Single is
             use Runnable_Holders;
             Exists  : Boolean;
             Ev      : Event;
-            Ignore  : Boolean;
          begin
             Parent.Queue.Dequeue (Ev, Exists);
             if Exists then
                select
                   -- An earlier event has arrived, so requeue
                   accept Notify;
-                  Parent.Queue.Enqueue (+Ev.Code, Ev.Time, Ignore);
+                  Parent.Queue.Enqueue (Ev);
                or
                   delay until Ev.Time; -- This wait may perfectly well be 0
+--                  Put_Line ("id:" & Ev.Id'Img);
                   Ev.Code.Reference.Run;
                end select;
             else
@@ -79,7 +79,18 @@ package body Rx.Dispatchers.Single is
          if Queue.Is_Empty or else Queue.Constant_Reference (Queue.First).Time > Time then
             Notify := True;
          end if;
-         Queue.Insert ((Time, +R));
+--         Put_Line ("enqueue:" & Seq'Img);
+         Queue.Insert ((Seq, Time, +R));
+         Seq := Seq + 1;
+      end Enqueue;
+
+      -------------
+      -- Enqueue --
+      -------------
+
+      procedure Enqueue (E : Event) is
+      begin
+         Queue.Insert (E);
       end Enqueue;
 
       -------------
@@ -92,6 +103,7 @@ package body Rx.Dispatchers.Single is
          if Exists then
             E := Queue.First_Element;
             Queue.Delete_First;
+--            Put_Line ("dequeue:" & E.Id'Img);
          end if;
       end Dequeue;
 

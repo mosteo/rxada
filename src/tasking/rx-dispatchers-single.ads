@@ -26,13 +26,17 @@ private
    type Dispatcher_Access is access all Dispatcher;
 
    package Runnable_Holders is new Rx.Holders (Runnable'Class);
---
+
+   type Event_Id is new Long_Long_Integer;
+
    type Event is record -- Needed To Hold It in The Ordered_Multiset
+      Id   : Event_Id; -- Used to break time ties
       Time : Ada.Calendar.Time;
       Code : Runnable_Holders.Definite;
    end record;
 
-   function "<" (L, R : Event) return Boolean is (R.Time < L.Time);
+   function "<" (L, R : Event) return Boolean is
+     (L.Time < R.Time or else (L.Time = R.Time and then L.Id < R.Id));
 
    package Event_Queues is new Ordered_Multisets (Event);
 
@@ -44,11 +48,15 @@ private
       procedure Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time; Notify : out Boolean);
       --  Add a runnable to be run at a certain time
 
+      procedure Enqueue (E : Event);
+      --  For internal use
+
       procedure Dequeue (E : out Event; Exists : out Boolean);
       --  Dequeue next event, if it exists
 
    private
       Queue : Event_Queues.Set;
+      Seq   : Event_Id := 0;
    end Safe;
 
    type Dispatcher is limited new Dispatchers.Dispatcher with record
