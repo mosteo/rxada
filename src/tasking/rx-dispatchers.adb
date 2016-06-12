@@ -1,4 +1,4 @@
-package body Rx.Scheduler is
+package body Rx.Dispatchers is
 
    ------------
    -- Events --
@@ -21,7 +21,13 @@ package body Rx.Scheduler is
          use Typed.Type_Traits;
       begin
          case R.Kind is
-            when On_Next      => R.Child.On_Next (+R.V);
+            when On_Next      =>
+               begin
+                  R.Child.On_Next (+R.V);
+               exception
+                  when E : others =>
+                     Typed.Consumers.Default_Error_Handler (R.Child, E);
+               end;
             when On_Error     => R.Child.On_Error (R.E);
             when On_Completed => R.Child.On_Completed;
          end case;
@@ -32,13 +38,14 @@ package body Rx.Scheduler is
       -------------
 
       procedure On_Next
-        (Sched : in out Object'Class;
+        (Sched : in out Dispatcher'Class;
          Observer : Shared.Observer;
          V : Typed.Type_Traits.T)
       is
          use Typed.Type_Traits;
+         R : Runner := (On_Next, Observer, +V); -- Create a copy so it's in/out
       begin
-         Sched.Schedule (Runner'(On_Next, Observer, +V));
+         Sched.Schedule (R);
       end On_Next;
 
       ------------------
@@ -46,7 +53,7 @@ package body Rx.Scheduler is
       ------------------
 
       procedure On_Completed
-        (Sched : in out Object'Class;
+        (Sched : in out Dispatcher'Class;
          Observer : Shared.Observer)
       is
       begin
@@ -60,7 +67,7 @@ package body Rx.Scheduler is
       --------------
 
       procedure On_Error
-        (Sched : in out Object'Class;
+        (Sched : in out Dispatcher'Class;
          Observer : Shared.Observer;
          E : Rx.Errors.Occurrence)
       is
@@ -72,4 +79,4 @@ package body Rx.Scheduler is
 
    end Events;
 
-end Rx.Scheduler;
+end Rx.Dispatchers;
