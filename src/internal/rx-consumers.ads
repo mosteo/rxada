@@ -14,6 +14,10 @@ package Rx.Consumers is
    procedure On_Completed (This : in out Observer) is abstract;
    procedure On_Error     (This : in out Observer; Error : in out Errors.Occurrence) is abstract;
 
+   type Sink is interface;
+   --  Used to diagnose improper subscriptions to things not a terminator Sink.
+   --  Any custom final subscriber must implement this interface.
+
    package Holders is new Rx.Holders (Observer'Class);
    type Holder is new Holders.Definite with null record;
 

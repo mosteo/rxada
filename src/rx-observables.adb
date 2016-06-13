@@ -10,6 +10,10 @@ package body Rx.Observables is
       Actual_L : Typed.Producers.Observable'Class := L;
       Actual_R : Typed.Consumers.Observer'Class   := R;
    begin
+      if not (R in Typed.Consumers.Sink'Class) then
+         raise Constraint_Error with "Attempting to subscribe from non-sink observer";
+      end if;
+
       Actual_L.Subscribe (Actual_R);
       return Subscriptions.Subscription'(null record);
    end "&";

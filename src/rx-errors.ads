@@ -16,6 +16,8 @@ package Rx.Errors is
 
    procedure Reraise (Error : Occurrence);
 
+   function Get_Exception (Error : Occurrence) return access constant Ada.Exceptions.Exception_Occurrence;
+
 private
 
    type Except_Access is access Ada.Exceptions.Exception_Occurrence;
@@ -27,5 +29,8 @@ private
 
    overriding procedure Finalize   (E : in out Occurrence);
    overriding procedure Adjust     (E : in out Occurrence);
+
+   function Get_Exception (Error : Occurrence) return access constant Ada.Exceptions.Exception_Occurrence
+     is (Error.Instance);
 
 end Rx.Errors;
