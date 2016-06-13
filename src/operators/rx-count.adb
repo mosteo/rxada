@@ -9,11 +9,10 @@ package body Rx.Count is
    end record;
 
    overriding
-   procedure On_Completed (This : in out Counter; Child : in out Transform.Into.Observer);
+   procedure On_Completed (This : in out Counter);
 
    overriding
    procedure On_Next (This  : in out Counter;
-                      Child : in out Transform.Into.Observer;
                       V     : Transform.From.T)
    is
       use Transform.Into.Type_Traits;
@@ -22,11 +21,11 @@ package body Rx.Count is
    end On_Next;
 
    overriding
-   procedure On_Completed (This : in out Counter; Child : in out Transform.Into.Observer) is
+   procedure On_Completed (This : in out Counter) is
       use Transform.Into.Type_Traits;
    begin
-      Child.On_Next (+This.Count);
-      Child.On_Completed;
+      This.Get_Child.On_Next (+This.Count);
+      This.Get_Child.On_Completed;
    end On_Completed;
 
    function Count (First : Transform.Into.T) return Transform.Operator'Class
