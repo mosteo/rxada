@@ -8,9 +8,10 @@ package body Rx.Links is
      (Producer : in out Link;
       Consumer : in out Into.Consumers.Observer'Class)
    is
+      use type Into.Consumers.Holder;
       Parent : From.Producers.Observable'Class := Producer.Get_Parent;
    begin
-      Producer.Child := Into.Consumers.To_Holder (Consumer);
+      Producer.Child := +Consumer;
       Parent.Subscribe (Producer);
    end Subscribe;
 

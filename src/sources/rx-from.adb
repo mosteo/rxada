@@ -14,7 +14,7 @@ package body Rx.From is
       procedure On_Subscribe (S : State.Definite;
                               Consumer : in out Arrays.Typed.Consumers.Observer'Class) is
       begin
-         for E of S.Constant_Reference loop
+         for E of S.CRef loop
             Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
          end loop;
       end On_Subscribe;
@@ -24,7 +24,7 @@ package body Rx.From is
       function From (A : Arrays.Typed_Array) return Arrays.Typed.Producers.Observable'Class
       is
       begin
-         return Arrayed.Create (State.To_Holder (A));
+         return Arrayed.Create (State.Hold (A));
       end From;
 
    end From_Array;
