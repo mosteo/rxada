@@ -9,7 +9,7 @@ package body Rx.Producers is
       Parent : Observable'Class)
    is
    begin
-      This.Parent := To_Holder (Parent);
+      This.Parent := +Parent;
    end Set_Parent;
 
    ----------------
@@ -21,7 +21,7 @@ package body Rx.Producers is
       return Observable'Class
    is
    begin
-      return This.Parent.Element;
+      return This.Parent.CRef;
    end Get_Parent;
 
 end Rx.Producers;
