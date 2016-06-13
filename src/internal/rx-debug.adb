@@ -27,4 +27,14 @@ package body Rx.Debug is
       Put_Line (I'Img);
    end Put_Line;
 
+   ----------
+   -- Dump --
+   ----------
+
+   procedure Dump is
+   begin
+      Gnat.Debug_Pools.Print_Info_Stdout (Debug_Pool, Display_Leaks => True);
+      Gnat.Debug_Pools.Dump_Gnatmem (Debug_Pool, "gmem.out");
+   end Dump;
+
 end Rx.Debug;

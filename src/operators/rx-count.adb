@@ -1,3 +1,5 @@
+with Gnat.Io; use Gnat.Io;
+
 package body Rx.Count is
 
    --------------------

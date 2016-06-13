@@ -6,7 +6,7 @@ generic
    type Indexes is (<>);
 package Rx.Traits.Arrays is
 
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
    type Typed_Array is array (Indexes range <>) of Typed.Type_Traits.D;
 

@@ -5,7 +5,7 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Shared is
 
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
    type Observer is new Typed.Consumers.Observer with private;
    --  In essence this is a carcass for a pointed to observer.

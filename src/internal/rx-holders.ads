@@ -5,7 +5,7 @@ private with Ada.Finalization;
 --  It turns out Lists are broken too in instantiation from rx-from.adb
 --  Rolling out my own holders (probably buggy too, or inneficient, or whatever...)
 
-with Gnat.Debug_Pools;
+with Rx.Debug;
 
 generic
    type Indef (<>) is private;
@@ -33,11 +33,13 @@ private
    use Ada.Finalization;
 
    type Indef_Access is access Indef;
+--     for Indef_Access'Storage_Pool use Debug.Debug_Pool;
 
    type Definite is new Ada.Finalization.Controlled with record
       Actual : Indef_Access;
    end record;
 
+   overriding procedure Initialize (D : in out Definite);
    overriding procedure Adjust   (D : in out Definite);
    overriding procedure Finalize (D : in out Definite);
 

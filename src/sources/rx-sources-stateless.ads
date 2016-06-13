@@ -7,7 +7,7 @@ generic
                                 Observer : in out Typed.Consumers.Observer'Class) is <>;
 package Rx.Sources.Stateless is
 
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
 --  Generic observable that can produce all its items from an initial value
 --  and hence don't need to retain a state going on.
