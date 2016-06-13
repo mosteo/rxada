@@ -17,30 +17,27 @@ package Rx.Links is
      Into.Producers.Observable
    with private;
 
-   function "&" (L : From.Producers.Observable'Class;
+   function "&" (L : From.Observable;
                  R : Link'Class)
-                 return Into.Producers.Observable'Class;
+                 return Into.Observable;
 
-   not overriding
-   procedure On_Next (This  : in out Link;
-                      Child : in out Into.Consumers.Observer'Class;
-                      V     : From.Type_Traits.T) is abstract;
+   procedure Set_Child (This : in out Link; Child : Into.Observer);
+   -- Can be used to override the default "&" behavior
 
-   not overriding
-   procedure On_Completed (This : in out Link; Child : in out Into.Consumers.Observer'Class) is null;
+   function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference;
+   -- Can be used within the Observer actions to pass the values along
 
    overriding
    procedure Subscribe (Producer : in out Link;
-                        Consumer : in out Into.Consumers.Observer'Class);
-
-   overriding
-   procedure On_Next (This : in out Link; V : From.Type_Traits.T);
+                        Consumer : in out Into.Observer);
 
    overriding
    procedure On_Completed (This : in out Link);
+   --  By default calls downstream On_Completed
 
    overriding
    procedure On_Error (This : in out Link; Error : in out Errors.Occurrence);
+   --  By default calls downstream On_Error
 
 private
 

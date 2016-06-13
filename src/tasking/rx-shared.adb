@@ -1,5 +1,7 @@
 with Ada.Unchecked_Deallocation;
 
+-- with Gnat.IO; use Gnat.IO;
+
 package body Rx.Shared is
 
    ------------

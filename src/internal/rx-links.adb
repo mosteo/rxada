@@ -6,24 +6,33 @@ package body Rx.Links is
 
    overriding procedure Subscribe
      (Producer : in out Link;
-      Consumer : in out Into.Consumers.Observer'Class)
+      Consumer : in out Into.Observer)
    is
       use type Into.Consumers.Holder;
-      Parent : From.Producers.Observable'Class := Producer.Get_Parent;
+      Parent : From.Observable := Producer.Get_Parent;
    begin
-      Producer.Child := +Consumer;
+      Producer.Set_Child (Consumer);
       Parent.Subscribe (Producer);
    end Subscribe;
 
-   -------------
-   -- On_Next --
-   -------------
+   ---------------
+   -- Get_Child --
+   ---------------
 
-   overriding procedure On_Next (This : in out Link; V : From.Type_Traits.T)
-   is
+   function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference is
    begin
-      Link'Class (This).On_Next (This.Child.Ref, V);
-   end On_Next;
+      return This.Child.Ref;
+   end Get_Child;
+
+   ---------------
+   -- Set_Child --
+   ---------------
+
+   procedure Set_Child (This : in out Link; Child : Into.Observer) is
+      use type Into.Consumers.Holder;
+   begin
+      This.Child := +Child;
+   end Set_Child;
 
    ------------------
    -- On_Completed --
@@ -31,7 +40,7 @@ package body Rx.Links is
 
    overriding procedure On_Completed (This : in out Link) is
    begin
-      Link'Class (This).On_Completed (This.Child.Ref);
+      This.Child.Ref.On_Completed;
    end On_Completed;
 
    --------------
@@ -47,9 +56,9 @@ package body Rx.Links is
    -- "&" --
    ---------
 
-   function "&" (L : From.Producers.Observable'Class;
+   function "&" (L : From.Observable;
                  R : Link'Class)
-                 return Into.Producers.Observable'Class
+                 return Into.Observable
    is
       Actual : Link'Class := R;
    begin

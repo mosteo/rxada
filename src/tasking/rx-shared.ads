@@ -7,8 +7,10 @@ package Rx.Shared is
 
    pragma Preelaborate;
 
-   --  In essence this is a ref counting carcass for a held observer
    type Observer is new Typed.Consumers.Observer with private;
+   --  In essence this is a carcass for a pointed to observer.
+   --  This way, both threads using it access the same actual Observer.
+   --  Deallocation is properly done in On_Completed/On_Error
 
    function Create (Held : Typed.Consumers.Observer'Class) return Observer;
    procedure Release (This : in out Observer);
