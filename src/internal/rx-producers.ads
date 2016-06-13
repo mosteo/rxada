@@ -5,7 +5,7 @@ generic
    type T (<>) is private;
 package Rx.Producers is
 
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
    package Consumers is new Rx.Consumers (T);
 

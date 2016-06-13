@@ -6,7 +6,7 @@ generic
    with package Into is new Rx.Typed (<>);
 package Rx.Transform is
 
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
    type Func1 is access function (V : From.Type_Traits.T) return Into.Type_Traits.T;
 

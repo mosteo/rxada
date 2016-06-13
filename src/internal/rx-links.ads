@@ -6,7 +6,7 @@ generic
    with package Into is new Rx.Typed (<>);
 package Rx.Links is
 
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
 --  A type that knows how to build a chain and then how to trigger subscriptions.
 --  Used as root for both Transformers and Mutators (the two kinds of Links)

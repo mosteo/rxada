@@ -12,6 +12,6 @@ generic
    with function Has_Element (C : Cursor) return Boolean is <>;
 package Rx.Traits.Iterable is
 
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
 end Rx.Traits.Iterable;
