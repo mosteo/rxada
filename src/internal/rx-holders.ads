@@ -5,11 +5,13 @@ private with Ada.Finalization;
 --  It turns out Lists are broken too in instantiation from rx-from.adb
 --  Rolling out my own holders (probably buggy too, or inneficient, or whatever...)
 
+with Gnat.Debug_Pools;
+
 generic
    type Indef (<>) is private;
 package Rx.Holders is
 
-   pragma Preelaborate;
+--     pragma Preelaborate;
 
    type Definite is tagged private;
 
