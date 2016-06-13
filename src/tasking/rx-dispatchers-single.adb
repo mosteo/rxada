@@ -42,7 +42,7 @@ package body Rx.Dispatchers.Single is
                or
                   delay until Ev.Time; -- This wait may perfectly well be 0
 --                  Put_Line ("id:" & Ev.Id'Img);
-                  Ev.Code.Reference.Run;
+                  Ev.Code.Ref.Run;
                end select;
             else
                select

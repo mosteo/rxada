@@ -1,32 +1,26 @@
+with Ada.Unchecked_Deallocation;
+
 package body Rx.Holders is
 
-   ---------
-   -- "+" --
-   ---------
+   ------------
+   -- Adjust --
+   ------------
 
-   function "+" (I : Indef) return Definite is
+   overriding procedure Adjust (D : in out Definite) is
    begin
-      return List : Definite do
-         List.Append (I);
-      end return;
-   end "+";
+      if D.Actual /= null then
+         D.Actual := new Indef'(D.Actual.all);
+      end if;
+   end Adjust;
 
-   ---------
-   -- Ref --
-   ---------
+   --------------
+   -- Finalize --
+   --------------
 
-   function Ref (I : aliased in out Definite) return Definites.Reference_Type is
+   overriding procedure Finalize (D : in out Definite) is
+      procedure Free is new Ada.Unchecked_Deallocation (Indef, Indef_Access);
    begin
-      return I.Reference (I.First);
-   end Ref;
-
-   ----------
-   -- CRef --
-   ----------
-
-   function CRef (I : Definite) return Definites.Constant_Reference_Type is
-   begin
-      return I.Constant_Reference (I.First);
-   end CRef;
+      Free (D.Actual);
+   end Finalize;
 
 end Rx.Holders;
