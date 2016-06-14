@@ -1,4 +1,5 @@
 with Ada.Finalization; use Ada.Finalization;
+with Ada.Unchecked_Deallocation;
 with Ada.Text_Io; use Ada.Text_Io;
 
 procedure Finalize_Leak is
@@ -8,10 +9,14 @@ procedure Finalize_Leak is
       type Leftie  is interface;
       type Rightie is interface;
 
+      type Left_Access is access Leftie'Class;
       type Holder is new Controlled with record
-         Held : access Leftie'Class;
+         Held : Left_Access;
       end record;
-      overriding procedure Finalize (H : in out Holder);
+      overriding procedure Adjust (Op : in out Holder);
+      overriding procedure Finalize (Op : in out Holder);
+      function Hold (L : Leftie'Class) return Holder
+        is (Holder'(Controlled with Held => new Leftie'Class'(L)));
 
       type Operator is new Leftie and Rightie with record
          Parent : Holder;
@@ -27,15 +32,23 @@ procedure Finalize_Leak is
    end P;
 
    package body P is
-      overriding procedure Finalize (H : in out Holder) is
-         pragma Unreferenced (H);
+      overriding procedure Adjust (Op : in out Holder) is
+      begin
+         if Op.Held /= null then
+            Put_Line ("adjust");
+            Op.Held := new Leftie'Class'(Op.Held.all);
+         end if;
+      end Adjust;
+      overriding procedure Finalize (Op : in out Holder) is
+         procedure Free is new Ada.Unchecked_Deallocation (Leftie'Class, Left_Access);
       begin
          Put_Line ("finalize");
+         Free (Op.Held);
       end Finalize;
 
       procedure Set_Parent (S : in out Operator; Parent : Leftie'Class) is
       begin
-         S.Parent := Holder'(Controlled with Held => new Leftie'Class'(Parent));
+         S.Parent := Hold (Parent);
       end Set_Parent;
 
       function "&" (L : Leftie'Class; R : Operator'Class) return Operator'Class is
