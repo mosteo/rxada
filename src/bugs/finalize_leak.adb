@@ -13,12 +13,10 @@ procedure Finalize_Leak is
       end record;
       overriding procedure Finalize (H : in out Holder);
 
-      type Subscriber is new Rightie with record
+      type Operator is new Leftie and Rightie with record
          Parent : Holder;
       end record;
-      procedure Set_Parent (S : in out Subscriber; Parent : Leftie'Class);
-
-      type Operator is new Subscriber and Leftie with null record;
+      procedure Set_Parent (S : in out Operator; Parent : Leftie'Class);
 
       function "&" (L : Leftie'Class; R : Operator'Class) return Operator'Class;
 
@@ -35,7 +33,7 @@ procedure Finalize_Leak is
          Put_Line ("finalize");
       end Finalize;
 
-      procedure Set_Parent (S : in out Subscriber; Parent : Leftie'Class) is
+      procedure Set_Parent (S : in out Operator; Parent : Leftie'Class) is
       begin
          S.Parent := Holder'(Controlled with Held => new Leftie'Class'(Parent));
       end Set_Parent;
