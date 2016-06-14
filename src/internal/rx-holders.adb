@@ -2,6 +2,14 @@ with Ada.Unchecked_Deallocation;
 
 package body Rx.Holders is
 
+   procedure Hold (D : in out Definite; I : Indef) is
+   begin
+      if D.Actual /= null then
+         D.Finalize;
+      end if;
+      D.Actual := new Indef'(I);
+   end Hold;
+
 ----------------
 -- Initialize --
 ----------------

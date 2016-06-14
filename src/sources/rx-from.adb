@@ -14,19 +14,17 @@ package body Rx.From is
       procedure On_Subscribe (S : State.Definite;
                               Consumer : in out Arrays.Typed.Consumers.Observer'Class) is
       begin
-         null; -- Emit nothing
---           for E of S.CRef loop
---              Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
---           end loop;
+         for E of S.CRef loop
+            Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
+         end loop;
       end On_Subscribe;
 
       package Arrayed is new Sources.Stateless (Arrays.Typed, State.Definite, On_Subscribe);
 
       function From (A : Arrays.Typed_Array) return Arrays.Typed.Producers.Observable'Class
       is
-         Def : State.Definite;
       begin
-         return Arrayed.Create (Def);
+         return Arrayed.Create (State.Hold (A));
       end From;
 
    end From_Array;

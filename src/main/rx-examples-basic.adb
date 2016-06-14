@@ -13,7 +13,7 @@ procedure Rx.Examples.Basic is
    procedure Wrap is
    begin
       --         Begin with self-checks
- --     pragma Assert (Tests.Basic_Tests);
+    pragma Assert (Tests.Basic_Tests);
 
       Debug.Put_Line ("Just example");
       Chain :=
@@ -47,9 +47,7 @@ procedure Rx.Examples.Basic is
       end;
    end Wrap;
 begin
-   loop
-      Wrap;
-   end loop;
+   Wrap;
 exception
    when E : others =>
       Debug.Print (E);
