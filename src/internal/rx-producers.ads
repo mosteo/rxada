@@ -14,7 +14,7 @@ package Rx.Producers is
    procedure Subscribe (Producer : in out Observable;
                         Consumer : in out Consumers.Observer'Class) is abstract;
 
-   package Holders is new Rx.Holders (Observable'Class);
+   package Holders is new Rx.Holders (Observable'Class, "observable'class");
    type Holder is new Holders.Definite with null record;
 
 

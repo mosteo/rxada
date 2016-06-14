@@ -31,7 +31,7 @@ package body Rx.Links is
    procedure Set_Child (This : in out Link; Child : Into.Observer) is
       use type Into.Consumers.Holder;
    begin
-      This.Child := +Child;
+      This.Child.Hold (Child);
    end Set_Child;
 
    ------------------

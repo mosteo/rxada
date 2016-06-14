@@ -18,7 +18,7 @@ package Rx.Consumers is
    --  Used to diagnose improper subscriptions to things not a terminator Sink.
    --  Any custom final subscriber must implement this interface.
 
-   package Holders is new Rx.Holders (Observer'Class);
+   package Holders is new Rx.Holders (Observer'Class, "observer'class");
    type Holder is new Holders.Definite with null record;
 
    procedure Default_Error_Handler (This : in out Observer'Class; Except : Ada.Exceptions.Exception_Occurrence);

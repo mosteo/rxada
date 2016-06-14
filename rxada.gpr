@@ -17,7 +17,12 @@ project RxAda is
    end Pretty_Printer;
 
    package Builder is
-      for Default_Switches ("ada") use ("-s", "-g", "-m");
+      case Build is
+         when "debug" =>
+            for Default_Switches ("ada") use ("-s", "-g");
+         when "release" =>
+            null;
+      end case;
    end Builder;
 
    package Compiler is
@@ -25,16 +30,26 @@ project RxAda is
          when "debug" =>
             for Default_Switches ("ada") use ("-gnatwal.f", "-gnatVa", "-g", "-Og", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
          when "release" =>
-            for Default_Switches ("ada") use ("-g", "-O3", "-gnatn", "-gnatN", "-gnat12");
+            for Default_Switches ("ada") use ("-O3", "-gnatn", "-gnat12");
       end case;
    end Compiler;
 
    package Binder is
-      for Default_Switches ("ada") use ("-E");
+      case Build is
+         when "debug" =>
+            for Default_Switches ("ada") use ("-E");
+         when "release" =>
+            null;
+      end case;
    end Binder;
 
    package Linker is
-      for Default_Switches ("ada") use ("-g");
+      case Build is
+         when "debug" =>
+            for Default_Switches ("ada") use ("-g");
+         when "release" =>
+            null;
+      end case;
    end Linker;
 
    package Gnattest is
