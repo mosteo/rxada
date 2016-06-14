@@ -1,14 +1,15 @@
-with Rx.Count;
-with Rx.From;
+	with Rx.Actions;
+	with Rx.Count;
+	with Rx.From;
 private with Rx.Just;
 private with Rx.Observe_On;
-with Rx.Operate;
+	with Rx.Operate;
 private with Rx.Print;
-with Rx.Schedulers;
+	with Rx.Schedulers;
 private with Rx.Subscribe;
-with Rx.Subscriptions;
-with Rx.Traits.Arrays;
-with Rx.Typed;
+	with Rx.Subscriptions;
+	with Rx.Traits.Arrays;
+	with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
@@ -67,7 +68,9 @@ package Rx.Observables is
    -- Subscribe --
    ---------------
 
-   function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Observer;
+   function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
+                       On_Completed : Rx.Actions.Proc0      := null;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Observer;
 
    ---------
    -- "&" --
@@ -100,7 +103,9 @@ private
                    With_Timestamp : Boolean                := True) return Operator renames RxPrint.Create;
 
    package RxSubscribe is new Rx.Subscribe (Typed);
-   function Subscribe (On_Next : Typed.Actions.Proc1 := null) return Observer renames RxSubscribe.As;
+   function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
+                       On_Completed : Rx.Actions.Proc0      := null;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Observer renames RxSubscribe.Create;
 
 
 end Rx.Observables;
