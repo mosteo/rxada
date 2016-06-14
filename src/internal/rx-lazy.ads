@@ -16,7 +16,7 @@ private
       procedure Get (X : in out Ptr);
       procedure Free;
    private
-      Datum : Ptr;
+      Instance : Ptr;
    end Safe;
 
    use Ada.Finalization;

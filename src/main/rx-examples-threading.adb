@@ -10,10 +10,12 @@ procedure Rx.Examples.Threading is
 
 begin
    Chain :=
-     Integers.Observables.From ((1, 2, 3, 4, 5))
+     Integers.Observables.Just (0)
+     & Print
      & Observe_On (Schedulers.Background)
-     & Map (Image'Access)
+     & Print
      & Observe_On (Schedulers.IO)
+     & Print
      & Subscribe (Put_Line'Access);
 exception
    when E : others =>

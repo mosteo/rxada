@@ -27,11 +27,11 @@ package body Rx.Lazy is
 
       procedure Get (X : in out Ptr) is
       begin
-         if Datum /= null then
-            X := Datum;
+         if Instance /= null then
+            X := Instance;
          else
-            Datum := new Content;
-            X     := Datum;
+            Instance := new Content;
+            X     := Instance;
          end if;
       end Get;
 
@@ -41,7 +41,7 @@ package body Rx.Lazy is
 
       procedure Free is
       begin
-         Free (Datum);
+         Free (Instance);
       end Free;
 
    end Safe;

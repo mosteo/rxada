@@ -6,6 +6,8 @@ package Rx.Actions is
 
    type Func1 is access function (V : T) return T;
 
+   type Func1Str is access function (V : T) return String;
+
    type Proc1 is access procedure (V : T);
 
 end Rx.Actions;
