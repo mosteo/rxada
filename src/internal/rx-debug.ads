@@ -1,6 +1,7 @@
 with Ada.Exceptions;
 with Ada.Tags;
-with Ada.Text_IO; use Ada.Text_IO;
+
+with Gnat.IO;
 
 with Gnat.Debug_Pools;
 
@@ -13,7 +14,7 @@ package Rx.Debug is
    procedure Log (S : String); -- Prints S if Enabled is true
 
    procedure Put_Line (I : Integer);
-   procedure Put_Line (S : String) renames Ada.Text_IO.Put_Line;
+   procedure Put_Line (S : String) renames Gnat.IO.Put_Line;
 
    function Image (T : Ada.Tags.Tag) return String renames Ada.Tags.Expanded_Name;
 
