@@ -27,8 +27,10 @@ package Rx.Holders is
    procedure Hold (D : in out Definite; I : Indef);
    function Hold (I : Indef) return Definite renames "+";
 
-   function Ref  (I : in out Definite) return Reference with Inline;
-   function CRef (I :        Definite) return Const_Ref with Inline;
+   function Ref  (D : in out Definite) return Reference with Inline;
+   function CRef (D :        Definite) return Const_Ref with Inline;
+
+   function Is_Empty (D : Definite) return Boolean with Inline;
 
    procedure Clear (D : in out Definite);
    --  Dispose of the stored definite
@@ -55,7 +57,9 @@ private
 
    function "+" (D : Definite) return Indef is (D.Actual.all);
 
-   function Ref  (I : in out Definite) return Reference is (Actual => I.Actual);
-   function CRef (I :        Definite) return Const_Ref is (Actual => I.Actual);
+   function Ref  (D : in out Definite) return Reference is (Actual => D.Actual);
+   function CRef (D :        Definite) return Const_Ref is (Actual => D.Actual);
+
+   function Is_Empty (D : Definite) return Boolean is (D.Actual = null);
 
 end Rx.Holders;

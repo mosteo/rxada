@@ -12,11 +12,7 @@ begin
                   No_Op
                   &
                   No_Op;
-
-         --  OTOH, valgrind is unable to pinpoint the leak
-
       begin
-         -- Leak := No_Op; -- This line would fix the leak, by forcing a finalization on Leak
          null;
       end;
       Put_Line ("--->8---");

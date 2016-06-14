@@ -18,10 +18,12 @@ procedure Finalize_Leak is
       function Hold (L : Leftie'Class) return Holder
         is (Holder'(Controlled with Held => new Leftie'Class'(L)));
 
-      type Operator is new Leftie and Rightie with record
+      type Subscriber is new Rightie with record
          Parent : Holder;
       end record;
-      procedure Set_Parent (S : in out Operator; Parent : Leftie'Class);
+      procedure Set_Parent (S : in out Subscriber; Parent : Leftie'Class);
+
+      type Operator is new Subscriber and Leftie with null record;
 
       function "&" (L : Leftie'Class; R : Operator'Class) return Operator'Class;
 
@@ -46,7 +48,7 @@ procedure Finalize_Leak is
          Free (Op.Held);
       end Finalize;
 
-      procedure Set_Parent (S : in out Operator; Parent : Leftie'Class) is
+      procedure Set_Parent (S : in out Subscriber; Parent : Leftie'Class) is
       begin
          S.Parent := Hold (Parent);
       end Set_Parent;
@@ -62,10 +64,10 @@ procedure Finalize_Leak is
    package PP is new P; use PP;
 
 begin
-   for I in 1 .. 3 loop
+   for I in 1 .. 1 loop
       Put_Line ("---8<---");
       declare
-         Leak : Operator'Class := N & N;
+         Leak : Leftie'Class := N & N;
       begin
          null;
       end;
