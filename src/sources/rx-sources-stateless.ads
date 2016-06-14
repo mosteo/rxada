@@ -10,7 +10,7 @@ package Rx.Sources.Stateless is
 --     pragma Preelaborate;
 
 --  Generic observable that can produce all its items from an initial value
---  and hence don't need to retain a state going on.
+--  and hence doesn't need to retain a state going on.
 --  The call to On_Complete is PERFORMED BY THIS TYPE, NO NEED TO DO IT IN INSTANCES
    type Observable is new Typed.Producers.Observable with private;
 

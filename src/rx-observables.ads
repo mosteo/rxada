@@ -1,5 +1,6 @@
 	with Rx.Actions;
 	with Rx.Count;
+private with Rx.Empty;
 	with Rx.From;
 private with Rx.Just;
 private with Rx.Observe_On;
@@ -35,6 +36,12 @@ package Rx.Observables is
 
       function Count (First : T) return Operator renames Self_Count.Count;
    end Counters;
+
+   -----------
+   -- Empty --
+   -----------
+
+   function Empty return Observable;
 
    ----------
    -- From --
@@ -87,6 +94,9 @@ package Rx.Observables is
                  return Subscriptions.Subscription;
 
 private
+
+   package RxEmpty is new Rx.Empty (Typed);
+   function Empty return Observable renames RxEmpty.Empty;
 
    package From_Arrays is new Rx.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable
