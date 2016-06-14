@@ -1,5 +1,3 @@
-with Gnat.Io; use Gnat.Io;
-
 package body Rx.Count is
 
    --------------------
@@ -17,6 +15,7 @@ package body Rx.Count is
    procedure On_Next (This  : in out Counter;
                       V     : Transform.From.T)
    is
+      pragma Unreferenced (V);
       use Transform.Into.Type_Traits;
    begin
       This.Count := +Succ (+This.Count);

@@ -1,3 +1,5 @@
+-- with Gnat.IO; use Gnat.IO;
+
 package body Rx.Producers is
 
    ----------------
@@ -11,17 +13,5 @@ package body Rx.Producers is
    begin
       This.Parent.Hold (Parent);
    end Set_Parent;
-
-   ----------------
-   -- Get_Parent --
-   ----------------
-
-   overriding function Get_Parent
-     (This :        Subscriptor)
-      return Observable'Class
-   is
-   begin
-      return This.Parent.CRef;
-   end Get_Parent;
 
 end Rx.Producers;

@@ -4,7 +4,7 @@ with Gnat.IO; use Gnat.IO;
 
 package body Rx.Holders is
 
-   Debug : constant Boolean := False;
+   Debug : constant Boolean := True;
 
    protected Counter is
       procedure Add (I : Integer; Msg : String);

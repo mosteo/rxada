@@ -1,3 +1,5 @@
+with Gnat.IO; use Gnat.IO;
+
 package body Rx.Links is
 
    ---------------
@@ -9,10 +11,17 @@ package body Rx.Links is
       Consumer : in out Into.Observer)
    is
       use type Into.Consumers.Holder;
-      Parent : From.Observable := Producer.Get_Parent;
    begin
-      Producer.Set_Child (Consumer);
-      Parent.Subscribe (Producer);
+      if Producer.Has_Parent then
+         declare
+            Parent : From.Observable := Producer.Get_Parent;
+         begin
+            Producer.Set_Child (Consumer);
+            Parent.Subscribe (Producer);
+         end;
+      else
+         raise Constraint_Error with "Attempting subscription without source observable";
+      end if;
    end Subscribe;
 
    ---------------
@@ -62,10 +71,10 @@ package body Rx.Links is
                  R : Link'Class)
                  return Into.Observable
    is
-      Actual : Link'Class := R;
    begin
-      Actual.Set_Parent (L);
-      return Actual;
+      return Actual : Link'Class := R do
+         Actual.Set_Parent (L);
+      end return;
    end "&";
 
 end Rx.Links;
