@@ -3,6 +3,7 @@
 private with Rx.Empty;
 	with Rx.From;
 private with Rx.Just;
+private with Rx.No_Op;
 private with Rx.Observe_On;
 	with Rx.Operate;
 private with Rx.Print;
@@ -59,6 +60,12 @@ package Rx.Observables is
    -- Observable from single value
    function Just (V : T) return Observable;
 
+   -----------
+   -- No_Op --
+   -----------
+
+   function No_Op return Operator;
+
    ----------------
    -- Observe_On --
    ----------------
@@ -104,6 +111,9 @@ private
 
    package RxJust is new Rx.Just (Typed);
    function Just (V : T) return Observable renames RxJust.Create;
+
+   package RxNoop is new Rx.No_Op (Operate);
+   function No_Op return Operator renames RxNoop.Create;
 
    package RxObserveOn is new Rx.Observe_On (Operate);
    function Observe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxObserveOn.Create;
