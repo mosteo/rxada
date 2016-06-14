@@ -16,7 +16,7 @@ begin
      & Print
      & Observe_On (Schedulers.IO)
      & Print
-     & Subscribe (Put_Line'Access);
+     & Subscribe;
 exception
    when E : others =>
       Debug.Print (E);
