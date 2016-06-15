@@ -73,6 +73,9 @@ package body Rx.Links is
    is
    begin
       return Actual : Link'Class := R do
+         if Actual.Has_Parent then
+            raise Constraint_Error with "Right operator already bound";
+         end if;
          Actual.Set_Parent (L);
       end return;
    end "&";
