@@ -1,6 +1,6 @@
 with Rx.Integers; use Rx.Integers; use Rx.Integers.Observables;
 with Rx.Debug; use Rx.Debug;
-with Rx.Subscriptions;
+with Rx.Schedulers;
 
 procedure Rx.Bugs.Op_Leak is
 
@@ -8,12 +8,14 @@ begin
    for I in 1 .. 3 loop
       Put_Line ("---8<---");
       declare
-         Leak : Integers.Observable :=
+         Leak : Integers.Instance.Observables.Operator :=
+                  Integers.Instance.Observables.Operator (
+                  Integers.Observable'(
                   No_Op
                   &
-                  No_Op;
+                  Observe_On (Schedulers.Immediate) ));
       begin
-         null;
+         Put_Line ("···");
       end;
       Put_Line ("--->8---");
    end loop;

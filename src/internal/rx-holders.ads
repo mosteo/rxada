@@ -5,11 +5,10 @@ private with Ada.Finalization;
 --  It turns out Lists are broken too in instantiation from rx-from.adb
 --  Rolling out my own holders (probably buggy too, or inneficient, or whatever...)
 
-with Rx.Debug;
-
 generic
    type Indef (<>) is private;
    Id : String := ""; -- Debug purposes only
+   with function Image (I : Indef) return String; -- Something that identifies better a Value
 package Rx.Holders is
 
 --     pragma Preelaborate;

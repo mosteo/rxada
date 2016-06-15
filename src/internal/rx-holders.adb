@@ -2,6 +2,8 @@ with Ada.Unchecked_Deallocation;
 
 with Gnat.IO; use Gnat.IO;
 
+with Rx.Debug;
+
 package body Rx.Holders is
 
    Debug : constant Boolean := True;
@@ -39,7 +41,7 @@ package body Rx.Holders is
       end if;
       D.Actual := new Indef'(I);
       if Debug then
-         Counter.Add (1, "alloc (hold)");
+         Counter.Add (1, "alloc (hold) " & Image (I));
       end if;
    end Hold;
 
@@ -63,7 +65,7 @@ package body Rx.Holders is
    begin
       if D.Actual /= null then
          if Debug then
-            Counter.Add (1, "alloc (adjust)");
+            Counter.Add (1, "alloc (adjust) " & Image (D.Actual.all));
          end if;
          D.Actual := new Indef'(D.Actual.all);
       end if;
@@ -83,7 +85,7 @@ package body Rx.Holders is
    begin
       if D.Actual /= null then
          if Debug then
-            Counter.Add (-1, "free (finalize)");
+            Counter.Add (-1, "free (finalize) " & Image (D.Actual.all));
          end if;
          Free (D.Actual);
       end if;

@@ -1,6 +1,8 @@
 with Rx.Consumers;
 with Rx.Holders;
 
+with Ada.Tags;
+
 generic
    type T (<>) is private;
 package Rx.Producers is
@@ -14,7 +16,9 @@ package Rx.Producers is
    procedure Subscribe (Producer : in out Observable;
                         Consumer : in out Consumers.Observer'Class) is abstract;
 
-   package Holders is new Rx.Holders (Observable'Class, "observable'class");
+   function Image (Y : Observable'Class) return String;
+
+   package Holders is new Rx.Holders (Observable'Class, "observable'class", Image);
    type Holder is new Holders.Definite with null record;
 
 
@@ -39,5 +43,7 @@ private
 
    overriding function  Get_Parent (This : Subscriptor) return Observable'Class is (This.Parent.Cref);
    overriding function  Has_Parent (This : Subscriptor) return Boolean is (not This.Parent.Is_Empty);
+
+   function Image (Y : Observable'Class) return String is (Ada.Tags.External_Tag (Y'Tag));
 
 end Rx.Producers;

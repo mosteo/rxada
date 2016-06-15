@@ -92,7 +92,7 @@ package Rx.Observables is
 
    --  Chain preparation
    function "&" (L : Observable;
-                 R : Operator)
+                 R : Operate.Transform.Typed.Link'Class)
                  return Observable renames Operate.Transform."&"; -- OMG
 
    --  Subscribe
