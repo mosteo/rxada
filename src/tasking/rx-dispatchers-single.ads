@@ -1,5 +1,6 @@
 private with Ada.Calendar;
 private with Ada.Containers.Ordered_Multisets;
+	with Ada.Tags;
 private with Rx.Holders;
 
 package Rx.Dispatchers.Single is
@@ -25,7 +26,9 @@ private
 
    type Dispatcher_Access is access all Dispatcher;
 
-   package Runnable_Holders is new Rx.Holders (Runnable'Class);
+   function Image (I : Runnable'Class) return String is (Ada.Tags.External_Tag (I'Tag));
+
+   package Runnable_Holders is new Rx.Holders (Runnable'Class, "runnable'class", Image);
 
    type Event_Id is new Long_Long_Integer;
 

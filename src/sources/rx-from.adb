@@ -9,7 +9,9 @@ package body Rx.From is
 
    package body From_Array is
 
-      package State is new Holders (Arrays.Typed_Array);
+      function Image (X : Arrays.Typed_Array) return String is ("");
+
+      package State is new Holders (Arrays.Typed_Array, "", Image);
 
       procedure On_Subscribe (S : State.Definite;
                               Consumer : in out Arrays.Typed.Consumers.Observer'Class) is
