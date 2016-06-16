@@ -1,5 +1,6 @@
 with Ada.Finalization; use Ada.Finalization;
 with Ada.Text_Io; use Ada.Text_Io;
+with Ada.Unchecked_Deallocation;
 
 procedure Finalize_Leak is
    generic
@@ -7,24 +8,41 @@ procedure Finalize_Leak is
 
       type One is interface;
 
+      type Int_Access is access Integer;
+
       type Managed is new Controlled with record
-         X : Integer := 1;
+         X : Int_Access;
       end record;
+      overriding procedure Adjust (M : in out Managed);
       overriding procedure Finalize (M : in out Managed);
+      function Build (I : Integer) return Managed;
 
       type Two is new One with record
-         M : Managed;
+         M : Managed := Build (1);
       end record;
 
    end P;
 
    package body P is
-      overriding procedure Finalize (M : in out Managed) is
-         pragma Unreferenced (M);
+      overriding procedure Adjust (M : in out Managed) is
       begin
-         Put_Line ("finalize M");
-         M.X := 0;
+         if M.X /= null then
+            M.X := new Integer'(M.X.all);
+         end if;
+      end Adjust;
+
+      overriding procedure Finalize (M : in out Managed) is
+         procedure Free is new Ada.Unchecked_Deallocation (Integer, Int_Access);
+      begin
+         if M.X /= null then
+            Free (M.X);
+            Put_Line ("finalize M with free");
+         else
+            Put_Line ("finalize M");
+         end if;
       end Finalize;
+
+      function Build (I : Integer) return Managed is (Managed'(Controlled with X => new Integer'(I)));
    end P;
 
    package PP is new P; use PP;
@@ -34,32 +52,16 @@ procedure Finalize_Leak is
 
    A : Two;
 begin
-   declare
-      B : constant One'Class := A;
-   begin
-      Put_Line ("---8<---");
-      Put_Line (Two'Class (B).M.X'Img);
-   end;
-   Put_Line ("--->8---");
+   A.M := Build (1);
 
-   New_Line;
-   declare
-      B : constant One'Class := Pass (A);
-   begin
-      Put_Line ("---8<---");
-      Put_Line (Two'Class (B).M.X'Img);
-   end;
-   Put_Line ("--->8---");
-
-   New_Line;
-   A.M.X := 2;
-   declare
-      B : One'Class := not A;
-   begin
-      Put_Line ("---8<---");
-      Put_Line (Two'Class (B).M.X'Img);
-   end;
-   Put_Line ("--->8---");
+   for I in 1 .. 666 loop
+      declare
+         B : One'Class := not A;
+      begin
+         Put_Line ("---8<---");
+      end;
+      Put_Line ("--->8---");
+   end loop;
 
    New_Line; Put_Line ("Now A is going to finalize");
 end Finalize_Leak;
