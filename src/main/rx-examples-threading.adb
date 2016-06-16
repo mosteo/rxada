@@ -12,9 +12,12 @@ begin
    Chain :=
      Integers.Observables.Just (0)
      & Print
+     & Subscribe_On (Schedulers.Computation)
      & Observe_On (Schedulers.Background)
      & Print
      & Observe_On (Schedulers.IO)
+     & Print
+     & Observe_On (Schedulers.Computation)
      & Print
      & Subscribe;
 exception

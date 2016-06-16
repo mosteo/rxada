@@ -1,5 +1,3 @@
-with Rx.Errors;
-
 package body Rx.Dispatchers is
 
    ------------
@@ -83,5 +81,25 @@ package body Rx.Dispatchers is
       end On_Error;
 
    end Events;
+
+   package body Subscribe is
+
+      type Runner is new Runnable with record
+         Op : Operate.Holders.Definite;
+      end record;
+
+      overriding procedure Run (R : in out Runner) is
+         Parent : Operate.Observable := R.Op.CRef.Get_Parent;
+      begin
+         Parent.Subscribe (R.Op.Ref); -- Suspicious... should make a copy of R.Op?
+      end Run;
+
+      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Operator) is
+         R : Runner := (Runnable with Operate.Holders.Hold (Operator));
+      begin
+         Sched.Schedule (R);
+      end On_Subscribe;
+
+   end Subscribe;
 
 end Rx.Dispatchers;

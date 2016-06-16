@@ -20,9 +20,9 @@ package Rx.Transform is
    -- "&" --
    ---------
 
-   function "&" (L : From.Producers.Observable'Class;
+   function "&" (L : From.Observable;
                  R : Operator'Class)
-                 return Into.Producers.Observable'Class
+                 return Into.Observable
    is (Typed."&" (L, Typed.Link'Class (R)))
    with Inline;
 

@@ -1,4 +1,5 @@
 with Rx.Errors;
+with Rx.Operate;
 with Rx.Shared;
 with Rx.Typed;
 
@@ -28,5 +29,13 @@ package Rx.Dispatchers is
       procedure On_Error     (Sched : in out Dispatcher'Class; Observer : Shared.Observer; E : Rx.Errors.Occurrence);
 
    end Events;
+
+   generic
+      with package Operate is new Rx.Operate (<>);
+   package Subscribe is
+
+      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Operator);
+
+   end Subscribe;
 
 end Rx.Dispatchers;

@@ -14,9 +14,9 @@ package body Rx.Links is
    begin
       if Producer.Has_Parent then
          declare
-            Parent : From.Observable := Producer.Get_Parent;
+            Parent : From.Observable := Producer.Get_Parent; -- Our own copy
          begin
-            Producer.Set_Child (Consumer);
+            Producer.Set_Child (Consumer); -- With its own child
             Parent.Subscribe (Producer);
          end;
       else
