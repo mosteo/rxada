@@ -4,7 +4,7 @@ generic
    with package Typed is new Rx.Typed (<>);
    type Initial_State is private;
    with procedure On_Subscribe (State    : Initial_State;
-                                Observer : in out Typed.Consumers.Observer'Class) is <>;
+                                Observer : in out Typed.Observer) is <>;
 package Rx.Sources.Stateless is
 
 --     pragma Preelaborate;

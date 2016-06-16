@@ -7,10 +7,11 @@ package body Rx.Dispatchers.Immediate is
    overriding procedure Schedule
      (Where : in out Dispatcher;
       What  : in out Runnable'Class;
-      After : Duration := 0.0)
+      Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
    is
+      pragma Unreferenced (Where);
    begin
-      delay After;
+      delay until Time;
       What.Run;
    end Schedule;
 
