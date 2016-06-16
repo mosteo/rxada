@@ -1,3 +1,4 @@
+with Rx.Holders;
 with Rx.Transform;
 with Rx.Typed;
 
@@ -16,5 +17,7 @@ package Rx.Operate is
    -- Scaffolding
    package Transform is new Rx.Transform (Typed, Typed);
    subtype Operator is Transform.Operator'Class;
+
+   package Holders is new Rx.Holders (Operator, "operator");
 
 end Rx.Operate;

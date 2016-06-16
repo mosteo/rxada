@@ -9,6 +9,7 @@ private with Rx.Observe_On;
 private with Rx.Print;
 	with Rx.Schedulers;
 private with Rx.Subscribe;
+private with Rx.Subscribe_On;
 	with Rx.Subscriptions;
 	with Rx.Traits.Arrays;
 	with Rx.Typed;
@@ -86,6 +87,12 @@ package Rx.Observables is
                        On_Completed : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Observer;
 
+   ------------------
+   -- Subscribe_On --
+   ------------------
+
+   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operate.Operator;
+
    ---------
    -- "&" --
    ---------
@@ -127,5 +134,7 @@ private
                        On_Completed : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Observer renames RxSubscribe.Create;
 
+   package RxSubsOn is new Rx.Subscribe_On (Operate);
+   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operate.Operator renames RxSubsOn.Create;
 
 end Rx.Observables;
