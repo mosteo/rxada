@@ -51,7 +51,7 @@ package body Rx.Interval is
       S.Scheduler.Schedule (R, Clock + S.First_Pause);
    end On_Subscribe;
 
-   package Source is new Sources.Stateless (Integers.Typed, State, On_Subscribe);
+   package Source is new Sources.Stateless (Integers.Typed, State, On_Subscribe, Completes => False);
 
    ------------
    -- Create --

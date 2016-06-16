@@ -1,3 +1,5 @@
+with Ada.Task_Identification;
+
 with Rx.Debug; use Rx.Debug;
 
 package body Rx.Dispatchers.Single is
@@ -12,10 +14,12 @@ package body Rx.Dispatchers.Single is
       Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
    is
       use Ada.Calendar;
+      use Ada.Task_Identification;
+
       Must_Notify : Boolean;
    begin
       Where.Queue.Enqueue (What, Time, Must_Notify);
-      if Must_Notify then
+      if Must_Notify and then Current_Task /= Where.Thread'Identity then
          Where.Thread.Notify;
       end if;
    end Schedule;

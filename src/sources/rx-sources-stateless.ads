@@ -5,6 +5,7 @@ generic
    type Initial_State is private;
    with procedure On_Subscribe (State    : Initial_State;
                                 Observer : in out Typed.Observer) is <>;
+   Completes : Boolean := True; -- This observable emits an On_Complete after all its values
 package Rx.Sources.Stateless is
 
 --     pragma Preelaborate;
