@@ -32,7 +32,8 @@ procedure Finalize_Leak is
       end Adjust;
 
       overriding procedure Finalize (M : in out Managed) is
-         procedure Free is new Ada.Unchecked_Deallocation (Integer, Int_Access);
+         procedure Free is
+           new Ada.Unchecked_Deallocation (Integer, Int_Access);
       begin
          if M.X /= null then
             Free (M.X);
@@ -42,7 +43,8 @@ procedure Finalize_Leak is
          end if;
       end Finalize;
 
-      function Build (I : Integer) return Managed is (Managed'(Controlled with X => new Integer'(I)));
+      function Build (I : Integer) return Managed
+      is (Managed'(Controlled with X => new Integer'(I)));
    end P;
 
    package PP is new P; use PP;
@@ -55,8 +57,16 @@ begin
    A.M := Build (1);
 
    for I in 1 .. 666 loop
+      Put_Line ("----------------------------");
       declare
-         B : One'Class := not A;
+         B : One'Class := Pass (A); -- This is properly finalized
+      begin
+         Put_Line ("......");
+      end;
+      Put_Line ("......");
+
+      declare
+         B : One'Class := not A; -- This is not
       begin
          Put_Line ("---8<---");
       end;
