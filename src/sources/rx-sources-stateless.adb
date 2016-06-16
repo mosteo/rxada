@@ -19,7 +19,9 @@ package body Rx.Sources.Stateless is
    is
    begin
       On_Subscribe (Producer.S, Consumer);
-      Consumer.On_Completed;
+      if Completes then
+         Consumer.On_Completed;
+      end if;
    exception
       when E : others =>
          Consumer.Default_Error_Handler (E);
