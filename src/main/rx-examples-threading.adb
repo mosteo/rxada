@@ -12,14 +12,14 @@ procedure Rx.Examples.Threading is
 begin
    Chain :=
      Interval.Create
---       & Print
---     & Subscribe_On (Schedulers.Computation)
---       & Observe_On (Schedulers.Background)
---       & Print
---       & Observe_On (Schedulers.IO)
---       & Print
---       & Observe_On (Schedulers.Computation)
---       & Print
+     & Print
+     & Subscribe_On (Schedulers.Computation)
+     & Observe_On (Schedulers.Background)
+     & Print
+     & Observe_On (Schedulers.IO)
+     & Print
+     & Observe_On (Schedulers.Computation)
+     & Print
      & Subscribe (Put_Line'Access);
 exception
    when E : others =>
