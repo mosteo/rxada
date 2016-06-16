@@ -1,3 +1,5 @@
+with Ada.Calendar;
+
 with Rx.Errors;
 with Rx.Operate;
 with Rx.Shared;
@@ -13,10 +15,10 @@ package Rx.Dispatchers is
 
    procedure Run (This : in out Runnable) is abstract;
 
-   --  Schedule a code to be run at a certain point from now, in a certain scheduler (thread)
+   --  Schedule a code to be run at a certain time, in a certain scheduler (thread)
    procedure Schedule (Where : in out Dispatcher;
                        What  : in out Runnable'Class;
-                       After : Duration := 0.0) is abstract;
+                       Time  : Ada.Calendar.Time := Ada.Calendar.Clock) is abstract;
 
    generic
       with package Typed is new Rx.Typed (<>);

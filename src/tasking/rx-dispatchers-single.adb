@@ -9,12 +9,12 @@ package body Rx.Dispatchers.Single is
    overriding procedure Schedule
      (Where : in out Dispatcher;
       What : in out Runnable'Class;
-      After : Duration := 0.0)
+      Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
    is
       use Ada.Calendar;
       Must_Notify : Boolean;
    begin
-      Where.Queue.Enqueue (What, Clock + After, Must_Notify);
+      Where.Queue.Enqueue (What, Time, Must_Notify);
       if Must_Notify then
          Where.Thread.Notify;
       end if;
