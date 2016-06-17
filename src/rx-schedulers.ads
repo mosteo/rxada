@@ -15,8 +15,15 @@ package Rx.Schedulers is
    function Immediate 	return Scheduler;
 --   function New_Thread  return Scheduler;
 
-   --  Shortcut for Ada.Task_Identification
+   procedure Shutdown renames Dispatchers.Shutdown;
+   --  Signal schedulers to exit.
+   --  Necessary when there are infinite sequences going on (e.g. Interval)
+
+   function Terminating return Boolean renames Dispatchers.Terminating;
+   --  Will be true after shutdown has been invoked
+
    function Current_Thread_Id return String;
+   --  Shortcut for Ada.Task_Identification
 
 private
 
