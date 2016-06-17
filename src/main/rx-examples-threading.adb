@@ -21,6 +21,9 @@ begin
      & Observe_On (Schedulers.Computation)
      & Print
      & Subscribe (Put_Line'Access);
+
+   delay 5.0;
+   Schedulers.Shutdown;
 exception
    when E : others =>
       Debug.Print (E);

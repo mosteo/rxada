@@ -38,7 +38,7 @@ package body Rx.Dispatchers.Single is
             Ev      : Event;
          begin
             Parent.Queue.Dequeue (Ev, Exists);
-            if Exists then
+            if Exists and not Dispatchers.Terminating then
                select
                   -- An earlier event has arrived, so requeue
                   accept Notify;

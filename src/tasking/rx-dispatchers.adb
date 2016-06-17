@@ -1,5 +1,23 @@
 package body Rx.Dispatchers is
 
+   Shutting_Down : Boolean := False;
+   pragma Atomic (Shutting_Down);
+
+   --------------
+   -- Shutdown --
+   --------------
+
+   procedure Shutdown is
+   begin
+      Shutting_Down := True;
+   end Shutdown;
+
+   -----------------
+   -- Terminating --
+   -----------------
+
+   function Terminating return Boolean is (Shutting_Down);
+
    ------------
    -- Events --
    ------------

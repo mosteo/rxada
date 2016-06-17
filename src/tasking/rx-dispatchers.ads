@@ -40,4 +40,11 @@ package Rx.Dispatchers is
 
    end Subscribe;
 
+   procedure Shutdown;
+   --  Signal schedulers to exit.
+   --  Necessary when there are infinite sequences going on (e.g. Interval)
+
+   function Terminating return Boolean;
+   --  Will be true after shutdown has been invoked
+
 end Rx.Dispatchers;
