@@ -1,6 +1,6 @@
 with Rx.Debug; use Rx.Debug;
 with Rx.Integers;
-with Rx.Interval;
+with Rx.Standard;
 with Rx.Schedulers;
 
 procedure Rx.Examples.Threading is
@@ -11,7 +11,7 @@ procedure Rx.Examples.Threading is
 
 begin
    Chain :=
-     Interval.Create
+     Standard.Interval
      & Print
      & Subscribe_On (Schedulers.Computation)
      & Observe_On (Schedulers.Background)
