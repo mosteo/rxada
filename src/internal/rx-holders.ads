@@ -5,8 +5,6 @@ private with Ada.Finalization;
 --  It turns out Lists are broken too in instantiation from rx-from.adb
 --  Rolling out my own holders (probably buggy too, or inneficient, or whatever...)
 
-with Rx.Debug;
-
 generic
    type Indef (<>) is private;
    Id : String := ""; -- Debug purposes only
@@ -16,9 +14,9 @@ package Rx.Holders is
 
    type Definite is tagged private;
 
-   type Reference (Actual : access Indef) is private
+   type Reference (Actual : access Indef) is limited private
    	with Implicit_Dereference => Actual;
-   type Const_Ref (Actual : access constant Indef) is private
+   type Const_Ref (Actual : access constant Indef) is limited private
    	with Implicit_Dereference => Actual;
 
    function "+" (I : Indef)    return Definite with Inline;
@@ -52,8 +50,8 @@ private
 
    procedure Clear (D : in out Definite) renames Finalize;
 
-   type Reference (Actual : access Indef) is null record;
-   type Const_Ref (Actual : access constant Indef) is null record;
+   type Reference (Actual : access Indef) is limited null record;
+   type Const_Ref (Actual : access constant Indef) is limited null record;
 
    function "+" (D : Definite) return Indef is (D.Actual.all);
 
