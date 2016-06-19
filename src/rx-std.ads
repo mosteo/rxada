@@ -2,7 +2,7 @@
 private with Rx.Interval;
 	with Rx.Schedulers;
 
-package Rx.Standard is
+package Rx.Std is
 
 --  Instances and default visibility for the common predefined types:
 --  Strings, Integers, StrToInt, IntToInt, IntToStr
@@ -25,4 +25,4 @@ private
                       return Integers.Observable renames RxInterval.Create;
 
 
-end Rx.Standard;
+end Rx.Std;
