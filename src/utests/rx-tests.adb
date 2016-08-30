@@ -17,7 +17,7 @@ package body Rx.Tests is
    function Length (S : String) return Integer is (S'Length);
    function Image  (I : Integer) return String is (I'Img);
 
-   Chain : Subscriptions.Subscription;
+   Chain : Subscriptions.No_Subscription;
 
    use Integers.Observables;
    use Strings.Observables;
