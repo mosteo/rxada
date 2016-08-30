@@ -98,7 +98,7 @@ package Rx.Observables is
    --  Subscribe
    function "&" (L : Observable;
                  R : Observer)
-                 return Subscriptions.Subscription;
+                 return Subscriptions.No_Subscription;
 
 private
 

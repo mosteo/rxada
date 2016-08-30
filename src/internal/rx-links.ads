@@ -9,8 +9,8 @@ package Rx.Links is
 --     pragma Preelaborate;
 
 --  A type that knows how to build a chain and then how to trigger subscriptions.
---  Used as root for both Transformers and Mutators (the two kinds of Links)
---  Transformers change types, Mutators do not.
+--  Used as root for both Transform and Operate (the two kinds of Links)
+--  Transformers change types, Operaters do not.
 
    type Link is abstract new
      From.Producers.Subscriptor and
