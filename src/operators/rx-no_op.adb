@@ -2,18 +2,23 @@ with Rx.Base_Op;
 
 package body Rx.No_Op is
 
-   procedure On_Next (V     :        Operate.Transform.From.Type_Traits.T;
-                      Child : in out Operate.Transform.Typed.Into.Observer'Class) is null;
+   -------------
+   -- On_Next --
+   -------------
 
-   package Op is new Rx.Base_Op (Operate.Transform, On_Next);
+   procedure On_Next (V     :        Operate.T;
+                      Child : in out Operate.Observer) is
+   begin
+      Child.On_Next (V);
+   end On_Next;
+
+   package Operator is new Rx.Base_Op (Operate.Transform, On_Next);
 
    ------------
    -- Create --
    ------------
 
-   function Create return Operate.Operator is
-   begin
-      return Op.Create;
-   end Create;
+   function Create return Operate.Operator renames Operator.Create;
+
 
 end Rx.No_Op;
