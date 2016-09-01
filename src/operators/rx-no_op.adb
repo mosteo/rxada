@@ -1,8 +1,11 @@
+with Rx.Base_Op;
+
 package body Rx.No_Op is
 
-   type Op is new Operate.Transform.Operator with null record;
+   procedure On_Next (V     :        Operate.Transform.From.Type_Traits.T;
+                      Child : in out Operate.Transform.Typed.Into.Observer'Class) is null;
 
-   overriding procedure On_Next (This : in out Op; V : Operate.T) is null;
+   package Op is new Rx.Base_Op (Operate.Transform, On_Next);
 
    ------------
    -- Create --
@@ -10,7 +13,7 @@ package body Rx.No_Op is
 
    function Create return Operate.Operator is
    begin
-      return Op'(Operate.Transform.Operator with null record);
+      return Op.Create;
    end Create;
 
 end Rx.No_Op;
