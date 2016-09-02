@@ -1,12 +1,12 @@
 with Ada.Calendar;
 
 with Rx.Dispatchers;
-with Rx.Shared;
+with Rx.Shared_Observer;
 with Rx.Src.Stateless;
 
 package body Rx.Src.Interval is
 
-   package Shared is new Rx.Shared (Typed);
+   package Shared is new Rx.Shared_Observer (Typed);
 
    use Typed.Type_Traits;
 
@@ -54,7 +54,7 @@ package body Rx.Src.Interval is
       S.Scheduler.Schedule (R, Clock + S.First_Pause);
    end On_Subscribe;
 
-   package Source is new Sources.Stateless (Typed, State, On_Subscribe, Completes => False);
+   package Source is new Src.Stateless (Typed, State, On_Subscribe, Completes => False);
 
    ------------
    -- Create --
