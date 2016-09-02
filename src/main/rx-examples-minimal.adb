@@ -121,11 +121,43 @@ begin
         Count (First => 0)
      );
 
-   Chain := -- Check counting of different types plus subscription
+   Chain := -- Check mixed counting of different types without subscription
+     +
      (
       From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
       &
         Count (First => 0)
+      &
+        Count (First => 0)
+     );
+
+   Chain := -- Check counting of different types with subscription
+     (
+      Just ("hello, world!")
+      &
+        Count (First => 0)
+      &
+        Subscribe (Debug.Put_Line'Access)
+     );
+
+   Chain := -- Check mixed counting of different types with subscription
+     (
+      From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
+      &
+        Count (First => 0)
+      &
+        Count (First => 0)
+      &
+        Subscribe (Debug.Put_Line'Access)
+     );
+
+   Chain := -- Check mixed counting of indefinite array types with subscription
+     (
+      From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
+      &
+        Count (First => 0)
+      &
+        Subscribe (Debug.Put_Line'Access)
      );
 
 end Rx.Examples.Minimal;

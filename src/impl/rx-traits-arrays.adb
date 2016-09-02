@@ -6,6 +6,8 @@ package body Rx.Traits.Arrays is
 
    package body Builders is
 
+      use Typed.Type_Traits;
+
       -----------
       -- Build --
       -----------
@@ -16,10 +18,7 @@ package body Rx.Traits.Arrays is
          return Typed_Array
       is
       begin
-         --  Generated stub: replace with real body!
-         pragma Compile_Time_Warning (Standard.True, "Build unimplemented");
-         raise Program_Error with "Unimplemented function Build";
-         return Build (V1 => V1, More => More);
+         return (Indexes'First => +V1) & More;
       end Build;
 
       -----------
@@ -32,10 +31,7 @@ package body Rx.Traits.Arrays is
          return Typed_Array
       is
       begin
-         --  Generated stub: replace with real body!
-         pragma Compile_Time_Warning (Standard.True, "Build unimplemented");
-         raise Program_Error with "Unimplemented function Build";
-         return Build (V1 => V1, V2 => V2, More => More);
+         return (+V1, +V2) & More;
       end Build;
 
       -----------
@@ -48,10 +44,7 @@ package body Rx.Traits.Arrays is
          return Typed_Array
       is
       begin
-         --  Generated stub: replace with real body!
-         pragma Compile_Time_Warning (Standard.True, "Build unimplemented");
-         raise Program_Error with "Unimplemented function Build";
-         return Build (V1 => V1, V2 => V2, V3 => V3, More => More);
+         return (+V1, +V2, +V3) & More;
       end Build;
 
       -----------
@@ -64,10 +57,7 @@ package body Rx.Traits.Arrays is
          return Typed_Array
       is
       begin
-         --  Generated stub: replace with real body!
-         pragma Compile_Time_Warning (Standard.True, "Build unimplemented");
-         raise Program_Error with "Unimplemented function Build";
-         return Build (V1 => V1, V2 => V2, V3 => V3, V4 => V4, More => More);
+         return (+V1, +V2, +V3, +V4) & More;
       end Build;
 
       -----------
@@ -80,11 +70,7 @@ package body Rx.Traits.Arrays is
          return Typed_Array
       is
       begin
-         --  Generated stub: replace with real body!
-         pragma Compile_Time_Warning (Standard.True, "Build unimplemented");
-         raise Program_Error with "Unimplemented function Build";
-         return Build (V1 => V1, V2 => V2, V3 => V3, V4 => V4, V5 => V5,
-            More => More);
+         return (+V1, +V2, +V3, +V4, +V5) & More;
       end Build;
 
       -----------
@@ -97,11 +83,7 @@ package body Rx.Traits.Arrays is
          return Typed_Array
       is
       begin
-         --  Generated stub: replace with real body!
-         pragma Compile_Time_Warning (Standard.True, "Build unimplemented");
-         raise Program_Error with "Unimplemented function Build";
-         return Build (V1 => V1, V2 => V2, V3 => V3, V4 => V4, V5 => V5,
-            V6 => V6, More => More);
+         return (+V1, +V2, +V3, +V4, +V5, +V6) & More;
       end Build;
 
    end Builders;
