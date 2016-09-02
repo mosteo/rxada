@@ -2,7 +2,7 @@ with Ada.Calendar;
 
 with Rx.Errors;
 with Rx.Operate;
-with Rx.Shared;
+with Rx.Shared_Observer;
 with Rx.Typed;
 
 package Rx.Dispatchers is
@@ -24,7 +24,7 @@ package Rx.Dispatchers is
       with package Typed is new Rx.Typed (<>);
    package Events is
 
-      package Shared is new Rx.Shared (Typed);
+      package Shared is new Rx.Shared_Observer (Typed);
 
       procedure On_Next      (Sched : in out Dispatcher'Class; Observer : Shared.Observer; V : Typed.Type_Traits.T);
       procedure On_Completed (Sched : in out Dispatcher'Class; Observer : Shared.Observer);

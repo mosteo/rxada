@@ -3,7 +3,7 @@ with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
-package Rx.Shared is
+package Rx.Shared_Observer is
 
 --     pragma Preelaborate;
 
@@ -31,4 +31,4 @@ private
 
    Null_Observer : constant Observer := (Typed.Consumers.Observer with Actual => null);
 
-end Rx.Shared;
+end Rx.Shared_Observer;

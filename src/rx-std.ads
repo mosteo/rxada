@@ -1,10 +1,10 @@
 with Ada.Exceptions;
 
 	with Rx.Any;
-	with Rx.Empty;
 	with Rx.Errors;
 	with Rx.Integers;
-private with Rx.Interval;
+private with Rx.Src.Empty;
+private with Rx.Src.Interval;
 	with Rx.Schedulers;
 
 package Rx.Std is
@@ -30,14 +30,14 @@ package Rx.Std is
 
 private
 
-   package RxEmpty is new Rx.Empty (Any.Typed);
+   package RxEmpty is new Rx.Src.Empty (Any.Typed);
 
    function Empty return Any.Observable renames RxEmpty.Empty;
 
    function Error (E : Rx.Errors.Occurrence)                return Any.Observable renames RxEmpty.Error;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable renames RxEmpty.Error;
 
-   package RxInterval is new Rx.Interval (Integers.Typed, Integer'Succ);
+   package RxInterval is new Rx.Src.Interval (Integers.Typed, Integer'Succ);
 
    function Interval (First       : Integer := 0;
                       Pause       : Duration := 1.0;

@@ -1,14 +1,14 @@
 	with Rx.Actions;
 	with Rx.Op.Count;
 private with Rx.Op.No_Op;
+private with Rx.Op.Observe_On;
+private with Rx.Op.Print;
+private with Rx.Op.Subscribe_On;
+	with Rx.Operate;
+	with Rx.Schedulers;
 	with Rx.Src.From;
 private with Rx.Src.Just;
-private with Rx.Op.Observe_On;
-	with Rx.Operate;
-private with Rx.Op.Print;
-	with Rx.Schedulers;
 private with Rx.Subscribe;
-private with Rx.Subscribe_On;
 	with Rx.Subscriptions;
 	with Rx.Traits.Arrays;
 	with Rx.Typed;
@@ -33,7 +33,7 @@ package Rx.Observables is
    generic
       with function Succ (V : T) return T;
    package Counters is
-      package Self_Count is new Rx.Count (Operate.Transform, Succ);
+      package Self_Count is new Rx.Op.Count (Operate.Transform, Succ);
 
       function Count (First : T) return Operator renames Self_Count.Count;
    end Counters;
@@ -102,20 +102,20 @@ package Rx.Observables is
 
 private
 
-   package From_Arrays is new Rx.From.From_Array (Default_Arrays);
+   package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable
                   renames From_Arrays.From;
 
-   package RxJust is new Rx.Just (Typed);
+   package RxJust is new Rx.Src.Just (Typed);
    function Just (V : T) return Observable renames RxJust.Create;
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
 
-   package RxObserveOn is new Rx.Observe_On (Operate);
+   package RxObserveOn is new Rx.Op.Observe_On (Operate);
    function Observe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxObserveOn.Create;
 
-   package RxPrint is new Rx.Print (Operate);
+   package RxPrint is new Rx.Op.Print (Operate);
    function Print (Func           : Typed.Actions.Func1Str := null;
                    With_Timestamp : Boolean                := True) return Operator renames RxPrint.Create;
 
@@ -124,7 +124,7 @@ private
                        On_Completed : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Observer renames RxSubscribe.Create;
 
-   package RxSubsOn is new Rx.Subscribe_On (Operate);
+   package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operate.Operator renames RxSubsOn.Create;
 
 end Rx.Observables;
