@@ -2,8 +2,8 @@ with Rx.Operate;
 
 generic
    with package Operate is new Rx.Operate (<>);
-package Rx.No_Op is
+package Rx.Op.No_Op is
 
    function Create return Operate.Operator;
 
-end Rx.No_Op;
+end Rx.Op.No_Op;

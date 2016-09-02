@@ -43,25 +43,14 @@ package body Rx.Links is
       This.Child.Hold (Child);
    end Set_Child;
 
-   ------------------
-   -- On_Completed --
-   ------------------
+   -------------------
+   -- Release_Child --
+   -------------------
 
-   overriding procedure On_Completed (This : in out Link) is
+   procedure Release_Child (This : in out Link) is
    begin
-      This.Child.Ref.On_Completed;
-      This.Child.Clear; -- Not strictly necessary, but frees memory somewhat earlier
-   end On_Completed;
-
-   --------------
-   -- On_Error --
-   --------------
-
-   overriding procedure On_Error (This : in out Link; Error : in out Errors.Occurrence) is
-   begin
-      This.Child.Ref.On_Error (Error); -- Pass it down
-      This.Child.Clear; -- Not strictly necessary, but frees memory somewhat earlier
-   end On_Error;
+      This.Child.Clear;
+   end Release_Child;
 
    ---------
    -- "&" --

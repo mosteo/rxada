@@ -1,3 +1,6 @@
+with Rx.Src;
+--  with rx.src.stateless; -- Next step
+
 package body Rx.Just is
 
    type Observable is new Typed.Producers.Observable with record

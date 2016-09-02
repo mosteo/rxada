@@ -27,17 +27,12 @@ package Rx.Links is
    function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference;
    -- Can be used within the Observer actions to pass the values along
 
+   procedure Release_Child (This : in out Link);
+   --  Once the child is no longer needed let it gooo!
+
    overriding
    procedure Subscribe (Producer : in out Link;
                         Consumer : in out Into.Observer);
-
-   overriding
-   procedure On_Completed (This : in out Link);
-   --  By default calls downstream On_Completed
-
-   overriding
-   procedure On_Error (This : in out Link; Error : in out Errors.Occurrence);
-   --  By default calls downstream On_Error
 
 private
 

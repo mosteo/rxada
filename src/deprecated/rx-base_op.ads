@@ -5,6 +5,8 @@ generic
    with procedure On_Next (V : Typed.From.Type_Traits.T; Child : in out Typed.Into.Observer'Class);
 package Rx.Base_Op is
 
+   pragma Compile_Time_Warning (True, "To be deleted, since inheritance chosen instead of genericity");
+
    type Operator is new Typed.Operator with null record;
 
    overriding procedure On_Next (This : in out Operator; V : Typed.From.Type_Traits.T);
