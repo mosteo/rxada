@@ -2,9 +2,9 @@ with Ada.Calendar;
 
 with Rx.Dispatchers;
 with Rx.Shared;
-with Rx.Sources.Stateless;
+with Rx.Src.Stateless;
 
-package body Rx.Interval is
+package body Rx.Src.Interval is
 
    package Shared is new Rx.Shared (Typed);
 
@@ -71,4 +71,4 @@ package body Rx.Interval is
       return Source.Create (State'(+First, Pause, First_Pause, Scheduler));
    end Create;
 
-end Rx.Interval;
+end Rx.Src.Interval;

@@ -1,7 +1,3 @@
-package Rx.Op is
-
-   pragma Compile_Time_Warning (True, "Move al operators to children of this");
-
-   pragma Preelaborate;
+package Rx.Op with Pure is
 
 end Rx.Op;

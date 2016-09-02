@@ -3,7 +3,7 @@ with Rx.Errors;
 
 -- with Gnat.Io; use Gnat.Io;
 
-package body Rx.Subscribe_On is
+package body Rx.Op.Subscribe_On is
 
    package Remote is new Dispatchers.Subscribe (Operate);
 
@@ -44,4 +44,4 @@ package body Rx.Subscribe_On is
       return Op'(Operate.Transform.Operator with Sched => Scheduler);
    end Create;
 
-end Rx.Subscribe_On;
+end Rx.Op.Subscribe_On;

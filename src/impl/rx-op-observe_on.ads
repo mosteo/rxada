@@ -3,8 +3,8 @@ with Rx.Schedulers;
 
 generic
    with package Operate is new Rx.Operate (<>);
-package Rx.Observe_On is
+package Rx.Op.Observe_On is
 
    function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator;
 
-end Rx.Observe_On;
+end Rx.Op.Observe_On;

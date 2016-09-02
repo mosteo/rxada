@@ -4,7 +4,7 @@ with Rx.Typed;
 generic
    with package Typed is new Rx.Typed (<>); -- Items emitted
    with function Succ (V : Typed.T) return Typed.T; -- Next in sequence
-package Rx.Interval is
+package Rx.Src.Interval is
 
    function Create (First       : Typed.T;
                     Pause       : Duration := 1.0;
@@ -13,4 +13,4 @@ package Rx.Interval is
                     return Typed.Observable;
    --  Delay Until is used, so slow processing may mean trouble...
 
-end Rx.Interval;
+end Rx.Src.Interval;

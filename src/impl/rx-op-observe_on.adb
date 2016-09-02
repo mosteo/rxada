@@ -3,7 +3,7 @@ with Rx.Errors;
 
 -- with Gnat.Io; use Gnat.Io;
 
-package body Rx.Observe_On is
+package body Rx.Op.Observe_On is
 
    package Remote is new Dispatchers.Events (Operate.Typed);
    package Shared renames Remote.Shared;
@@ -69,4 +69,4 @@ package body Rx.Observe_On is
       return Op'(Operate.Transform.Operator with Sched => Scheduler);
    end Create;
 
-end Rx.Observe_On;
+end Rx.Op.Observe_On;

@@ -1,7 +1,7 @@
 with Rx.Holders;
-with Rx.Sources.Stateless;
+with Rx.Src.Stateless;
 
-package body Rx.From is
+package body Rx.Src.From is
 
    ----------------
    -- From_Array --
@@ -19,7 +19,7 @@ package body Rx.From is
          end loop;
       end On_Subscribe;
 
-      package Arrayed is new Sources.Stateless (Arrays.Typed, State.Definite, On_Subscribe);
+      package Arrayed is new Src.Stateless (Arrays.Typed, State.Definite, On_Subscribe);
 
       function From (A : Arrays.Typed_Array) return Arrays.Typed.Producers.Observable'Class
       is
@@ -47,7 +47,7 @@ package body Rx.From is
          end loop;
       end On_Subscribe;
 
-      package Iterables is new Rx.Sources.Stateless (Iterable.Typed, Iterable.Cursor, On_Subscribe);
+      package Iterables is new Rx.Src.Stateless (Iterable.Typed, Iterable.Cursor, On_Subscribe);
 
       function From (C : Iterable.Container) return Iterable.Typed.Producers.Observable'Class is
       begin
@@ -56,4 +56,4 @@ package body Rx.From is
 
    end From_Iterable;
 
-end Rx.From;
+end Rx.Src.From;

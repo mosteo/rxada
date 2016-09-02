@@ -1,4 +1,4 @@
-package body Rx.Count is
+package body Rx.Op.Count is
 
    --------------------
    -- Discrete_Count --
@@ -36,4 +36,4 @@ package body Rx.Count is
       return Counter'(Transform.Operator with Count => +First);
    end Count;
 
-end Rx.Count;
+end Rx.Op.Count;

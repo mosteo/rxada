@@ -1,23 +1,20 @@
 with Rx.Src;
---  with rx.src.stateless; -- Next step
+with Rx.Src.Stateless;
 
-package body Rx.Just is
+package body Rx.Src.Just is
 
-   type Observable is new Typed.Producers.Observable with record
-      Value : Typed.Type_Traits.D;
-   end record;
-
-   overriding
-   procedure Subscribe (Producer : in out Observable;
-                        Consumer : in out Typed.Consumers.Observer'Class) is
+   procedure On_Subscribe (State    :        Typed.D;
+                           Observer : in out Typed.Observer)
+   is
    begin
-      Consumer.On_Next (Typed.Type_Traits.To_Indefinite (Producer.Value));
-      Consumer.On_Completed;
-   end Subscribe;
+      Observer.On_Next (Typed.Type_Traits.To_Indefinite (State));
+   end On_Subscribe;
 
-   function Create (V : Typed.Type_Traits.T) return Typed.Producers.Observable'Class is
+   package Source is new Src.Stateless (Typed, Typed.D, On_Subscribe);
+
+   function Create (V : Typed.T) return Typed.Observable'Class is
    begin
-      return Observable'(Typed.Producers.Observable with Value => Typed.Type_Traits.To_Definite (V));
+      return Source.Create (Typed.Type_Traits.To_Definite (V));
    end Create;
 
-end Rx.Just;
+end Rx.Src.Just;
