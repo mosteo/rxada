@@ -35,7 +35,7 @@ package Rx.Observables is
    package Counters is
       package Self_Count is new Rx.Op.Count (Operate.Transform, Succ);
 
-      function Count (First : T) return Operator renames Self_Count.Count;
+      function Count (First : T) return Operate.Transform.Operator'Class renames Self_Count.Count;
    end Counters;
 
    ----------
@@ -84,21 +84,29 @@ package Rx.Observables is
    -- Subscribe_On --
    ------------------
 
-   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operate.Operator;
+   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator;
 
    ---------
    -- "&" --
    ---------
 
    --  Chain preparation
-   function "&" (L : Observable;
-                 R : Operator)
-                 return Observable renames Operate.Transform."&"; -- OMG
+--     function "&" (L : Observable; R : Operate.Operator'Class) return Observable
+--     is (Operate.Transform.Typed."&" (L, Operate.Transform.Operator'Class (R)));
+   --  This oneapplies to type-preserving operators
+
+   function "&" (L : Observable; R : Operate.Transform.Operator'Class) return Observable
+   is (Operate.Transform.Typed."&" (L, Operate.Transform.Typed.Link'Class (R)));
+--   renames Operate.Transform.Typed."&";
+
+   -- Debug helper
+   -- function "and" (L : Observable; R : Operator) return Observable renames "&";
 
    --  Subscribe
-   function "&" (L : Observable;
-                 R : Observer)
-                 return Subscriptions.No_Subscription;
+   function "&" (L : Observable; R : Observer) return Subscriptions.No_Subscription;
+
+   -- Debug helpers
+   function "+" (O : Observable)                    return Subscriptions.No_Subscription is (null record);
 
 private
 
@@ -125,6 +133,6 @@ private
                        On_Error     : Rx.Actions.Proc_Error := null) return Observer renames RxSubscribe.Create;
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
-   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operate.Operator renames RxSubsOn.Create;
+   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;
 
 end Rx.Observables;

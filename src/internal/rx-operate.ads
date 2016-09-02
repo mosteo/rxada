@@ -16,8 +16,13 @@ package Rx.Operate is
 
    -- Scaffolding
    package Transform is new Rx.Transform (Typed, Typed);
-   subtype Operator is Transform.Operator'Class;
 
-   package Holders is new Rx.Holders (Operator, "operator");
+   -- Not needed but works around some gnat bug on instantiations
+   type Operator is abstract new Transform.Operator with null record;
+
+   package From renames Transform.From;
+   package Into renames Transform.Into;
+
+   package Holders is new Rx.Holders (Operator'Class, "operator");
 
 end Rx.Operate;

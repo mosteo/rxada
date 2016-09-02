@@ -13,4 +13,7 @@ package Rx.Indefinites is
    -- Actually usable package
    package Observables renames Instance.Observables;
 
+   --  For easy visibility of this heresy:
+   package Arrays renames Observables.Default_Arrays.Builders;
+
 end Rx.Indefinites;

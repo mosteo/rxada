@@ -21,7 +21,7 @@ package Rx.Operators is
    ---------
 
    function "&" (L : From.Observable; R : Operator) return Into.Observable
-     renames Typed."&";
+   is (Typed.Typed."&" (L, Typed.Typed.Link'Class (R)));
 
    --------------
    -- Counters --

@@ -1,3 +1,5 @@
+with Rx.Definites;
+with Rx.Indefinites;
 with Rx.Integers;
 with Rx.Operators;
 with Rx.Strings;
@@ -16,5 +18,11 @@ package Rx.Examples is
    function Inc (I : Integer) return Integer is (I+1);
 
    Chain : Subscriptions.No_Subscription;
+
+   --  Finally, to increase ambiguity:
+--     package Chars is new Rx.Definites (Character);
+
+   type Intarr is array (Integer range <>) of Integer;
+--     package Intarrs is new Rx.Indefinites (Intarr);
 
 end Rx.Examples;

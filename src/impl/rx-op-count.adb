@@ -1,33 +1,50 @@
 package body Rx.Op.Count is
 
-   --------------------
-   -- Discrete_Count --
-   --------------------
-
    type Counter is new Transform.Operator with record
       Count : Transform.Into.Type_Traits.D;
    end record;
 
    overriding
-   procedure On_Completed (This : in out Counter);
+   procedure On_Next (This  : in out Counter;
+                      V     :        Transform.From.T;
+                      Child : in out Transform.Into.Observer'Class);
+
+   overriding
+   procedure On_Completed (This : in out Counter;
+                          Child : in out Transform.Into.Observer'Class);
+
+   -------------
+   -- On_Next --
+   -------------
 
    overriding
    procedure On_Next (This  : in out Counter;
-                      V     : Transform.From.T)
+                      V     :        Transform.From.T;
+                      Child : in out Transform.Into.Observer'Class)
    is
-      pragma Unreferenced (V);
+      pragma Unreferenced (V, Child);
       use Transform.Into.Type_Traits;
    begin
       This.Count := +Succ (+This.Count);
    end On_Next;
 
+
+   ------------------
+   -- On_Completed --
+   ------------------
+
    overriding
-   procedure On_Completed (This : in out Counter) is
+   procedure On_Completed (This : in out Counter;
+                          Child : in out Transform.Into.Observer'Class) is
       use Transform.Into.Type_Traits;
    begin
-      This.Get_Child.On_Next (+This.Count);
-      This.Get_Child.On_Completed;
+      Child.On_Next (+This.Count);
+      Child.On_Completed;
    end On_Completed;
+
+   -----------
+   -- Count --
+   -----------
 
    function Count (First : Transform.Into.T) return Transform.Operator'Class
    is

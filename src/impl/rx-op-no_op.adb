@@ -1,11 +1,11 @@
 package body Rx.Op.No_Op is
 
-   type Operator is new Operate.Transform.Operator with null record;
+   type Operator is new Operate.Operator with null record;
 
    overriding
    procedure On_Next (This  : in out Operator;
                       V     :        Operate.T;
-                      Child : in out Operate.Transform.Into.Observer)
+                      Child : in out Operate.Observer'Class)
    is
       pragma Unreferenced (This);
    begin
@@ -16,9 +16,9 @@ package body Rx.Op.No_Op is
    -- Create --
    ------------
 
-   function Create return Operate.Operator is
+   function Create return Operate.Operator'Class is
    begin
-      return Operator'(Operate.Transform.Operator with null record);
+      return Operator'(Operate.Operator with null record);
    end Create;
 
 

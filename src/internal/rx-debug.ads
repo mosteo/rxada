@@ -7,6 +7,8 @@ with Gnat.Debug_Pools;
 
 package Rx.Debug is
 
+--     pragma Preelaborate;
+
    Enabled : constant Boolean := False;
 
    procedure Print (E : Ada.Exceptions.Exception_Occurrence);

@@ -4,9 +4,10 @@ package body Rx.Op.Map is
 
    overriding
    procedure On_Next (This  : in out Op;
-                      V     : Typed.From.Type_Traits.T) is
+                      V     : Typed.From.Type_Traits.T;
+                      Child : in out Typed.Into.Observer'Class) is
    begin
-      This.Get_Child.On_Next (This.F (V));
+      Child.On_Next (This.F (V));
    end On_Next;
 
    ------------
