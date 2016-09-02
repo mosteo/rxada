@@ -4,7 +4,7 @@ with Gnat.IO;
 
 with Rx.Schedulers;
 
-package body Rx.Print is
+package body Rx.Op.Print is
 
    use Ada.Calendar;
 
@@ -36,4 +36,4 @@ package body Rx.Print is
       return Op'(Operate.Transform.Operator with Func => Func, With_Timestamp => With_Timestamp);
    end Create;
 
-end Rx.Print;
+end Rx.Op.Print;

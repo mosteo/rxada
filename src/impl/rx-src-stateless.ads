@@ -6,7 +6,7 @@ generic
    with procedure On_Subscribe (State    : Initial_State;
                                 Observer : in out Typed.Observer) is <>;
    Completes : Boolean := True; -- This observable emits an On_Complete after all its values
-package Rx.Sources.Stateless is
+package Rx.Src.Stateless is
 
 --     pragma Preelaborate;
 
@@ -27,4 +27,4 @@ private
    procedure Subscribe (Producer : in out Observable;
                         Consumer : in out Typed.Consumers.Observer'Class);
 
-end Rx.Sources.Stateless;
+end Rx.Src.Stateless;

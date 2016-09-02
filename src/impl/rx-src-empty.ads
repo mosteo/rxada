@@ -5,7 +5,7 @@ with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
-package Rx.Empty is
+package Rx.Src.Empty is
 
    function Empty return Typed.Observable;
 
@@ -14,4 +14,4 @@ package Rx.Empty is
    function Error (E : Rx.Errors.Occurrence)                return Typed.Observable;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Typed.Observable;
 
-end Rx.Empty;
+end Rx.Src.Empty;

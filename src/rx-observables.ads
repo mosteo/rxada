@@ -1,11 +1,11 @@
 	with Rx.Actions;
-	with Rx.Count;
-	with Rx.From;
-private with Rx.Just;
+	with Rx.Op.Count;
 private with Rx.Op.No_Op;
-private with Rx.Observe_On;
+	with Rx.Src.From;
+private with Rx.Src.Just;
+private with Rx.Op.Observe_On;
 	with Rx.Operate;
-private with Rx.Print;
+private with Rx.Op.Print;
 	with Rx.Schedulers;
 private with Rx.Subscribe;
 private with Rx.Subscribe_On;

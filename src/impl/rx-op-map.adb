@@ -1,4 +1,4 @@
-package body Rx.Map is
+package body Rx.Op.Map is
 
    type Op (F : Typed.Func1) is new Typed.Operator with null record;
 
@@ -18,4 +18,4 @@ package body Rx.Map is
       return Op'(Typed.Operator with F => F);
    end Create;
 
-end Rx.Map;
+end Rx.Op.Map;

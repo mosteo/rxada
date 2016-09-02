@@ -1,7 +1,7 @@
 with Rx.Traits.Arrays;
 with Rx.Traits.Iterable;
 
-package Rx.From is
+package Rx.Src.From is
 
 --     pragma Preelaborate;
 
@@ -17,4 +17,4 @@ package Rx.From is
       function From (C : Iterable.Container) return Iterable.Typed.Producers.Observable'Class;
    end From_Iterable;
 
-end Rx.From;
+end Rx.Src.From;

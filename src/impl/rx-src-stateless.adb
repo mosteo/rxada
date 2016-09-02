@@ -1,4 +1,4 @@
-package body Rx.Sources.Stateless is
+package body Rx.Src.Stateless is
 
    ------------
    -- Create --
@@ -27,4 +27,4 @@ package body Rx.Sources.Stateless is
          Consumer.Default_Error_Handler (E);
    end Subscribe;
 
-end Rx.Sources.Stateless;
+end Rx.Src.Stateless;
