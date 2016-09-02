@@ -8,13 +8,13 @@ package body Rx.Op.Observe_On is
    package Remote is new Dispatchers.Events (Operate.Typed);
    package Shared renames Remote.Shared;
 
-   type Op is new Operate.Transform.Operator with record
+   type Op is new Operate.Operator with record
       Sched : Schedulers.Scheduler;
    end record;
 
-   overriding procedure On_Next      (This : in out Op; V : Operate.T);
-   overriding procedure On_Completed (This : in out Op);
-   overriding procedure On_Error     (This : in out Op; Error : in out Rx.Errors.Occurrence);
+   overriding procedure On_Next      (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class);
+   overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer'Class);
+   overriding procedure On_Error     (This : in out Op; Error : in out Rx.Errors.Occurrence; Child : in out Operate.Observer'Class);
 
    overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Observer);
 
@@ -22,27 +22,27 @@ package body Rx.Op.Observe_On is
    -- On_Next --
    -------------
 
-   overriding procedure On_Next (This : in out Op; V : Operate.T) is
+   overriding procedure On_Next (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class) is
    begin
-      Remote.On_Next (This.Sched.all, Shared.Observer (This.Get_Child.Actual.all), V);
+      Remote.On_Next (This.Sched.all, Shared.Observer (Child), V);
    end On_Next;
 
    ------------------
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This : in out Op) is
+   overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer'Class) is
    begin
-      Remote.On_Completed (This.Sched.all, Shared.Observer (This.Get_Child.Actual.all));
+      Remote.On_Completed (This.Sched.all, Shared.Observer (Child));
    end On_Completed;
 
    --------------
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Op; Error : in out Rx.Errors.Occurrence) is
+   overriding procedure On_Error (This : in out Op; Error : in out Rx.Errors.Occurrence; Child : in out Operate.Observer'Class) is
    begin
-      Remote.On_Error (This.Sched.all, Shared.Observer (This.Get_Child.Actual.all), Error);
+      Remote.On_Error (This.Sched.all, Shared.Observer (Child), Error);
       --  Since the error is now in another thread, and we won't know if it has been handled,
       --  we are done here:
       Error.Set_Handled;
@@ -64,7 +64,7 @@ package body Rx.Op.Observe_On is
    -- Create --
    ------------
 
-   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator is
+   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
    begin
       return Op'(Operate.Transform.Operator with Sched => Scheduler);
    end Create;

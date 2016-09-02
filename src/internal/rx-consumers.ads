@@ -7,7 +7,7 @@ generic
    type T (<>) is private;
 package Rx.Consumers is
 
-   --     pragma Preelaborate;
+--     pragma Preelaborate;
 
    type Observer is interface;
    procedure On_Next      (This : in out Observer; V : T) is abstract;

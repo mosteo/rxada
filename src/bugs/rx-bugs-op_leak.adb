@@ -1,6 +1,5 @@
 with Rx.Integers; use Rx.Integers; use Rx.Integers.Observables;
 with Rx.Debug; use Rx.Debug;
-with Rx.Subscriptions;
 
 procedure Rx.Bugs.Op_Leak is
 
@@ -12,6 +11,7 @@ begin
                   No_Op
                   &
                   No_Op;
+         pragma Unreferenced (Leak);
       begin
          null;
       end;

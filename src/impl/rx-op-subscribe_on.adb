@@ -7,11 +7,11 @@ package body Rx.Op.Subscribe_On is
 
    package Remote is new Dispatchers.Subscribe (Operate);
 
-   type Op is new Operate.Transform.Operator with record
+   type Op is new Operate.Operator with record
       Sched : Schedulers.Scheduler;
    end record;
 
-   overriding procedure On_Next      (This : in out Op; V : Operate.T);
+   overriding procedure On_Next      (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class);
 
    overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Observer);
 
@@ -19,9 +19,10 @@ package body Rx.Op.Subscribe_On is
    -- On_Next --
    -------------
 
-   overriding procedure On_Next (This : in out Op; V : Operate.T) is
+   overriding procedure On_Next (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class) is
+      pragma Unreferenced (This);
    begin
-      This.Get_Child.On_Next (V);
+      Child.On_Next (V);
    end On_Next;
 
    ---------------
@@ -39,9 +40,9 @@ package body Rx.Op.Subscribe_On is
    -- Create --
    ------------
 
-   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator is
+   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
    begin
-      return Op'(Operate.Transform.Operator with Sched => Scheduler);
+      return Op'(Operate.Operator with Sched => Scheduler);
    end Create;
 
 end Rx.Op.Subscribe_On;
