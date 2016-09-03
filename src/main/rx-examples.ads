@@ -20,7 +20,7 @@ package Rx.Examples is
    Chain : Subscriptions.No_Subscription;
 
    --  Finally, to increase ambiguity:
---     package Chars is new Rx.Definites (Character);
+--   package Chars is new Rx.Definites (Character); -- THIS LINE BREAKS SOMETHING
 
    type Intarr is array (Integer range <>) of Integer;
 --     package Intarrs is new Rx.Indefinites (Intarr);
