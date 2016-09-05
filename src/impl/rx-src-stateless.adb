@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Subscriptions;
 
 package body Rx.Src.Stateless is
@@ -26,7 +27,7 @@ package body Rx.Src.Stateless is
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         null;
+         Debug.Log ("At Stateless.Subscribe: caught No_Longer_Subscribed");
       when E : others =>
          Consumer.Default_Error_Handler (E);
    end Subscribe;

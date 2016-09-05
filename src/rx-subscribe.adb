@@ -8,6 +8,9 @@ package body Rx.Subscribe is
       On_Next      : Typed.Actions.Proc1;
       On_Completed : Rx.Actions.Proc0;
       On_Error     : Rx.Actions.Proc_Error;
+
+      Completed    : Boolean;
+      Errored      : Boolean;
    end record;
 
    overriding procedure On_Next      (This : in out Obs; V : Typed.Type_Traits.T);
@@ -21,6 +24,12 @@ package body Rx.Subscribe is
    overriding procedure On_Completed (This : in out Obs) is
       use Rx.Actions;
    begin
+      if This.Completed then
+         raise Program_Error with "Doubly completed";
+      else
+         This.Completed := True;
+      end if;
+
       if This.On_Completed /= null then
          This.On_Completed.all;
       end if;
@@ -33,6 +42,12 @@ package body Rx.Subscribe is
    overriding procedure On_Error (This : in out Obs; Error : in out Errors.Occurrence) is
       use Rx.Actions;
    begin
+      if This.Errored then
+         raise Program_Error with "Doubly errored";
+      else
+         This.Errored := True;
+      end if;
+
       if This.On_Error /= null then
          This.On_Error (Error);
          Error.Set_Handled;
@@ -64,7 +79,9 @@ package body Rx.Subscribe is
                     On_Completed : Rx.Actions.Proc0      := null;
                     On_Error     : Rx.Actions.Proc_Error := null) return Typed.Producers.Subscriptor'Class is
    begin
-      return Obs'(Typed.Producers.Subscriptor with On_Next, On_Completed, On_Error);
+      return Obs'(Typed.Producers.Subscriptor
+                  with On_Next, On_Completed, On_Error,
+                 Completed => False, Errored => False);
    end Create;
 
 end Rx.Subscribe;

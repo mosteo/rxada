@@ -9,7 +9,7 @@ package Rx.Debug is
 
 --     pragma Preelaborate;
 
-   Enabled : constant Boolean := False;
+   Enabled : constant Boolean := True;
 
    procedure Print (E : Ada.Exceptions.Exception_Occurrence);
 
