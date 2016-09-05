@@ -23,6 +23,11 @@ package body Rx.Shared_Data is
       P.Safe.Apply (CB);
    end Apply;
 
+   function Get (P : Proxy) return Const_Ref is
+   begin
+      return P.Safe.Get;
+   end Get;
+
    ---------------
    -- Safe_Item --
    ---------------
@@ -46,6 +51,15 @@ package body Rx.Shared_Data is
       begin
          Elem := I;
       end Set;
+
+      ---------
+      -- Get --
+      ---------
+
+      function Get return Const_Ref is
+      begin
+         return Const_Ref'(Actual => Elem);
+      end Get;
 
       ---------------
       -- Get_Count --
@@ -86,7 +100,9 @@ package body Rx.Shared_Data is
 
    overriding procedure Adjust (P : in out Proxy) is
    begin
-      P.Safe.Adjust;
+      if P.Safe /= null then
+         P.Safe.Adjust;
+      end if;
    end Adjust;
 
    --------------
@@ -96,9 +112,11 @@ package body Rx.Shared_Data is
    overriding procedure Finalize (P : in out Proxy) is
       procedure Free is new Ada.Unchecked_Deallocation (Safe_Item, Safe_Access);
    begin
-      P.Safe.Finalize;
-      if P.Safe.Get_Count = 0 then
-         Free (P.Safe);
+      if P.Safe /= null then
+         P.Safe.Finalize;
+         if P.Safe.Get_Count = 0 then
+            Free (P.Safe);
+         end if;
       end if;
    end Finalize;
 

@@ -20,8 +20,9 @@ package Rx.Observables is
    package Retyped renames Typed; -- Bug workaround
 
    -- Shortcuts
-   subtype Observable is Typed.Producers.Observable'Class;
-   subtype Observer   is Typed.Consumers.Observer'Class;
+   subtype Observable  is Typed.Producers.Observable'Class;
+   subtype Observer    is Typed.Consumers.Observer'Class;
+   subtype Subscriptor is Typed.Producers.Subscriptor'Class;
    subtype T is Typed.Type_Traits.T;
 
    -- Scaffolding
@@ -81,7 +82,7 @@ package Rx.Observables is
 
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Observer;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Subscriptor;
 
    ------------------
    -- Subscribe_On --
@@ -106,10 +107,10 @@ package Rx.Observables is
    -- function "and" (L : Observable; R : Operator) return Observable renames "&";
 
    --  Subscribe
-   function "&" (L : Observable; R : Observer) return Subscriptions.No_Subscription;
+   function "&" (L : Observable; R : Subscriptor) return Subscriptions.Subscription;
 
    -- Debug helpers
-   function "+" (O : Observable)                    return Subscriptions.No_Subscription is (null record);
+   function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
 
 private
 
@@ -133,7 +134,7 @@ private
    package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Observer renames RxSubscribe.Create;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Subscriptor renames RxSubscribe.Create;
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;

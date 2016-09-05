@@ -6,4 +6,6 @@ package Rx.Tests is
 
    function No_Op return Boolean;
 
+   function Subscriptions return Boolean;
+
 end Rx.Tests;

@@ -16,21 +16,21 @@ procedure Rx.Examples.Minimal is
    use StrCount;
 
 begin
-   Chain :=
+   Sub :=
      Just ("Hello, world!")
      & -- Check subscription alone
      Subscribe (Debug.Put_Line'Access);
 
-   Chain :=
-     +
+   Nosub :=
+     -
      (
       Just ("Hello, world!")
       & -- Check single type-preserving operation alone;
       No_Op
      );
 
-   Chain :=
-     +
+   Nosub :=
+     -
      (
       Just ("Hello, world!")
       & -- Check multiple type-preserving operation alone;
@@ -39,23 +39,23 @@ begin
         No_op
      );
 
-   Chain := -- Check type-preserving op plus subscription
+   Sub := -- Check type-preserving op plus subscription
      Just ("Hello, world!")
      &
      No_Op
      &
      Subscribe (Debug.Put_Line'Access);
 
-   Chain :=
-     +
+   Nosub :=
+     -
      (
       Just ("Hello, world!")
       & -- Check transformation alone;
         Map (Length'Access)
      );
 
-   Chain := -- Check roundtrip
-     +
+   Nosub := -- Check roundtrip
+     -
      (
       Just ("Hello, world!")
       &
@@ -64,7 +64,7 @@ begin
         Map (Image'Access)
      );
 
-   Chain := -- Check roundtrip plus subscription
+   Sub := -- Check roundtrip plus subscription
      (
       Just ("Hello, world!")
       &
@@ -75,15 +75,15 @@ begin
         Subscribe (Debug.Put_Line'Access)
      );
 
-   Chain := -- Check counting of same type without subscription
-     +
+   Nosub := -- Check counting of same type without subscription
+     -
      (
       Just (0)
       &
         Count (First => 0)
      );
 
-   Chain := -- Check counting of same type with subscription
+   Sub := -- Check counting of same type with subscription
      (
       Just (0)
       &
@@ -92,8 +92,8 @@ begin
         Subscribe (Debug.Put_Line'Access)
      );
 
-   Chain := -- Check counting of same type plus type-preserving without subscription
-     +
+   Nosub := -- Check counting of same type plus type-preserving without subscription
+     -
      (
       Just (0)
       &
@@ -102,7 +102,7 @@ begin
         No_Op
      );
 
-   Chain := -- Check counting of same type plus type-preserving plus subscription
+   Sub := -- Check counting of same type plus type-preserving plus subscription
      (
       Just (0)
       &
@@ -113,16 +113,16 @@ begin
         Subscribe (Debug.Put_Line'Access)
      );
 
-   Chain := -- Check counting of different types without subscription
-     +
+   Nosub := -- Check counting of different types without subscription
+     -
      (
       Just ("hello, world!")
       &
         Count (First => 0)
      );
 
-   Chain := -- Check mixed counting of different types without subscription
-     +
+   Nosub := -- Check mixed counting of different types without subscription
+     -
      (
       From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
       &
@@ -131,7 +131,7 @@ begin
         Count (First => 0)
      );
 
-   Chain := -- Check counting of different types with subscription
+   Sub := -- Check counting of different types with subscription
      (
       Just ("hello, world!")
       &
@@ -140,7 +140,7 @@ begin
         Subscribe (Debug.Put_Line'Access)
      );
 
-   Chain := -- Check mixed counting of different types with subscription
+   Sub := -- Check mixed counting of different types with subscription
      (
       From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
       &
@@ -151,7 +151,7 @@ begin
         Subscribe (Debug.Put_Line'Access)
      );
 
-   Chain := -- Check mixed counting of indefinite array types with subscription
+   Sub := -- Check mixed counting of indefinite array types with subscription
      (
       From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
       &

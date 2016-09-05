@@ -1,9 +1,10 @@
 with Rx.Debug;
 with Rx.Errors;
+with Rx.Subscriptions;
 
 package body Rx.Subscribe is
 
-   type Obs is new Typed.Consumers.Observer and Typed.Consumers.Sink with record
+   type Obs is new Typed.Producers.Subscriptor and Typed.Consumers.Sink with record
       On_Next      : Typed.Actions.Proc1;
       On_Completed : Rx.Actions.Proc0;
       On_Error     : Rx.Actions.Proc_Error;
@@ -48,8 +49,10 @@ package body Rx.Subscribe is
    overriding procedure On_Next (This : in out Obs; V : Typed.Type_Traits.T) is
       use Typed.Actions;
    begin
-      if This.On_Next /= null then
+      if This.On_Next /= null and then This.Subscription.Is_Subscribed then
          This.On_Next (V);
+      elsif not This.Subscription.Is_Subscribed then
+         raise Subscriptions.No_Longer_Subscribed;
       end if;
    end On_Next;
 
@@ -59,9 +62,9 @@ package body Rx.Subscribe is
 
    function Create (On_Next      : Typed.Actions.Proc1   := null;
                     On_Completed : Rx.Actions.Proc0      := null;
-                    On_Error     : Rx.Actions.Proc_Error := null) return Typed.Consumers.Observer'Class is
+                    On_Error     : Rx.Actions.Proc_Error := null) return Typed.Producers.Subscriptor'Class is
    begin
-      return Obs'(On_Next, On_Completed, On_Error);
+      return Obs'(Typed.Producers.Subscriptor with On_Next, On_Completed, On_Error);
    end Create;
 
 end Rx.Subscribe;

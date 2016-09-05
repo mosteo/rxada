@@ -16,6 +16,9 @@ package body Rx.Links is
          declare
             Parent : From.Observable := Producer.Get_Parent; -- Our own copy
          begin
+            if Consumer in Into.Producers.Subscriptor'Class then -- Ouch
+               Producer.Share (Into.Producers.Subscriptor'Class (Consumer).Subscription);
+            end if;
             Producer.Set_Child (Consumer); -- With its own child
             Parent.Subscribe (Producer);
          end;

@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Operators;
 with Rx.Std;
 with Rx.Subscriptions;
@@ -18,7 +19,7 @@ package body Rx.Tests is
    function Length (S : String) return Integer is (S'Length);
    function Image  (I : Integer) return String is (I'Img);
 
-   Chain : Subscriptions.No_Subscription;
+   Subs : Rx.Subscriptions.Subscription;
 
    use Integers;
    use Strings;
@@ -57,19 +58,19 @@ package body Rx.Tests is
 
    function Basic_Tests return Boolean is
    begin
-      Chain := Just (1) & Subscribe (Verify_Basic_1.Verify'Access);
+      Subs := Just (1) & Subscribe (Verify_Basic_1.Verify'Access);
 
-      Chain := Just ("hello") & Subscribe (Verify_Basic_Hi.Verify'Access);
+      Subs := Just ("hello") & Subscribe (Verify_Basic_Hi.Verify'Access);
 
-      Chain := Ints.From ((1, 1, 1)) & Subscribe (Verify_Basic_1.Verify'Access);
+      Subs := Ints.From ((1, 1, 1)) & Subscribe (Verify_Basic_1.Verify'Access);
 
-      Chain := Just ("Hello")
+      Subs := Just ("Hello")
         &
         StrCount.Count (0)
         &
         Subscribe (Verify_Basic_1.Verify'Access);
 
-      Chain := Ints.From ((1, 2))
+      Subs := Ints.From ((1, 2))
         &
         Count (-1)
         &
@@ -79,8 +80,8 @@ package body Rx.Tests is
       declare
          Ob : constant Integers.Observable := Ints.From ((1, 2, 3, 4)) & Count (-3);
       begin
-         Chain := Ob & Subscribe (Verify_Basic_1.Verify'Access);
-         Chain := Ob & Subscribe (Verify_Basic_1.Verify'Access);
+         Subs := Ob & Subscribe (Verify_Basic_1.Verify'Access);
+         Subs := Ob & Subscribe (Verify_Basic_1.Verify'Access);
       end;
 
       return Verify_Basic_1.Passed and Verify_Basic_Hi.Passed;
@@ -93,12 +94,28 @@ package body Rx.Tests is
    package No_Op_Check is new Verifier (Integer, 1);
    function No_Op return Boolean is
    begin
-      Chain :=
+      Subs :=
         Ints.Just (1) &
         Ints.No_Op &
         Subscribe (No_Op_Check.Verify'Access);
 
       return No_Op_Check.Passed;
    end No_Op;
+
+   function Subscriptions return Boolean is
+   begin
+      Subs :=
+        Std.Interval (1) &
+        Subscribe (Debug.Put_Line'Access);
+
+      pragma Assert (Subs.Is_Subscribed);
+
+      Subs.Unsubscribe;
+
+      return not Subs.Is_Subscribed;
+   exception
+      when others =>
+         return False;
+   end Subscriptions;
 
 end Rx.Tests;
