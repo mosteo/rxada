@@ -1,17 +1,16 @@
-with Rx.Definites;
-with Rx.Indefinites;
-with Rx.Integers;
-with Rx.Operators;
-with Rx.Strings;
+with Rx.Std;
 with Rx.Subscriptions;
 
 package Rx.Examples is
 
-   package StrToInt is new Rx.Operators (Strings.Observables, Integers.Observables);
-   package IntToStr is new Rx.Operators (Integers.Observables, Strings.Observables);
+   package Integers renames Std.Integers;
+   package Strings  renames Std.Strings;
 
-   package IntCount is new Rx.Integers.Observables.Counters (Integer'Succ);
-   package StrCount is new StrToInt.Counters (Integer'Succ);
+   package IntToStr renames Std.IntToStr;
+   package StrToInt renames Std.StrToInt;
+
+   package IntCount renames Std.IntCount;
+   package StrCount renames Std.StrCount;
 
    function Length (S : String) return Integer is (S'Length);
    function Image  (I : Integer) return String is (I'Img);

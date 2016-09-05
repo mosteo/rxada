@@ -1,11 +1,10 @@
 with Rx.Debug; use Rx.Debug;
-with Rx.Integers;
 with Rx.Std;
 with Rx.Schedulers;
 
 procedure Rx.Examples.Threading is
-   use Integers.Observables;
-   use Strings.Observables;
+   use Integers;
+   use Strings;
    use IntToStr;
    use StrToInt;
 

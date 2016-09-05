@@ -1,15 +1,16 @@
-with Rx.Integers;
 with Rx.Operators;
-with Rx.Strings;
+with Rx.Std;
 with Rx.Subscriptions;
 
 package body Rx.Tests is
 
-   package Ints renames Integers.Observables;
-   package Strs renames Strings.Observables;
+   use Rx.Std;
 
-   package StrToInt is new Rx.Operators (Strings.Observables, Integers.Observables);
-   package IntToStr is new Rx.Operators (Integers.Observables, Strings.Observables);
+   package Ints renames Std.Integers;
+   package Strs renames Std.Strings;
+
+   package StrToInt is new Rx.Operators (Strings, Integers);
+   package IntToStr is new Rx.Operators (Integers, Strings);
 
    package IntCount is new Ints.Counters (Integer'Succ);
    package StrCount is new StrToInt.Counters (Integer'Succ);
@@ -19,8 +20,8 @@ package body Rx.Tests is
 
    Chain : Subscriptions.No_Subscription;
 
-   use Integers.Observables;
-   use Strings.Observables;
+   use Integers;
+   use Strings;
    use StrToInt;
    use IntToStr;
    use IntCount;
