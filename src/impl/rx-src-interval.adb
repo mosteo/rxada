@@ -3,6 +3,7 @@ with Ada.Calendar;
 with Rx.Dispatchers;
 with Rx.Shared_Observer;
 with Rx.Src.Stateless;
+with Rx.Subscriptions;
 
 package body Rx.Src.Interval is
 
@@ -30,6 +31,12 @@ package body Rx.Src.Interval is
       R.Value := +Succ (+R.Value);
       R.Next  := R.Next + R.Pause;
       R.Sched.Schedule (R, R.Next);
+   exception
+      when Subscriptions.No_Longer_Subscribed =>
+         --  We could check if the child is a Subscriptor and if it is subscribed... but too ugly?
+         null;
+      when E : others =>
+         R.Child.Default_Error_Handler (E);
    end Run;
 
    type State is record

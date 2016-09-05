@@ -9,7 +9,7 @@ procedure Rx.Examples.Threading is
    use StrToInt;
 
 begin
-   Chain :=
+   Sub :=
      Std.Interval
      & Print
      & Subscribe_On (Schedulers.Computation)

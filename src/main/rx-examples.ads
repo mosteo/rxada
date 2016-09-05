@@ -16,7 +16,8 @@ package Rx.Examples is
    function Image  (I : Integer) return String is (I'Img);
    function Inc (I : Integer) return Integer is (I+1);
 
-   Chain : Subscriptions.No_Subscription;
+   Nosub : Subscriptions.No_Subscription;
+   Sub   : Subscriptions.Subscription;
 
    --  Finally, to increase ambiguity:
 --   package Chars is new Rx.Definites (Character); -- THIS LINE BREAKS SOMETHING
