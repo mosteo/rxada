@@ -1,11 +1,9 @@
 with Rx.Debug; use Rx.Debug;
-with Rx.Integers;
-with Rx.Strings;
 with Rx.Tests;
 
 procedure Rx.Examples.Basic is
-   use Integers.Observables;
-   use Strings.Observables;
+   use Integers;
+   use Strings;
    use StrToInt;
    use IntToStr;
    use IntCount;
@@ -27,19 +25,19 @@ procedure Rx.Examples.Basic is
 
       Debug.Put_Line ("From_Array example");
       Chain :=
-        Integers.Observables.From ((5, 4, 3, 2, 1)) &
+        Integers.From ((5, 4, 3, 2, 1)) &
         Subscribe (Debug.Put_Line'Access);
 
       Debug.Put_Line ("Count example");
       Chain :=
-        Integers.Observables.From ((0, 1, 2, 3)) &
+        Integers.From ((0, 1, 2, 3)) &
         Count (First => 0) &
         Subscribe (Debug.Put_Line'Access);
 
       Debug.Put_Line ("Count reset example");
       declare
          Ob : constant Integers.Observable :=
-                Integers.Observables.From ((0, 1, 2, 3))
+                Integers.From ((0, 1, 2, 3))
                 & Count (First => 0);
       begin
          Chain := Ob & Subscribe (Put_Line'Access); -- Must both output 4

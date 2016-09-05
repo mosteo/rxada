@@ -4,8 +4,8 @@ with Rx.Debug;
 
 procedure Rx.Examples.Minimal is
 
-   use Integers.Observables;
-   use Strings.Observables;
+   use Integers;
+   use Strings;
 
 --     use Chars.Observables;
 --     use Intarrs.Observables;

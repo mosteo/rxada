@@ -17,6 +17,8 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Observables is
 
+   package Retyped renames Typed; -- Bug workaround
+
    -- Shortcuts
    subtype Observable is Typed.Producers.Observable'Class;
    subtype Observer   is Typed.Consumers.Observer'Class;
@@ -43,6 +45,7 @@ package Rx.Observables is
    ----------
 
    package Default_Arrays is new Rx.Traits.Arrays (Typed, Integer);
+   package Arrays renames Default_Arrays;
 
    -- Observable from an array of values, useful for literal arrays
    function From (A : Default_Arrays.Typed_Array) return Observable;

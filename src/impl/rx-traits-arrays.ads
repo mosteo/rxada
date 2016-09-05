@@ -12,18 +12,14 @@ package Rx.Traits.Arrays is
 
    Empty_Array : constant Typed_Array;
 
-   package Builders is
+   -- HERESY TO AVOID FORCING THE USER TO DESIGNATE A NULL VALUE
 
-      -- HERESY TO AVOID FORCING THE USER TO DESIGNATE A NULL VALUE
-
-      function Build (V1 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
-      function Build (V1, V2 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
-      function Build (V1, V2, V3 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
-      function Build (V1, V2, V3, V4 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
-      function Build (V1, V2, V3, V4, V5 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
-      function Build (V1, V2, V3, V4, V5, V6 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
-
-   end Builders;
+   function Build (V1 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
+   function Build (V1, V2 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
+   function Build (V1, V2, V3 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
+   function Build (V1, V2, V3, V4 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
+   function Build (V1, V2, V3, V4, V5 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
+   function Build (V1, V2, V3, V4, V5, V6 : Typed.T; More : Typed_Array := Empty_Array) return Typed_Array;
 
 private
 

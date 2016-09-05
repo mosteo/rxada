@@ -1,8 +1,8 @@
-with Rx.Integers; use Rx.Integers; use Rx.Integers.Observables;
 with Rx.Debug; use Rx.Debug;
+with Rx.Std;   use Rx.Std;
 
 procedure Rx.Bugs.Op_Leak is
-
+   use Integers;
 begin
    for I in 1 .. 3 loop
       Put_Line ("---8<---");

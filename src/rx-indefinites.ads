@@ -14,6 +14,6 @@ package Rx.Indefinites is
    package Observables renames Instance.Observables;
 
    --  For easy visibility of this heresy:
-   package Arrays renames Observables.Default_Arrays.Builders;
+   package Arrays renames Observables.Default_Arrays;
 
 end Rx.Indefinites;
