@@ -27,6 +27,8 @@ package Rx.Links is
    function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference;
    -- Can be used within the Observer actions to pass the values along
 
+   function Has_Child (This : Link) return Boolean;
+
    procedure Release_Child (This : in out Link);
    --  Once the child is no longer needed let it gooo!
 
@@ -42,5 +44,8 @@ private
        with record
       Child : Into.Consumers.Holder;
    end record;
+
+   function Has_Child (This : Link) return Boolean
+     is (not This.Child.Is_Empty);
 
 end Rx.Links;

@@ -84,6 +84,28 @@ package body Rx.Tests is
          Subs := Ob & Subscribe (Verify_Basic_1.Verify'Access);
       end;
 
+      -- Test limit
+      Subs := Ints.From ((1, 1, 2))
+        &
+        Limit (2)
+        &
+        Subscribe (Verify_Basic_1.Verify'Access);
+
+      Subs := Ints.From ((1, 1, 2))
+        &
+        Limit (2)
+        &
+        Count (-1)
+        &
+        Subscribe (Verify_Basic_1.Verify'Access);
+
+      Subs := Ints.From ((1, 1, 1))
+        &
+        Limit (5) -- Check proper completion when not enough
+        &
+        Subscribe (Verify_Basic_1.Verify'Access);
+
+
       return Verify_Basic_1.Passed and Verify_Basic_Hi.Passed;
    end Basic_Tests;
 

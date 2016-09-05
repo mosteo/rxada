@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Subscriptions;
 
 package body Rx.Transform is
@@ -8,12 +9,14 @@ package body Rx.Transform is
 
    overriding procedure On_Next (This : in out Operator; V : From.T) is
    begin
-      if This.Is_Subscribed then
+      if This.Has_Child and then This.Is_Subscribed then
          Operator'Class (This).On_Next (V, This.Get_Child);
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
+         Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed");
          This.Unsubscribe;
+         This.Release_Child;
    end On_Next;
 
    ------------------
@@ -22,7 +25,7 @@ package body Rx.Transform is
 
    overriding procedure On_Completed (This : in out Operator) is
    begin
-      if This.Is_Subscribed then
+      if This.Has_Child and then This.Is_Subscribed then
          Operator'Class (This).On_Completed (This.Get_Child);
       end if;
       This.Release_Child; -- Not strictly necessary, but frees memory somewhat earlier
@@ -34,8 +37,10 @@ package body Rx.Transform is
 
    overriding procedure On_Error (This : in out Operator; Error : in out Errors.Occurrence) is
    begin
-      if This.Is_Subscribed then
+      if This.Has_Child and then This.Is_Subscribed then
          Operator'Class (This).On_Error (Error, This.Get_Child); -- Pass it down
+      else
+         Error.Reraise;
       end if;
       This.Release_Child; -- Not strictly necessary, but frees memory somewhat earlier
    end On_Error;

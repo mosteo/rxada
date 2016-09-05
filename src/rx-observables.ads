@@ -1,5 +1,6 @@
 	with Rx.Actions;
 	with Rx.Op.Count;
+private with Rx.Op.Limit;
 private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
@@ -59,6 +60,12 @@ package Rx.Observables is
    function Just (V : T) return Observable;
 
    -----------
+   -- Limit --
+   -----------
+
+   function Limit (Max : Natural) return Operator;
+
+   -----------
    -- No_Op --
    -----------
 
@@ -90,6 +97,12 @@ package Rx.Observables is
 
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator;
 
+   ----------
+   -- Take --
+   ----------
+
+   function Take  (Max : Natural) return Operator renames Limit;
+
    ---------
    -- "&" --
    ---------
@@ -120,6 +133,9 @@ private
 
    package RxJust is new Rx.Src.Just (Typed);
    function Just (V : T) return Observable renames RxJust.Create;
+
+   package RxLimit is new Rx.Op.Limit (Operate);
+   function Limit (Max : Natural) return Operator renames RxLimit.Create;
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
