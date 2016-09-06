@@ -1,5 +1,6 @@
+with Rx.Contracts;
 with Rx.Errors;
-with Rx.Links;
+-- with Rx.Links;
 with Rx.Typed;
 
 generic
@@ -7,15 +8,19 @@ generic
    with package Into is new Rx.Typed (<>);
 package Rx.Transform is
 
---     pragma Preelaborate;
+   pragma Preelaborate;
 
    type Func1 is access function (V : From.Type_Traits.T) return Into.Type_Traits.T;
 
-   package Typed is new Rx.Links (From, Into);
+--   package Typed is new Rx.Links (From, Into);
 
    --  This type is not strictly necessary, but by having it with its own "&" we can disambiguate better
    --  from same-type operators, leading to less prefixing necessary
-   type Operator is abstract new Typed.Link with null record;
+   type Operator is abstract new
+     Into.Contracts.Observable and
+     From.Contracts.Observer and
+     Rx.Contracts.Subscriber
+       with null record;
 
    --  To have common code not lost, new operators should extend this one, leaving the original
    --  Consumer interface intact (On_Next, etc). Instead, these versions that receive the Observer
