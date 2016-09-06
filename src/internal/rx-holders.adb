@@ -2,7 +2,7 @@ with Ada.Unchecked_Deallocation;
 
 with Gnat.IO; use Gnat.IO;
 
-with Rx.Debug;
+--  with Rx.Debug;
 
 package body Rx.Holders is
 
@@ -70,9 +70,9 @@ package body Rx.Holders is
          D.Actual := new Indef'(D.Actual.all);
       end if;
    exception
-      when E : others =>
+      when others =>
          Put_Line (Id & ": alloc exception (adjust)");
-         Rx.Debug.Print (E);
+--           Rx.Debug.Print (E);
          raise;
    end Adjust;
 
@@ -90,9 +90,9 @@ package body Rx.Holders is
          Free (D.Actual);
       end if;
    exception
-      when E : others =>
+      when others =>
          Put_Line (Id & ": alloc exception (finalize)");
-         Rx.Debug.Print (E);
+--           Rx.Debug.Print (E);
          raise;
    end Finalize;
 

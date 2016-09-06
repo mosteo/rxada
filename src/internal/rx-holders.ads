@@ -10,7 +10,7 @@ generic
    Id : String := ""; -- Debug purposes only
 package Rx.Holders is
 
---     pragma Preelaborate;
+   pragma Preelaborate;
 
    type Definite is tagged private;
 

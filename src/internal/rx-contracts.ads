@@ -28,9 +28,9 @@ package Rx.Contracts is
       type T (<>) is private;
    package Typed is
 
-   --------------
-   -- Observer --
-   --------------
+      --------------
+      -- Observer --
+      --------------
 
       type Observer is interface;
       --  Someone interested in receiving data
@@ -51,14 +51,5 @@ package Rx.Contracts is
       --  This is Subscribe in RxJava, but I'm tired of inconsistent naming over there
 
    end Typed;
-
-
---     type Descendant is interface;
---     --  Type that can be put in a chain
---     --  This probably should go straight to Links
---
---     procedure Set_Parent (This : in out Descendant; Parent : Observable'Class) is abstract;
---     function  Get_Parent (This :        Descendant) return Observable'Class is abstract;
---     function  Has_Parent (This :        Descendant) return Boolean is abstract;
 
 end Rx.Contracts;
