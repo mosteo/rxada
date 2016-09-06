@@ -49,6 +49,10 @@ package Rx.Transform is
    function Is_Subscribed (This : Operator) return Boolean;
 
    overriding
+   procedure Observe (Producer : in out Operator;
+                      Consumer : in out Into.Observer);
+
+   overriding
    procedure On_Next (This : in out Operator; V : From.T);
    --  By default calls the explicit On_Next above
 
@@ -88,10 +92,6 @@ private
 
    procedure Release_Child (This : in out Operator);
    --  Once the child is no longer needed let it gooo!
-
-   overriding
-   procedure Observe (Producer : in out Operator;
-                      Consumer : in out Into.Observer);
 
    overriding
    function Is_Subscribed (This : Operator) return Boolean is (not This.Child.Is_Empty);

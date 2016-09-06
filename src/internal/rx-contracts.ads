@@ -50,6 +50,14 @@ package Rx.Contracts is
                          Consumer : in out Observer'Class) is abstract;
       --  This is Subscribe in RxJava, but I'm tired of inconsistent naming over there
 
+
+      --------------
+      -- Consumer --
+      --------------
+
+      -- Final Endpoint for a live chain
+      type Consumer is interface and Sink and Observer;
+
    end Typed;
 
 end Rx.Contracts;
