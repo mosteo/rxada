@@ -18,7 +18,6 @@ package Rx.Producers is
    package Holders is new Rx.Holders (Observable'Class, "observable'class");
    type Holder is new Holders.Definite with null record;
 
-
    type Subscriber is interface;
 
    procedure Set_Parent (This : in out Subscriber; Parent : Observable'Class) is abstract;
