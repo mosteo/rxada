@@ -1,10 +1,9 @@
-with Rx.Integers;
+with Rx.Std;
 
 package Rx.Bugs is
 
 private
 
-   use Rx.Integers.Observables;
-   package IntCount is new Rx.Integers.Observables.Counters (Integer'Succ);
+   package IntCount is new Std.Integers.Counters (Integer'Succ);
 
 end Rx.Bugs;

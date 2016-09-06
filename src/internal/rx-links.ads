@@ -9,8 +9,8 @@ package Rx.Links is
 --     pragma Preelaborate;
 
 --  A type that knows how to build a chain and then how to trigger subscriptions.
---  Used as root for both Transformers and Mutators (the two kinds of Links)
---  Transformers change types, Mutators do not.
+--  Used as root for both Transform and Operate (the two kinds of Links)
+--  Transformers change types, Operaters do not.
 
    type Link is abstract new
      From.Producers.Subscriptor and
@@ -27,17 +27,14 @@ package Rx.Links is
    function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference;
    -- Can be used within the Observer actions to pass the values along
 
+   function Has_Child (This : Link) return Boolean;
+
+   procedure Release_Child (This : in out Link);
+   --  Once the child is no longer needed let it gooo!
+
    overriding
    procedure Subscribe (Producer : in out Link;
                         Consumer : in out Into.Observer);
-
-   overriding
-   procedure On_Completed (This : in out Link);
-   --  By default calls downstream On_Completed
-
-   overriding
-   procedure On_Error (This : in out Link; Error : in out Errors.Occurrence);
-   --  By default calls downstream On_Error
 
 private
 
@@ -47,5 +44,9 @@ private
        with record
       Child : Into.Consumers.Holder;
    end record;
+
+   function Has_Child (This : Link) return Boolean is (not This.Child.Is_Empty);
+
+   function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference is (This.Child.Ref);
 
 end Rx.Links;

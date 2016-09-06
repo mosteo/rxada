@@ -16,6 +16,9 @@ package body Rx.Links is
          declare
             Parent : From.Observable := Producer.Get_Parent; -- Our own copy
          begin
+            if Consumer in Into.Producers.Subscriptor'Class then -- Ouch
+               Producer.Share (Into.Producers.Subscriptor'Class (Consumer).Subscription);
+            end if;
             Producer.Set_Child (Consumer); -- With its own child
             Parent.Subscribe (Producer);
          end;
@@ -23,15 +26,6 @@ package body Rx.Links is
          raise Constraint_Error with "Attempting subscription without source observable";
       end if;
    end Subscribe;
-
-   ---------------
-   -- Get_Child --
-   ---------------
-
-   function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference is
-   begin
-      return This.Child.Ref;
-   end Get_Child;
 
    ---------------
    -- Set_Child --
@@ -43,25 +37,14 @@ package body Rx.Links is
       This.Child.Hold (Child);
    end Set_Child;
 
-   ------------------
-   -- On_Completed --
-   ------------------
+   -------------------
+   -- Release_Child --
+   -------------------
 
-   overriding procedure On_Completed (This : in out Link) is
+   procedure Release_Child (This : in out Link) is
    begin
-      This.Child.Ref.On_Completed;
-      This.Child.Clear; -- Not strictly necessary, but frees memory somewhat earlier
-   end On_Completed;
-
-   --------------
-   -- On_Error --
-   --------------
-
-   overriding procedure On_Error (This : in out Link; Error : in out Errors.Occurrence) is
-   begin
-      This.Child.Ref.On_Error (Error); -- Pass it down
-      This.Child.Clear; -- Not strictly necessary, but frees memory somewhat earlier
-   end On_Error;
+      This.Child.Clear;
+   end Release_Child;
 
    ---------
    -- "&" --

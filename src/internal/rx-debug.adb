@@ -2,9 +2,9 @@ with Gnat.Traceback.Symbolic;
 
 package body Rx.Debug is
 
-   procedure Log (S : String) is
+   procedure Log (S : String; Level : Levels := Verbose) is
    begin
-      if Enabled then
+      if Level > Debug.Level then
          Put_Line ("debug: " & S);
       end if;
    end Log;

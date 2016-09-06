@@ -1,6 +1,6 @@
-with Rx.Count;
-with Rx.Map;
 with Rx.Observables;
+with Rx.Op.Count;
+with Rx.Op.Map;
 with Rx.Transform;
 
 generic
@@ -21,7 +21,7 @@ package Rx.Operators is
    ---------
 
    function "&" (L : From.Observable; R : Operator) return Into.Observable
-     renames Typed."&";
+   is (Typed.Typed."&" (L, Typed.Typed.Link'Class (R)));
 
    --------------
    -- Counters --
@@ -30,7 +30,7 @@ package Rx.Operators is
    generic
       with function Succ (V : Into.T) return Into.T;
    package Counters is
-      package Pkg_Count is new Rx.Count (Typed, Succ);
+      package Pkg_Count is new Rx.Op.Count (Typed, Succ);
       function Count (First : Into.T) return Operator renames Pkg_Count.Count;
    end Counters;
 
@@ -42,7 +42,7 @@ package Rx.Operators is
 
 private
 
-   package RxMap is new Rx.Map (Typed);
+   package RxMap is new Rx.Op.Map (Typed);
    function Map (F : Typed.Func1) return Operator renames RxMap.Create;
 
 end Rx.Operators;

@@ -1,16 +1,16 @@
 with Rx.Debug; use Rx.Debug;
-with Rx.Integers;
+with Rx.Std;
 with Rx.Schedulers;
 
 procedure Rx.Examples.Threading is
-   use Integers.Observables;
-   use Strings.Observables;
+   use Integers;
+   use Strings;
    use IntToStr;
    use StrToInt;
 
 begin
-   Chain :=
-     Integers.Observables.Just (0)
+   Sub :=
+     Std.Interval
      & Print
      & Subscribe_On (Schedulers.Computation)
      & Observe_On (Schedulers.Background)
@@ -19,7 +19,10 @@ begin
      & Print
      & Observe_On (Schedulers.Computation)
      & Print
-     & Subscribe;
+     & Subscribe (Put_Line'Access);
+
+   delay 5.0;
+   Schedulers.Shutdown;
 exception
    when E : others =>
       Debug.Print (E);

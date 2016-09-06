@@ -2,7 +2,11 @@ project RxAda is
 
    for Source_Dirs use ("src/**");
    for Object_Dir use "./obj";
-   for Main use ("rx-examples-basic.adb", "rx-examples-threading.adb", "rx-bugs-op_leak.adb");
+   for Main use ("rx-examples-minimal.adb",
+                 "rx-examples-basic.adb",
+                 "rx-examples-threading.adb",
+                 "rx-examples-tests.adb",
+                 "rx-bugs-op_leak.adb");
 
    type Build_Type is ("debug", "release");
    Build : Build_Type := external ("build", "debug");
@@ -29,6 +33,7 @@ project RxAda is
       case Build is
          when "debug" =>
             for Default_Switches ("ada") use ("-gnatwal.f", "-gnatVa", "-g", "-Og", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
+            --for Default_Switches ("ada") use ("-gnatwal", "-gnatVa", "-g", "-Og", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
          when "release" =>
             for Default_Switches ("ada") use ("-O3", "-gnatn", "-gnat12");
       end case;
@@ -37,7 +42,7 @@ project RxAda is
    package Binder is
       case Build is
          when "debug" =>
-            for Default_Switches ("ada") use ("-E");
+            for Default_Switches ("ada") use ("-E", "-Es");
          when "release" =>
             null;
       end case;
