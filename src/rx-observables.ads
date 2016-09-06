@@ -18,12 +18,12 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Observables is
 
-   package Retyped renames Typed; -- Bug workaround
+--     package Retyped renames Typed; -- Bug workaround
 
    -- Shortcuts
-   subtype Observable  is Typed.Producers.Observable'Class;
-   subtype Observer    is Typed.Consumers.Observer'Class;
-   subtype Subscriptor is Typed.Producers.Subscriptor'Class;
+   subtype Consumer    is Typed.Contracts.Consumer'Class;
+   subtype Observable  is Typed.Contracts.Observable'Class;
+   subtype Observer    is Typed.Contracts.Observer'Class;
    subtype T is Typed.Type_Traits.T;
 
    -- Scaffolding
@@ -89,7 +89,7 @@ package Rx.Observables is
 
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Subscriptor;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Consumer;
 
    ------------------
    -- Subscribe_On --
@@ -108,19 +108,12 @@ package Rx.Observables is
    ---------
 
    --  Chain preparation
---     function "&" (L : Observable; R : Operate.Operator'Class) return Observable
---     is (Operate.Transform.Typed."&" (L, Operate.Transform.Operator'Class (R)));
-   --  This oneapplies to type-preserving operators
 
-   function "&" (L : Observable; R : Operate.Transform.Operator'Class) return Observable
-   is (Operate.Transform.Typed."&" (L, Operate.Transform.Typed.Link'Class (R)));
---   renames Operate.Transform.Typed."&";
-
-   -- Debug helper
-   -- function "and" (L : Observable; R : Operator) return Observable renames "&";
+   function "&" (Producer : Observable; Consumer : Operate.Transform.Operator'Class) return Observable
+   renames Operate.Transform.Will_Observe;
 
    --  Subscribe
-   function "&" (L : Observable; R : Subscriptor) return Subscriptions.Subscription;
+   function "&" (Producer : Observable; Endpoint : Consumer) return Subscriptions.Subscription;
 
    -- Debug helpers
    function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
@@ -150,7 +143,7 @@ private
    package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Subscriptor renames RxSubscribe.Create;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Consumer renames RxSubscribe.Create;
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;

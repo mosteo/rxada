@@ -11,8 +11,8 @@ package Rx.Operate is
 
    -- Shortcuts
    subtype T          is Typed.Type_Traits.T;
-   subtype Observable is Typed.Producers.Observable'Class;
-   subtype Observer   is Typed.Consumers.Observer'Class;
+   subtype Observable is Typed.Contracts.Observable'Class;
+   subtype Observer   is Typed.Contracts.Observer'Class;
 
    -- Scaffolding
    package Transform is new Rx.Transform (Typed, Typed);

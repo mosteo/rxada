@@ -1,3 +1,5 @@
+with Ada.Exceptions;
+
 with Rx.Actions;
 with Rx.Contracts;
 with Rx.Traits.Types;
@@ -18,5 +20,8 @@ package Rx.Typed is
    subtype D is Type_Traits.D;
    subtype Observable is Contracts.Observable'Class;
    subtype Observer   is Contracts.Observer'Class;
+
+   procedure Default_Error_Handler (This   : in out Observer'Class;
+                                    Except : Ada.Exceptions.Exception_Occurrence);
 
 end Rx.Typed;
