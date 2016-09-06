@@ -3,6 +3,24 @@ with Rx.Subscriptions;
 
 package body Rx.Transform is
 
+   overriding procedure Observe
+     (Producer : in out Operator;
+      Consumer : in out Into.Observer)
+   is
+--      use type Into.Consumers.Holder;
+   begin
+      if Producer.Has_Parent then
+         declare
+            Parent : From.Observable := Producer.Get_Parent; -- Our own copy
+         begin
+            Producer.Set_Child (Consumer); -- With its own child
+            Parent.Observe (Producer);
+         end;
+      else
+         raise Constraint_Error with "Attempting subscription without producer observable";
+      end if;
+   end Observe;
+
    -------------
    -- On_Next --
    -------------
@@ -70,5 +88,37 @@ package body Rx.Transform is
    begin
       Child.On_Error  (Error);
    end On_Error;
+
+   -------------------
+   -- Release_Child --
+   -------------------
+
+   procedure Release_Child (This : in out Operator) is
+   begin
+      This.Child.Clear;
+   end Release_Child;
+
+   ---------------
+   -- Set_Child --
+   ---------------
+
+   procedure Set_Child (This : in out Operator; Child : Into.Observer) is
+   begin
+      This.Child.Hold (Child);
+   end Set_Child;
+
+   ------------------
+   -- Will_Observe --
+   ------------------
+
+   function Will_Observe (Producer : From.Observable;
+                          Consumer : Operator'Class)
+                          return Into.Observable
+   is
+   begin
+      return Actual : Operator'Class := Consumer do
+         Actual.Set_Parent (Producer);
+      end return;
+   end Will_Observe;
 
 end Rx.Transform;
