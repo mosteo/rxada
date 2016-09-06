@@ -1,15 +1,17 @@
-with Rx.Integers;
+with Rx.Debug;
 with Rx.Operators;
-with Rx.Strings;
+with Rx.Std;
 with Rx.Subscriptions;
 
 package body Rx.Tests is
 
-   package Ints renames Integers.Observables;
-   package Strs renames Strings.Observables;
+   use Rx.Std;
 
-   package StrToInt is new Rx.Operators (Strings.Observables, Integers.Observables);
-   package IntToStr is new Rx.Operators (Integers.Observables, Strings.Observables);
+   package Ints renames Std.Integers;
+   package Strs renames Std.Strings;
+
+   package StrToInt is new Rx.Operators (Strings, Integers);
+   package IntToStr is new Rx.Operators (Integers, Strings);
 
    package IntCount is new Ints.Counters (Integer'Succ);
    package StrCount is new StrToInt.Counters (Integer'Succ);
@@ -17,64 +19,125 @@ package body Rx.Tests is
    function Length (S : String) return Integer is (S'Length);
    function Image  (I : Integer) return String is (I'Img);
 
-   Chain : Subscriptions.Subscription;
+   Subs : Rx.Subscriptions.Subscription;
 
-   use Integers.Observables;
-   use Strings.Observables;
+   use Integers;
+   use Strings;
    use StrToInt;
    use IntToStr;
    use IntCount;
    use StrCount;
 
-   Passed : Boolean := True;
-
    generic
       type T (<>) is private;
       Target : T;
-   procedure Verify (I : T);
+   package Verifier is
 
-   procedure Verify (I : T) is
-   begin
-      Passed := Passed and then I = Target;
-   end Verify;
+      Passed : Boolean := True;
+      pragma Atomic (Passed);
 
-   procedure Verify_1 is new Verify (Integer, 1);
+      procedure Verify (I : T);
 
-   procedure Verify_Hello is new Verify (String, "hello");
+   end Verifier;
+
+   package body Verifier is
+
+      procedure Verify (I : T) is
+      begin
+         Passed := Passed and then I = Target;
+      end Verify;
+
+   end Verifier;
 
    -----------------
    -- Basic_Tests --
    -----------------
 
+   package Verify_Basic_1  is new Verifier (Integer, 1);
+   package Verify_Basic_Hi is new Verifier (String, "hello");
+
    function Basic_Tests return Boolean is
    begin
-      Chain := Just (1) & Subscribe (Verify_1'Access);
+      Subs := Just (1) & Subscribe (Verify_Basic_1.Verify'Access);
 
-      Chain := Just ("hello") & Subscribe (Verify_Hello'Access);
+      Subs := Just ("hello") & Subscribe (Verify_Basic_Hi.Verify'Access);
 
-      Chain := Ints.From ((1, 1, 1)) & Subscribe (Verify_1'Access);
+      Subs := Ints.From ((1, 1, 1)) & Subscribe (Verify_Basic_1.Verify'Access);
 
-      Chain := Just ("Hello")
+      Subs := Just ("Hello")
         &
         StrCount.Count (0)
         &
-        Subscribe (Verify_1'Access);
+        Subscribe (Verify_Basic_1.Verify'Access);
 
-      Chain := Ints.From ((1, 2))
+      Subs := Ints.From ((1, 2))
         &
         Count (-1)
         &
-        Subscribe (Verify_1'Access);
+        Subscribe (Verify_Basic_1.Verify'Access);
 
       -- Test counting reset
       declare
          Ob : constant Integers.Observable := Ints.From ((1, 2, 3, 4)) & Count (-3);
       begin
-         Chain := Ob & Subscribe (Verify_1'Access);
-         Chain := Ob & Subscribe (Verify_1'Access);
+         Subs := Ob & Subscribe (Verify_Basic_1.Verify'Access);
+         Subs := Ob & Subscribe (Verify_Basic_1.Verify'Access);
       end;
 
-      return Passed;
+      -- Test limit
+      Subs := Ints.From ((1, 1, 2))
+        &
+        Limit (2)
+        &
+        Subscribe (Verify_Basic_1.Verify'Access);
+
+      Subs := Ints.From ((1, 1, 2))
+        &
+        Limit (2)
+        &
+        Count (-1)
+        &
+        Subscribe (Verify_Basic_1.Verify'Access);
+
+      Subs := Ints.From ((1, 1, 1))
+        &
+        Limit (5) -- Check proper completion when not enough
+        &
+        Subscribe (Verify_Basic_1.Verify'Access);
+
+
+      return Verify_Basic_1.Passed and Verify_Basic_Hi.Passed;
    end Basic_Tests;
+
+   -----------
+   -- No_Op --
+   -----------
+
+   package No_Op_Check is new Verifier (Integer, 1);
+   function No_Op return Boolean is
+   begin
+      Subs :=
+        Ints.Just (1) &
+        Ints.No_Op &
+        Subscribe (No_Op_Check.Verify'Access);
+
+      return No_Op_Check.Passed;
+   end No_Op;
+
+   function Subscriptions return Boolean is
+   begin
+      Subs :=
+        Std.Interval (1) &
+        Subscribe (Debug.Put_Line'Access);
+
+      pragma Assert (Subs.Is_Subscribed);
+
+      Subs.Unsubscribe;
+
+      return not Subs.Is_Subscribed;
+   exception
+      when others =>
+         return False;
+   end Subscriptions;
 
 end Rx.Tests;

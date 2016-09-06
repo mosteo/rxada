@@ -2,6 +2,8 @@ with Ada.Unchecked_Deallocation;
 
 with Gnat.IO; use Gnat.IO;
 
+with Rx.Debug;
+
 package body Rx.Holders is
 
    Debug : constant Boolean := False;

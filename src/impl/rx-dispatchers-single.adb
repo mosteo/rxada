@@ -1,0 +1,116 @@
+with Ada.Task_Identification;
+
+with Rx.Debug; use Rx.Debug;
+
+package body Rx.Dispatchers.Single is
+
+   --------------
+   -- Schedule --
+   --------------
+
+   overriding procedure Schedule
+     (Where : in out Dispatcher;
+      What : in out Runnable'Class;
+      Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
+   is
+      use Ada.Calendar;
+      use Ada.Task_Identification;
+
+      Must_Notify : Boolean;
+   begin
+      Where.Queue.Enqueue (What, Time, Must_Notify);
+      if Must_Notify and then Current_Task /= Where.Thread'Identity then
+         Where.Thread.Notify;
+      end if;
+   end Schedule;
+
+   ------------
+   -- Runner --
+   ------------
+
+   task body Runner is
+   begin
+      loop
+         declare
+            use Ada.Calendar;
+            use Runnable_Holders;
+            Exists  : Boolean;
+            Ev      : Event;
+         begin
+            Parent.Queue.Dequeue (Ev, Exists);
+            if Exists and not Dispatchers.Terminating then
+               select
+                  -- An earlier event has arrived, so requeue
+                  accept Notify;
+                  Parent.Queue.Enqueue (Ev);
+               or
+                  delay until Ev.Time; -- This wait may perfectly well be 0
+--                  Put_Line ("id:" & Ev.Id'Img);
+                  Ev.Code.Ref.Run;
+               end select;
+            else
+               select
+                  accept Notify;
+               or
+                  terminate;
+               end select;
+            end if;
+         exception
+            when E : others =>
+               Debug.Print (E);
+         end;
+      end loop;
+   end Runner;
+
+   ----------
+   -- Safe --
+   ----------
+
+   protected body Safe is
+
+      -------------
+      -- Enqueue --
+      -------------
+
+      procedure Enqueue
+        (R : Runnable'Class;
+         Time : Ada.Calendar.Time;
+         Notify : out Boolean)
+      is
+         use Ada.Calendar;
+         use Runnable_Holders;
+      begin
+         if Queue.Is_Empty or else Queue.Constant_Reference (Queue.First).Time > Time then
+            Notify := True;
+         end if;
+--         Put_Line ("enqueue:" & Seq'Img);
+         Queue.Insert ((Seq, Time, +R));
+         Seq := Seq + 1;
+      end Enqueue;
+
+      -------------
+      -- Enqueue --
+      -------------
+
+      procedure Enqueue (E : Event) is
+      begin
+         Queue.Insert (E);
+      end Enqueue;
+
+      -------------
+      -- Dequeue --
+      -------------
+
+      procedure Dequeue (E : out Event; Exists : out Boolean) is
+      begin
+         Exists := not Queue.Is_Empty;
+         if Exists then
+            E := Queue.First_Element;
+            Queue.Delete_First;
+--            Put_Line ("dequeue:" & E.Id'Img);
+         end if;
+      end Dequeue;
+
+   end Safe;
+
+end Rx.Dispatchers.Single;

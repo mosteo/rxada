@@ -1,15 +1,15 @@
 	with Rx.Actions;
-	with Rx.Count;
-private with Rx.Empty;
-	with Rx.From;
-private with Rx.Just;
-private with Rx.No_Op;
-private with Rx.Observe_On;
+	with Rx.Op.Count;
+private with Rx.Op.Limit;
+private with Rx.Op.No_Op;
+private with Rx.Op.Observe_On;
+private with Rx.Op.Print;
+private with Rx.Op.Subscribe_On;
 	with Rx.Operate;
-private with Rx.Print;
 	with Rx.Schedulers;
+	with Rx.Src.From;
+private with Rx.Src.Just;
 private with Rx.Subscribe;
-private with Rx.Subscribe_On;
 	with Rx.Subscriptions;
 	with Rx.Traits.Arrays;
 	with Rx.Typed;
@@ -18,9 +18,12 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Observables is
 
+   package Retyped renames Typed; -- Bug workaround
+
    -- Shortcuts
-   subtype Observable is Typed.Producers.Observable'Class;
-   subtype Observer   is Typed.Consumers.Observer'Class;
+   subtype Observable  is Typed.Producers.Observable'Class;
+   subtype Observer    is Typed.Consumers.Observer'Class;
+   subtype Subscriptor is Typed.Producers.Subscriptor'Class;
    subtype T is Typed.Type_Traits.T;
 
    -- Scaffolding
@@ -34,22 +37,17 @@ package Rx.Observables is
    generic
       with function Succ (V : T) return T;
    package Counters is
-      package Self_Count is new Rx.Count (Operate.Transform, Succ);
+      package Self_Count is new Rx.Op.Count (Operate.Transform, Succ);
 
-      function Count (First : T) return Operator renames Self_Count.Count;
+      function Count (First : T) return Operate.Transform.Operator'Class renames Self_Count.Count;
    end Counters;
-
-   -----------
-   -- Empty --
-   -----------
-
-   function Empty return Observable;
 
    ----------
    -- From --
    ----------
 
    package Default_Arrays is new Rx.Traits.Arrays (Typed, Integer);
+   package Arrays renames Default_Arrays;
 
    -- Observable from an array of values, useful for literal arrays
    function From (A : Default_Arrays.Typed_Array) return Observable;
@@ -60,6 +58,12 @@ package Rx.Observables is
 
    -- Observable from single value
    function Just (V : T) return Observable;
+
+   -----------
+   -- Limit --
+   -----------
+
+   function Limit (Max : Natural) return Operator;
 
    -----------
    -- No_Op --
@@ -85,56 +89,70 @@ package Rx.Observables is
 
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Observer;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Subscriptor;
 
    ------------------
    -- Subscribe_On --
    ------------------
 
-   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operate.Operator;
+   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator;
+
+   ----------
+   -- Take --
+   ----------
+
+   function Take  (Max : Natural) return Operator renames Limit;
 
    ---------
    -- "&" --
    ---------
 
    --  Chain preparation
-   function "&" (L : Observable;
-                 R : Operator)
-                 return Observable renames Operate.Transform."&"; -- OMG
+--     function "&" (L : Observable; R : Operate.Operator'Class) return Observable
+--     is (Operate.Transform.Typed."&" (L, Operate.Transform.Operator'Class (R)));
+   --  This oneapplies to type-preserving operators
+
+   function "&" (L : Observable; R : Operate.Transform.Operator'Class) return Observable
+   is (Operate.Transform.Typed."&" (L, Operate.Transform.Typed.Link'Class (R)));
+--   renames Operate.Transform.Typed."&";
+
+   -- Debug helper
+   -- function "and" (L : Observable; R : Operator) return Observable renames "&";
 
    --  Subscribe
-   function "&" (L : Observable;
-                 R : Observer)
-                 return Subscriptions.Subscription;
+   function "&" (L : Observable; R : Subscriptor) return Subscriptions.Subscription;
+
+   -- Debug helpers
+   function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
 
 private
 
-   package RxEmpty is new Rx.Empty (Typed);
-   function Empty return Observable renames RxEmpty.Empty;
-
-   package From_Arrays is new Rx.From.From_Array (Default_Arrays);
+   package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable
                   renames From_Arrays.From;
 
-   package RxJust is new Rx.Just (Typed);
+   package RxJust is new Rx.Src.Just (Typed);
    function Just (V : T) return Observable renames RxJust.Create;
 
-   package RxNoop is new Rx.No_Op (Operate);
+   package RxLimit is new Rx.Op.Limit (Operate);
+   function Limit (Max : Natural) return Operator renames RxLimit.Create;
+
+   package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
 
-   package RxObserveOn is new Rx.Observe_On (Operate);
+   package RxObserveOn is new Rx.Op.Observe_On (Operate);
    function Observe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxObserveOn.Create;
 
-   package RxPrint is new Rx.Print (Operate);
+   package RxPrint is new Rx.Op.Print (Operate);
    function Print (Func           : Typed.Actions.Func1Str := null;
                    With_Timestamp : Boolean                := True) return Operator renames RxPrint.Create;
 
    package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Observer renames RxSubscribe.Create;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Subscriptor renames RxSubscribe.Create;
 
-   package RxSubsOn is new Rx.Subscribe_On (Operate);
-   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operate.Operator renames RxSubsOn.Create;
+   package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
+   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;
 
 end Rx.Observables;
