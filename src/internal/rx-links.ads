@@ -45,7 +45,8 @@ private
       Child : Into.Consumers.Holder;
    end record;
 
-   function Has_Child (This : Link) return Boolean
-     is (not This.Child.Is_Empty);
+   function Has_Child (This : Link) return Boolean is (not This.Child.Is_Empty);
+
+   function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference is (This.Child.Ref);
 
 end Rx.Links;

@@ -28,15 +28,6 @@ package body Rx.Links is
    end Subscribe;
 
    ---------------
-   -- Get_Child --
-   ---------------
-
-   function Get_Child (This : in out Link) return Into.Consumers.Holders.Reference is
-   begin
-      return This.Child.Ref;
-   end Get_Child;
-
-   ---------------
    -- Set_Child --
    ---------------
 
