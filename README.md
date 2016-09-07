@@ -30,14 +30,22 @@ For a working example check the file [rx-examples-basic.adb](https://bitbucket.o
 
 ### Quick start ###
 
-You need to instantiate a package for each type you want to use in a Rx chain, and a transformation package for each pair of types involved in some operation:
+You need to instantiate a package for each type you want to use in a Rx chain, and a transformation package for each pair of types involved in some operation. The basic String and Integer types are already available in Rx.Std. Supposing you didn't know about this, you would do:
 
 ```
 #!Ada
 
-package Strings  is new Rx.Indefinites (String);  -- Comes pre-instantiated as Rx.Strings
-package Integers is new Rx.Definites (Integer);   -- Comes pre-instantiated as Rx.Integers
+package Strings  is new Rx.Indefinites (String);  -- Comes pre-instantiated as Rx.Std
+package Integers is new Rx.Definites (Integer);   -- Comes pre-instantiated as Rx.Std
 package StrToInt is new Rx.Operators (Strings.Observables, Integers.Observables);
+```
+
+Otherwise, it is enough to do:
+
+```
+#!Ada
+
+package StrToInt is new Rx.Operators (Std.Strings, Std.Integers);
 ```
 
 Then, you have to "use" them so their "&" function becomes visible. As a side effect, Rx operators become visible too, although they can be prefixed with their package for clarity, if preferred.
