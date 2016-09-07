@@ -52,6 +52,7 @@ package Rx.Contracts is
       --  as opposed to an operator that passed data along.
 
       function Get_Subscription (S : Sink) return Subscriptions.Subscription is abstract;
+      --  A sink must asynchronously allow a way of stopping incoming data
 
    end Typed;
 
