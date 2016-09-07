@@ -25,7 +25,7 @@ project RxAda is
          when "debug" =>
             for Default_Switches ("ada") use ("-s", "-g");
          when "release" =>
-            null;
+            for Default_Switches ("ada") use ("-s");
       end case;
    end Builder;
 
