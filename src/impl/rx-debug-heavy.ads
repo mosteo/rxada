@@ -8,7 +8,7 @@ package Rx.Debug.Heavy is
 
    pragma Elaborate_Body;
 
-   procedure Print (E : Ada.Exceptions.Exception_Occurrence);
+   procedure Backtrace (E : Ada.Exceptions.Exception_Occurrence);
 
    --  Memory inspection
    Debug_Pool : Gnat.Debug_Pools.Debug_Pool;

@@ -21,7 +21,7 @@ package Rx.Observables is
 --     package Retyped renames Typed; -- Bug workaround
 
    -- Shortcuts
-   subtype Consumer    is Typed.Contracts.Consumer'Class;
+   subtype Sink        is Typed.Contracts.Sink'Class;
    subtype Observable  is Typed.Contracts.Observable'Class;
    subtype Observer    is Typed.Contracts.Observer'Class;
    subtype T is Typed.Type_Traits.T;
@@ -89,7 +89,7 @@ package Rx.Observables is
 
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Consumer;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Sink;
 
    ------------------
    -- Subscribe_On --
@@ -113,7 +113,7 @@ package Rx.Observables is
    renames Operate.Transform.Will_Observe;
 
    --  Subscribe
-   function "&" (Producer : Observable; Endpoint : Consumer) return Subscriptions.Subscription;
+   function "&" (Producer : Observable; Consumer : Sink) return Subscriptions.Subscription;
 
    -- Debug helpers
    function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
@@ -143,7 +143,7 @@ private
    package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Consumer renames RxSubscribe.Create;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Sink renames RxSubscribe.Create;
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;

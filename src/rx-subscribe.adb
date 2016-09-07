@@ -4,10 +4,12 @@ with Rx.Subscriptions;
 
 package body Rx.Subscribe is
 
-   type Obs is new Typed.Producers.Subscriptor and Typed.Consumers.Sink with record
+   type Obs is new Typed.Contracts.Sink with record
       On_Next      : Typed.Actions.Proc1;
       On_Completed : Rx.Actions.Proc0;
       On_Error     : Rx.Actions.Proc_Error;
+
+      Subscription : Subscriptions.Subscription;
 
       Completed    : Boolean;
       Errored      : Boolean;
@@ -16,6 +18,8 @@ package body Rx.Subscribe is
    overriding procedure On_Next      (This : in out Obs; V : Typed.Type_Traits.T);
    overriding procedure On_Completed (This : in out Obs);
    overriding procedure On_Error     (This : in out Obs; Error : in out Errors.Occurrence);
+
+   overriding function Is_Subscribed (This : Obs) return Boolean is (This.Subscription.Is_Subscribed);
 
    ------------------
    -- On_Completed --
@@ -30,7 +34,7 @@ package body Rx.Subscribe is
          This.Completed := True;
       end if;
 
-      if This.On_Completed /= null then
+      if This.On_Completed /= null and then This.Is_Subscribed then
          This.On_Completed.all;
       end if;
    end On_Completed;
@@ -48,7 +52,7 @@ package body Rx.Subscribe is
          This.Errored := True;
       end if;
 
-      if This.On_Error /= null then
+      if This.On_Error /= null and then This.Is_Subscribed then
          This.On_Error (Error);
          Error.Set_Handled;
       else
@@ -64,9 +68,9 @@ package body Rx.Subscribe is
    overriding procedure On_Next (This : in out Obs; V : Typed.Type_Traits.T) is
       use Typed.Actions;
    begin
-      if This.On_Next /= null and then This.Subscription.Is_Subscribed then
+      if This.On_Next /= null and then This.Is_Subscribed then
          This.On_Next (V);
-      elsif not This.Subscription.Is_Subscribed then
+      elsif not This.Is_Subscribed then
          raise Subscriptions.No_Longer_Subscribed;
       end if;
    end On_Next;
@@ -77,11 +81,15 @@ package body Rx.Subscribe is
 
    function Create (On_Next      : Typed.Actions.Proc1   := null;
                     On_Completed : Rx.Actions.Proc0      := null;
-                    On_Error     : Rx.Actions.Proc_Error := null) return Typed.Producers.Subscriptor'Class is
+                    On_Error     : Rx.Actions.Proc_Error := null) return Typed.Contracts.Sink'Class is
    begin
-      return Obs'(Typed.Producers.Subscriptor
-                  with On_Next, On_Completed, On_Error,
-                 Completed => False, Errored => False);
+      return Obs'(Typed.Contracts.Sink with
+                  On_Next,
+                  On_Completed,
+                  On_Error,
+                  Subscription => Subscriptions.Subscribe,
+                  Completed    => False,
+                  Errored      => False);
    end Create;
 
 end Rx.Subscribe;

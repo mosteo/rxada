@@ -16,14 +16,6 @@ package Rx.Contracts is
    function Is_Subscribed (This : Subscriber) return Boolean is abstract;
    --  A subscriber can be interrogated about its desire for more data, to allow premature stop
 
-   ----------
-   -- Sink --
-   ----------
-
-   type Sink is interface;
-   --  A sink is someone who requested a subscription and consumes data,
-   --  as opposed to an operator that passed data along.
-
    generic
       type T (<>) is private;
    package Typed is
@@ -51,12 +43,14 @@ package Rx.Contracts is
       --  This is Subscribe in RxJava, but I'm tired of inconsistent naming over there
 
 
-      --------------
-      -- Consumer --
-      --------------
+      ----------
+      -- Sink --
+      ----------
 
       -- Final Endpoint for a live chain
-      type Consumer is interface and Sink and Observer;
+      type Sink is interface and Observer and Subscriber;
+      --  A sink is someone who requested a subscription and consumes data,
+      --  as opposed to an operator that passed data along.
 
    end Typed;
 

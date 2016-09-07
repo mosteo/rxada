@@ -1,3 +1,4 @@
+with Ada.Exceptions;
 with Ada.Tags;
 
 with Gnat.IO;
@@ -21,5 +22,7 @@ package Rx.Debug is
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;
 
    function Image (T : Ada.Tags.Tag) return String renames Ada.Tags.Expanded_Name;
+
+   procedure Print (E : Ada.Exceptions.Exception_Occurrence);
 
 end Rx.Debug;

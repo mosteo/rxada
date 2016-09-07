@@ -12,17 +12,15 @@ package body Rx.Debug.Heavy is
       Gnat.Debug_Pools.Dump_Gnatmem (Debug_Pool, "gmem.out");
    end Dump;
 
-   -----------
-   -- Print --
-   -----------
 
-   procedure Print (E : Ada.Exceptions.Exception_Occurrence) is
+   ---------------
+   -- Backtrace --
+   ---------------
+
+   procedure Backtrace (E : Ada.Exceptions.Exception_Occurrence) is
    begin
-      Put_Line ("Uh oh...");
-      Put_Line (Ada.Exceptions.Exception_Name (E));
-      Put_Line (Ada.Exceptions.Exception_Message (E));
-      Put_Line (Ada.Exceptions.Exception_Information (E));
+      Debug.Print (E);
       Put_Line (GNAT.Traceback.Symbolic.Symbolic_Traceback (E));
-   end Print;
+   end Backtrace;
 
 end Rx.Debug.Heavy;
