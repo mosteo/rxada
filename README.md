@@ -1,6 +1,6 @@
 # README #
 
-RxAda, an experiment on porting [ReactiveX](http://reactivex.io/) to Ada. At this time there is only a proof-of-concept example.
+RxAda, an experiment on porting [ReactiveX](http://reactivex.io/) to Ada. At this time this is an incomplete proof-of-concept with a few implemented operators. Schedulers and subscriptions are implemented though.
 
 Quick example. Suppose a Java 8 case where we print the length of a string:
 
@@ -18,15 +18,17 @@ With RxAda this becomes (tested with gnat GPL 2015/2016 and gnat from Ubuntu 16.
 ```
 #!Ada
 
+declare
+   S : Rx.Subscriptions.Subscription;
 begin
-   Chain :=
+   S := -- We can't ignore the resulting subscription in Ada
      Just ("Hello, world!") &
      Map (Length'Access) &
      Subscribe (Put_Line'Access);
 ```
 Type checks are performed at compile time.
 
-For a working example check the file [rx-examples-basic.adb](https://bitbucket.org/amosteo/rxada/src/9292a420676fdc8b6e2f572f5c89114551ead664/src/rx-examples-basic.adb?at=default)
+For a working example check the file [rx-examples-basic.adb](https://bitbucket.org/amosteo/rxada/src/9292a420676fdc8b6e2f572f5c89114551ead664/src/rx-examples-basic.adb?at=default) and the other examples in the src/main folder
 
 ### Quick start ###
 
