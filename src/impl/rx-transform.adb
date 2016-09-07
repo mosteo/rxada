@@ -3,7 +3,11 @@ with Rx.Subscriptions;
 
 package body Rx.Transform is
 
-   overriding procedure Observe
+   ---------------
+   -- Subscribe --
+   ---------------
+
+   overriding procedure Subscribe
      (Producer : in out Operator;
       Consumer : in out Into.Observer)
    is
@@ -14,12 +18,12 @@ package body Rx.Transform is
             Parent : From.Observable := Producer.Get_Parent; -- Our own copy
          begin
             Producer.Set_Child (Consumer); -- With its own child
-            Parent.Observe (Producer);
+            Parent.Subscribe (Producer);
          end;
       else
          raise Constraint_Error with "Attempting subscription without producer observable";
       end if;
-   end Observe;
+   end Subscribe;
 
    -------------
    -- On_Next --
@@ -44,8 +48,12 @@ package body Rx.Transform is
    begin
       if This.Has_Child then
          Operator'Class (This).On_Completed (This.Get_Child);
-         This.Release_Child; -- Not strictly necessary, but frees memory somewhat earlier
+         This.Release_Child;
       end if;
+   exception
+      when Subscriptions.No_Longer_Subscribed =>
+         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Reduced);
+         This.Release_Child;
    end On_Completed;
 
    --------------
@@ -55,8 +63,13 @@ package body Rx.Transform is
    overriding procedure On_Error (This : in out Operator; Error : in out Errors.Occurrence) is
    begin
       if This.Has_Child then
-         Operator'Class (This).On_Error (Error, This.Get_Child); -- Pass it down
-         This.Release_Child; -- Not strictly necessary, but frees memory somewhat earlier
+         begin
+            Operator'Class (This).On_Error (Error, This.Get_Child); -- Pass it down
+         exception
+            when Subscriptions.No_Longer_Subscribed =>
+               Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Reduced);
+         end;
+         This.Release_Child;
       else
          Error.Reraise;
       end if;

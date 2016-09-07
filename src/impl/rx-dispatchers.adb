@@ -44,7 +44,7 @@ package body Rx.Dispatchers is
                   R.Child.On_Next (+R.V);
                exception
                   when E : others =>
-                     Typed.Consumers.Default_Error_Handler (R.Child, E);
+                     Typed.Default_Error_Handler (R.Child, E);
                end;
             when On_Error     =>
                R.Child.On_Error (R.E);

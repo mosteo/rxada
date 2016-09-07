@@ -48,8 +48,6 @@ package body Rx.Op.Limit is
       end if;
    end On_Next;
 
-   pragma Compile_Time_Warning (True, "Check what to do when limit is 0");
-
    ------------
    -- Create --
    ------------

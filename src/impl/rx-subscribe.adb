@@ -21,6 +21,8 @@ package body Rx.Subscribe is
 
    overriding function Is_Subscribed (This : Obs) return Boolean is (This.Subscription.Is_Subscribed);
 
+   overriding function Get_Subscription (This : Obs) return Subscriptions.Subscription is (This.Subscription);
+
    ------------------
    -- On_Completed --
    ------------------
@@ -30,6 +32,9 @@ package body Rx.Subscribe is
    begin
       if This.Completed then
          raise Program_Error with "Doubly completed";
+      elsif
+        This.Errored then
+         raise Program_Error with "Completed after error";
       else
          This.Completed := True;
       end if;
@@ -48,6 +53,8 @@ package body Rx.Subscribe is
    begin
       if This.Errored then
          raise Program_Error with "Doubly errored";
+      elsif This.Completed then
+         raise Program_Error with "Errored after completed";
       else
          This.Errored := True;
       end if;

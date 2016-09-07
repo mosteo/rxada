@@ -7,7 +7,7 @@ with Rx.Typed;
 
 package Rx.Dispatchers is
 
---     pragma Preelaborate;
+   pragma Elaborate_Body;
 
    type Dispatcher is limited interface;
 

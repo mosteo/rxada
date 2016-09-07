@@ -8,13 +8,13 @@ package Rx.Src.From is
    generic
       with package Arrays is new Rx.Traits.Arrays (<>);
    package From_Array is
-      function From (A : Arrays.Typed_Array) return Arrays.Typed.Producers.Observable'Class;
+      function From (A : Arrays.Typed_Array) return Arrays.Typed.Contracts.Observable'Class;
    end From_Array;
 
    generic
       with package Iterable is new Rx.Traits.Iterable (<>);
    package From_Iterable is
-      function From (C : Iterable.Container) return Iterable.Typed.Producers.Observable'Class;
+      function From (C : Iterable.Container) return Iterable.Typed.Contracts.Observable'Class;
    end From_Iterable;
 
 end Rx.Src.From;

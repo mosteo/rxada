@@ -40,14 +40,14 @@ package Rx.Std is
 
 private
 
-   package RxEmpty is new Rx.Src.Empty (Any.Retyped);
+   package RxEmpty is new Rx.Src.Empty (Any.Typedd);
 
    function Empty return Any.Observable renames RxEmpty.Empty;
 
    function Error (E : Rx.Errors.Occurrence)                return Any.Observable renames RxEmpty.Error;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable renames RxEmpty.Error;
 
-   package RxInterval is new Rx.Src.Interval (Integers.Retyped, Integer'Succ);
+   package RxInterval is new Rx.Src.Interval (Integers.Typedd, Integer'Succ);
 
    function Interval (First       : Integer := 0;
                       Pause       : Duration := 1.0;
