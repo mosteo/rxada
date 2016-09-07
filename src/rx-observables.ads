@@ -1,5 +1,6 @@
 	with Rx.Actions;
 	with Rx.Op.Count;
+private with Rx.Op.Filter;
 private with Rx.Op.Limit;
 private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
@@ -41,6 +42,12 @@ package Rx.Observables is
 
       function Count (First : T) return Operate.Transform.Operator'Class renames Self_Count.Count;
    end Counters;
+
+   ------------
+   -- Filter --
+   ------------
+
+   function Filter (Check : not null Typed.Actions.Filter1) return Operator;
 
    ----------
    -- From --
@@ -119,6 +126,9 @@ package Rx.Observables is
    function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
 
 private
+
+   package RxFilter is new Rx.Op.Filter (Operate);
+   function Filter (Check : not null Typed.Actions.Filter1) return Operator renames RxFilter.Create;
 
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable

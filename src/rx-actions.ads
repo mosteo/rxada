@@ -16,6 +16,8 @@ package Rx.Actions is
 
       type Proc1 is access procedure (V : T);
 
+      type Filter1 is access function (V : T) return Boolean;
+
    end Typed;
 
 end Rx.Actions;

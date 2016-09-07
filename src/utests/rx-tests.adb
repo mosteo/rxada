@@ -55,6 +55,9 @@ package body Rx.Tests is
 
    package Verify_Basic_1  is new Verifier (Integer, 1);
    package Verify_Basic_Hi is new Verifier (String, "hello");
+   procedure Verify (V : Integer) renames Verify_Basic_1.Verify;
+
+   function Is_One (V : Integer) return Boolean is (V = 1);
 
    function Basic_Tests return Boolean is
    begin
@@ -105,6 +108,15 @@ package body Rx.Tests is
         &
         Subscribe (Verify_Basic_1.Verify'Access);
 
+      -- Filter test
+      Subs := Ints.From ((2, 2, 1)) &
+        Filter (Is_One'Access) &
+        Subscribe (Verify'Access);
+
+      Subs := Ints.From ((1, 2, 2)) &
+        Filter (Is_One'Access) &
+        Count (0) &
+        Subscribe (Verify'Access);
 
       return Verify_Basic_1.Passed and Verify_Basic_Hi.Passed;
    end Basic_Tests;
