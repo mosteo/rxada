@@ -18,7 +18,7 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Observables is
 
---     package Retyped renames Typed; -- Bug workaround
+   package Typedd renames Typed; -- Bug workaround
 
    -- Shortcuts
    subtype Sink        is Typed.Contracts.Sink'Class;

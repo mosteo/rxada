@@ -1,6 +1,7 @@
 --  Interfaces that rule the Rx world
 
 with Rx.Errors;
+with Rx.Subscriptions;
 
 package Rx.Contracts is
 
@@ -38,10 +39,8 @@ package Rx.Contracts is
       type Observable is interface;
       --  Someone capable of producing data to which an observer can subscribe
 
-      procedure Observe (Producer : in out Observable;
-                         Consumer : in out Observer'Class) is abstract;
-      --  This is Subscribe in RxJava, but I'm tired of inconsistent naming over there
-
+      procedure Subscribe (Producer : in out Observable;
+                           Consumer : in out Observer'Class) is abstract;
 
       ----------
       -- Sink --
@@ -51,6 +50,8 @@ package Rx.Contracts is
       type Sink is interface and Observer and Subscriber;
       --  A sink is someone who requested a subscription and consumes data,
       --  as opposed to an operator that passed data along.
+
+      function Get_Subscription (S : Sink) return Subscriptions.Subscription is abstract;
 
    end Typed;
 

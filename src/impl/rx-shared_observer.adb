@@ -8,9 +8,9 @@ package body Rx.Shared_Observer is
    -- Create --
    ------------
 
-   function Create (Held : Typed.Consumers.Observer'Class) return Observer is
+   function Create (Held : Typed.Contracts.Observer'Class) return Observer is
    begin
-      return (Actual => new Typed.Consumers.Observer'Class'(Held));
+      return (Actual => new Typed.Contracts.Observer'Class'(Held));
    end Create;
 
    -------------
@@ -18,7 +18,7 @@ package body Rx.Shared_Observer is
    -------------
 
    procedure Release (This : in out Observer) is
-      procedure Free is new Ada.Unchecked_Deallocation (Typed.Consumers.Observer'Class, Observer_Access);
+      procedure Free is new Ada.Unchecked_Deallocation (Typed.Contracts.Observer'Class, Observer_Access);
    begin
       Free (This.Actual);
    end Release;

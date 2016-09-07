@@ -18,7 +18,7 @@ package body Rx.Src.Stateless is
 
    overriding procedure Subscribe
      (Producer : in out Observable;
-      Consumer : in out Typed.Consumers.Observer'Class)
+      Consumer : in out Typed.Contracts.Observer'Class)
    is
    begin
       On_Subscribe (Producer.S, Consumer);
@@ -29,7 +29,7 @@ package body Rx.Src.Stateless is
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("At Stateless.Subscribe: caught No_Longer_Subscribed");
       when E : others =>
-         Consumer.Default_Error_Handler (E);
+         Typed.Default_Error_Handler (Consumer, E);
    end Subscribe;
 
 end Rx.Src.Stateless;

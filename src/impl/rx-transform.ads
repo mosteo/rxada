@@ -42,15 +42,21 @@ package Rx.Transform is
                        Child : in out Into.Observer'Class);
    --  By default calls Child.On_error
 
-   --  DO NOT OVERRIDE THE STANDARD FOLLOWING METHODS IN NEW OPERATORS
-   --  OR ELSE CALL THE PARENT IMPLEMENTATIONS
+   --  FOLLOWING CAN BE OVERRIDEN IF DEFAULT BEHAVIOR HAS TO BE MODIFIED, BUT THESE ARE PROPER DEFAULTS
 
    overriding
    function Is_Subscribed (This : Operator) return Boolean;
 
    overriding
-   procedure Observe (Producer : in out Operator;
-                      Consumer : in out Into.Observer);
+   procedure Subscribe (Producer : in out Operator;
+                        Consumer : in out Into.Observer);
+
+   procedure Set_Child (This : in out Operator; Child : Into.Observer);
+   -- Can be used to override the default "&" behavior
+
+
+   --  DO NOT OVERRIDE THE STANDARD FOLLOWING METHODS IN NEW OPERATORS
+   --  OR ELSE CALL THE PARENT IMPLEMENTATIONS
 
    overriding
    procedure On_Next (This : in out Operator; V : From.T);
@@ -82,9 +88,6 @@ private
    with record
       Child : Child_Holder;
    end record;
-
-   procedure Set_Child (This : in out Operator; Child : Into.Observer);
-   -- Can be used to override the default "&" behavior
 
    function Has_Child (This : Operator) return Boolean is (not This.Child.Is_Empty);
 

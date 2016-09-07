@@ -12,7 +12,7 @@ package body Rx.Src.From is
       package State is new Holders (Arrays.Typed_Array);
 
       procedure On_Subscribe (S : State.Definite;
-                              Consumer : in out Arrays.Typed.Consumers.Observer'Class) is
+                              Consumer : in out Arrays.Typed.Contracts.Observer'Class) is
       begin
          for E of S.CRef loop
             Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
@@ -21,7 +21,7 @@ package body Rx.Src.From is
 
       package Arrayed is new Src.Stateless (Arrays.Typed, State.Definite, On_Subscribe);
 
-      function From (A : Arrays.Typed_Array) return Arrays.Typed.Producers.Observable'Class
+      function From (A : Arrays.Typed_Array) return Arrays.Typed.Contracts.Observable'Class
       is
       begin
          return Arrayed.Create (State.Hold (A));
@@ -36,7 +36,7 @@ package body Rx.Src.From is
    package body From_Iterable is
 
       procedure On_Subscribe (State    : Iterable.Cursor;
-                              Consumer : in out Iterable.Typed.Consumers.Observer'Class)
+                              Consumer : in out Iterable.Typed.Contracts.Observer'Class)
       is
          use Iterable;
          I : Cursor := State;
@@ -49,7 +49,7 @@ package body Rx.Src.From is
 
       package Iterables is new Rx.Src.Stateless (Iterable.Typed, Iterable.Cursor, On_Subscribe);
 
-      function From (C : Iterable.Container) return Iterable.Typed.Producers.Observable'Class is
+      function From (C : Iterable.Container) return Iterable.Typed.Contracts.Observable'Class is
       begin
          return Iterables.Create (Iterable.First (C));
       end From;
