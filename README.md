@@ -28,7 +28,7 @@ begin
 ```
 Type checks are performed at compile time.
 
-For a working example check the file [rx-examples-basic.adb](https://bitbucket.org/amosteo/rxada/src/9292a420676fdc8b6e2f572f5c89114551ead664/src/rx-examples-basic.adb?at=default) and the other examples in the src/main folder
+For a working example check the file [rx-examples-basic.adb](https://bitbucket.org/amosteo/rxada/src/default/src/main/rx-examples-basic.adb?at=default) and the other examples in the [src/main](https://bitbucket.org/amosteo/rxada/src/default/src/main?at=default) folder
 
 ### Quick start ###
 
@@ -67,8 +67,8 @@ Design goals:
 
 Some highlights about the library implementation:
 
-* The library makes extensive use of "signature packages" aka "traits" (thanks go to Emmanuel Briot for his traits-based container library). Check [rx-types.ads](https://bitbucket.org/amosteo/rxada/src/ec4fdb3ef9320f18c92e5ca00a3f4bd8459c75a9/src/rx-types.ads?at=default&fileviewer=file-view-default) and [rx-operators.ads](https://bitbucket.org/amosteo/rxada/src/ec4fdb3ef9320f18c92e5ca00a3f4bd8459c75a9/src/rx-operators.ads?at=default) for examples, and the Rx.Traits.* hierarchy.
-* There is no explicit dynamic memory management for now in the library code, thanks to Ada use of unconstrained types and the Ada.Containers.Holders 2012 package. 
+* The library makes extensive use of "signature packages" aka "traits" (thanks go to Emmanuel Briot for his traits-based container library). Check [rx-types.ads](https://bitbucket.org/amosteo/rxada/src/default/src/rx-types.ads?at=default&fileviewer=file-view-default) and [rx-operators.ads](https://bitbucket.org/amosteo/rxada/src/default/src/rx-operators.ads?at=default) for examples, and the Rx.Traits.* hierarchy. However, this is mostly hidden from the user. Beginners can use simple instantiations of Rx.Definites or Rx.Indefinites with their types of choice.
+* There is very little explicit dynamic memory management for now in the library code, thanks to Ada use of unconstrained types and the Ada.Containers.Holders 2012 package. 
 
 ### What's next ###
 
