@@ -1,19 +1,27 @@
 with Ada.Exceptions;
 
-	with Rx.Errors;
-	with Rx.Impl.Any;
-	with Rx.Impl.Integers;
-	with Rx.Impl.Strings;
-	with Rx.Operators;
+with Rx.Errors;
+with Rx.Impl.Any;
+with Rx.Impl.Integers;
+with Rx.Impl.Strings;
+with Rx.Operators;
+with Rx.Subscriptions;
+with Rx.Schedulers;
+
 private with Rx.Src.Empty;
 private with Rx.Src.Interval;
-	with Rx.Schedulers;
 
 package Rx.Std is
 
 --  Instances and default visibility for the common predefined types:
 --  Strings, Integers, StrToInt, IntToInt, IntToStr
 --  Also default sources/operators from ReactiveX documentation
+
+   --  Type shortcuts:
+
+   subtype Subscription is Rx.Subscriptions.Subscription;
+
+   --  Convenience instances
 
    package Any      renames Rx.Impl.Any.Instance.Observables;
    package Integers renames Rx.Impl.Integers.Observables;
@@ -24,6 +32,8 @@ package Rx.Std is
 
    package IntCount is new Integers.Counters (Integer'Succ);
    package StrCount is new StrToInt.Counters (Integer'Succ);
+
+   --  Standard Rx sources and operators
 
    function Empty return Any.Observable;
 
