@@ -5,7 +5,7 @@ package body Rx.Src.Empty is
    type Void is null record;
 
    procedure On_Subscribe (State    : Void;
-                           Observer : in out Typed.Observer) is null;
+                           Observer : in out Typed.Subscriber) is null;
 
    package Empty_Sources is new Rx.Src.Stateless (Typed, Void);
 
@@ -34,7 +34,7 @@ package body Rx.Src.Empty is
    -----------
 
    procedure On_Subscribe_Error (Error    : Errors.Occurrence;
-                                 Observer : in out Typed.Observer)
+                                 Observer : in out Typed.Subscriber)
    is
       E : Errors.Occurrence := Error;
    begin

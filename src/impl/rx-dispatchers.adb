@@ -27,7 +27,7 @@ package body Rx.Dispatchers is
       type Kinds is (On_Next, On_Completed, On_Error);
 
       type Runner (Kind : Kinds) is new Runnable with record
-         Child : Shared.Observer;
+         Child : Shared.Subscriber;
          case Kind is
             when On_Next      => V : Typed.D;
             when On_Error     => E : Errors.Occurrence;
@@ -62,7 +62,7 @@ package body Rx.Dispatchers is
 
       procedure On_Next
         (Sched : in out Dispatcher'Class;
-         Observer : Shared.Observer;
+         Observer : Shared.Subscriber;
          V : Typed.Type_Traits.T)
       is
          use Typed.Type_Traits;
@@ -77,7 +77,7 @@ package body Rx.Dispatchers is
 
       procedure On_Completed
         (Sched : in out Dispatcher'Class;
-         Observer : Shared.Observer)
+         Observer : Shared.Subscriber)
       is
          R : Runner := (On_Completed, Observer);
       begin
@@ -90,7 +90,7 @@ package body Rx.Dispatchers is
 
       procedure On_Error
         (Sched : in out Dispatcher'Class;
-         Observer : Shared.Observer;
+         Observer : Shared.Subscriber;
          E : Rx.Errors.Occurrence)
       is
          R : Runner := (On_Error, Observer, E);

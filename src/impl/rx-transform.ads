@@ -1,4 +1,3 @@
-with Rx.Contracts;
 with Rx.Errors;
 with Rx.Holders;
 with Rx.Impl.Links;
@@ -20,8 +19,7 @@ package Rx.Transform is
    type Operator is abstract new
      Links.Downstream and
      Into.Contracts.Observable and
-     From.Contracts.Observer and
-     Rx.Contracts.Subscriber
+     From.Contracts.Subscriber
        with private;
 
    --  To have common code not lost, new operators should extend this one, leaving the original
@@ -49,9 +47,9 @@ package Rx.Transform is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Into.Observer);
+                        Consumer : in out Into.Subscriber);
 
-   procedure Set_Child (This : in out Operator; Child : Into.Observer);
+   procedure Set_Child (This : in out Operator; Child : Into.Subscriber);
    -- Can be used to override the default "&" behavior
 
 
@@ -77,14 +75,13 @@ package Rx.Transform is
 
 private
 
-   package Child_Holders is new Rx.Holders (Into.Observer'Class, "transform.observer'class");
+   package Child_Holders is new Rx.Holders (Into.Subscriber'Class, "transform.observer'class");
    type Child_Holder is new Child_Holders.Definite with null record;
 
    type Operator is abstract new
      Links.Downstream and
      Into.Contracts.Observable and
-     From.Contracts.Observer and
-     Rx.Contracts.Subscriber
+     From.Contracts.Subscriber
    with record
       Child : Child_Holder;
    end record;

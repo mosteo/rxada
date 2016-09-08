@@ -4,7 +4,7 @@ with Rx.Src.Stateless;
 package body Rx.Src.Just is
 
    procedure On_Subscribe (State    :        Typed.D;
-                           Observer : in out Typed.Observer)
+                           Observer : in out Typed.Subscriber)
    is
    begin
       Observer.On_Next (Typed.Type_Traits.To_Indefinite (State));

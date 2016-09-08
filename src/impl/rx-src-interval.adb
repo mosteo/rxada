@@ -2,13 +2,13 @@ with Ada.Calendar;
 
 with Rx.Debug;
 with Rx.Dispatchers;
-with Rx.Shared_Observer;
+with Rx.Impl.Shared_Subscriber;
 with Rx.Src.Stateless;
 with Rx.Subscriptions;
 
 package body Rx.Src.Interval is
 
-   package Shared is new Rx.Shared_Observer (Typed);
+   package Shared is new Rx.Impl.Shared_Subscriber (Typed);
 
    use Typed.Type_Traits;
 
@@ -18,7 +18,7 @@ package body Rx.Src.Interval is
       Value  : Typed.D;	   	 	 -- Next value to emit
       Next   : Ada.Calendar.Time;	 -- Reference for next deadline
 
-      Child  : Shared.Observer; -- Reduce copy stress with a shared observer across runnables
+      Child  : Shared.Subscriber; -- Reduce copy stress with a shared observer across runnables
    end record;
 
    ---------
@@ -50,7 +50,7 @@ package body Rx.Src.Interval is
    -- On_Subscribe --
    ------------------
 
-   procedure On_Subscribe (S : State; Observer : in out Typed.Observer) is
+   procedure On_Subscribe (S : State; Observer : in out Typed.Subscriber) is
       use Ada.Calendar;
       R : Runner := (S.Scheduler,
                      S.Pause,

@@ -2,23 +2,23 @@ with Ada.Unchecked_Deallocation;
 
 -- with Gnat.IO; use Gnat.IO;
 
-package body Rx.Shared_Observer is
+package body Rx.Impl.Shared_Subscriber is
 
    ------------
    -- Create --
    ------------
 
-   function Create (Held : Typed.Contracts.Observer'Class) return Observer is
+   function Create (Held : Typed.Subscriber) return Subscriber is
    begin
-      return (Actual => new Typed.Contracts.Observer'Class'(Held));
+      return (Actual => new Typed.Subscriber'(Held));
    end Create;
 
    -------------
    -- Release --
    -------------
 
-   procedure Release (This : in out Observer) is
-      procedure Free is new Ada.Unchecked_Deallocation (Typed.Contracts.Observer'Class, Observer_Access);
+   procedure Release (This : in out Subscriber) is
+      procedure Free is new Ada.Unchecked_Deallocation (Typed.Subscriber, Subscriber_Access);
    begin
       Free (This.Actual);
    end Release;
@@ -28,7 +28,7 @@ package body Rx.Shared_Observer is
    -------------
 
    overriding procedure On_Next
-     (This : in out Observer;
+     (This : in out Subscriber;
       V : Typed.Type_Traits.T)
    is
    begin
@@ -39,7 +39,7 @@ package body Rx.Shared_Observer is
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This : in out Observer) is
+   overriding procedure On_Completed (This : in out Subscriber) is
    begin
       This.Actual.On_Completed;
       This.Release;
@@ -50,7 +50,7 @@ package body Rx.Shared_Observer is
    --------------
 
    overriding procedure On_Error
-     (This  : in out Observer;
+     (This  : in out Subscriber;
       Error : in out  Errors.Occurrence)
    is
    begin
@@ -58,4 +58,4 @@ package body Rx.Shared_Observer is
       This.Release;
    end On_Error;
 
-end Rx.Shared_Observer;
+end Rx.Impl.Shared_Subscriber;
