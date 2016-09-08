@@ -12,7 +12,7 @@ package body Rx.Src.From is
       package State is new Holders (Arrays.Typed_Array);
 
       procedure On_Subscribe (S : State.Definite;
-                              Consumer : in out Arrays.Typed.Contracts.Observer'Class) is
+                              Consumer : in out Arrays.Typed.Subscriber) is
       begin
          for E of S.CRef loop
             Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
@@ -36,7 +36,7 @@ package body Rx.Src.From is
    package body From_Iterable is
 
       procedure On_Subscribe (State    : Iterable.Cursor;
-                              Consumer : in out Iterable.Typed.Contracts.Observer'Class)
+                              Consumer : in out Iterable.Typed.Subscriber)
       is
          use Iterable;
          I : Cursor := State;

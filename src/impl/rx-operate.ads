@@ -13,6 +13,7 @@ package Rx.Operate is
    subtype T          is Typed.Type_Traits.T;
    subtype Observable is Typed.Contracts.Observable'Class;
    subtype Observer   is Typed.Contracts.Observer'Class;
+   subtype Subscriber is Typed.Contracts.Subscriber'Class;
 
    -- Scaffolding
    package Transform is new Rx.Transform (Typed, Typed);

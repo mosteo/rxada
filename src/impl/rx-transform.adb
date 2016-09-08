@@ -9,7 +9,7 @@ package body Rx.Transform is
 
    overriding procedure Subscribe
      (Producer : in out Operator;
-      Consumer : in out Into.Observer)
+      Consumer : in out Into.Subscriber)
    is
 --      use type Into.Consumers.Holder;
    begin
@@ -115,7 +115,7 @@ package body Rx.Transform is
    -- Set_Child --
    ---------------
 
-   procedure Set_Child (This : in out Operator; Child : Into.Observer) is
+   procedure Set_Child (This : in out Operator; Child : Into.Subscriber) is
    begin
       This.Child.Hold (Child);
    end Set_Child;

@@ -16,7 +16,7 @@ package body Rx.Op.Observe_On is
    overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer'Class);
    overriding procedure On_Error     (This : in out Op; Error : in out Rx.Errors.Occurrence; Child : in out Operate.Observer'Class);
 
-   overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Observer);
+   overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Subscriber);
 
    -------------
    -- On_Next --
@@ -24,7 +24,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure On_Next (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class) is
    begin
-      Remote.On_Next (This.Sched.all, Shared.Observer (Child), V);
+      Remote.On_Next (This.Sched.all, Shared.Subscriber (Child), V);
    end On_Next;
 
    ------------------
@@ -33,7 +33,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer'Class) is
    begin
-      Remote.On_Completed (This.Sched.all, Shared.Observer (Child));
+      Remote.On_Completed (This.Sched.all, Shared.Subscriber (Child));
    end On_Completed;
 
    --------------
@@ -42,7 +42,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure On_Error (This : in out Op; Error : in out Rx.Errors.Occurrence; Child : in out Operate.Observer'Class) is
    begin
-      Remote.On_Error (This.Sched.all, Shared.Observer (Child), Error);
+      Remote.On_Error (This.Sched.all, Shared.Subscriber (Child), Error);
       --  Since the error is now in another thread, and we won't know if it has been handled,
       --  we are done here:
       Error.Set_Handled;
@@ -52,7 +52,7 @@ package body Rx.Op.Observe_On is
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe (This : in out Op; Child : in out Operate.Observer) is
+   overriding procedure Subscribe (This : in out Op; Child : in out Operate.Subscriber) is
       Parent : Operate.Observable := This.Get_Parent;
       Me     : Op := This; -- Create a copy that will hold the actual shared observable
    begin

@@ -10,7 +10,7 @@ package Rx.Typed is
 
    pragma Preelaborate;
 
-   package Contracts is new Rx.Contracts.Typed (Type_Traits.T);
+   package Contracts is new Rx.Contracts (Type_Traits.T);
    --  The beginning of it all
 
    package Actions   is new Rx.Actions.Typed (Type_Traits.T);
@@ -20,6 +20,7 @@ package Rx.Typed is
    subtype D is Type_Traits.D;
    subtype Observable is Contracts.Observable'Class;
    subtype Observer   is Contracts.Observer'Class;
+   subtype Subscriber is Contracts.Subscriber'Class;
 
    procedure Default_Error_Handler (This   : in out Observer'Class;
                                     Except : Ada.Exceptions.Exception_Occurrence);

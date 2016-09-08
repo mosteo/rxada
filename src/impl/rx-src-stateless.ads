@@ -4,7 +4,7 @@ generic
    with package Typed is new Rx.Typed (<>);
    type Initial_State is private;
    with procedure On_Subscribe (State    : Initial_State;
-                                Observer : in out Typed.Observer) is <>;
+                                Observer : in out Typed.Subscriber) is <>;
    Completes : Boolean := True; -- This observable emits an On_Complete after all its values
 package Rx.Src.Stateless is
 
@@ -25,6 +25,6 @@ private
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : in out Typed.Contracts.Observer'Class);
+                        Consumer : in out Typed.Subscriber);
 
 end Rx.Src.Stateless;

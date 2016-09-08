@@ -13,7 +13,7 @@ package body Rx.Op.Subscribe_On is
 
    overriding procedure On_Next      (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class);
 
-   overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Observer);
+   overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Subscriber);
 
    -------------
    -- On_Next --
@@ -29,7 +29,7 @@ package body Rx.Op.Subscribe_On is
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe (This : in out Op; Child : in out Operate.Observer) is
+   overriding procedure Subscribe (This : in out Op; Child : in out Operate.Subscriber) is
    begin
       This.Set_Child (Child);
       -- Relay subscription to the actual thread:
