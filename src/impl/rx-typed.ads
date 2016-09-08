@@ -2,6 +2,7 @@ with Ada.Exceptions;
 
 with Rx.Actions;
 with Rx.Contracts;
+with Rx.Impl.Definite_Observable;
 with Rx.Traits.Types;
 
 generic
@@ -24,5 +25,7 @@ package Rx.Typed is
 
    procedure Default_Error_Handler (This   : in out Observer'Class;
                                     Except : Ada.Exceptions.Exception_Occurrence);
+
+   package Defobs is new Impl.Definite_Observable (Contracts);
 
 end Rx.Typed;

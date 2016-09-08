@@ -1,19 +1,21 @@
-	with Rx.Actions;
-	with Rx.Op.Count;
+with Rx.Actions;
+with Rx.Op.Count;
+with Rx.Operate;
+with Rx.Schedulers;
+with Rx.Src.Create;
+with Rx.Src.From;
+with Rx.Subscriptions;
+with Rx.Traits.Arrays;
+with Rx.Typed;
+
 private with Rx.Op.Filter;
 private with Rx.Op.Limit;
 private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
 private with Rx.Op.Subscribe_On;
-	with Rx.Operate;
-	with Rx.Schedulers;
-	with Rx.Src.From;
 private with Rx.Src.Just;
 private with Rx.Subscribe;
-	with Rx.Subscriptions;
-	with Rx.Traits.Arrays;
-	with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
@@ -25,7 +27,8 @@ package Rx.Observables is
    subtype Sink        is Typed.Contracts.Sink'Class;
    subtype Observable  is Typed.Contracts.Observable'Class;
    subtype Observer    is Typed.Contracts.Observer'Class;
-   subtype T is Typed.Type_Traits.T;
+   subtype T           is Typed.Type_Traits.T;
+   subtype Defob       is Typed.Defobs.Observable;
 
    -- Scaffolding
    package Operate is new Rx.Operate (Typed);
@@ -42,6 +45,18 @@ package Rx.Observables is
 
       function Count (First : T) return Operate.Transform.Operator'Class renames Self_Count.Count;
    end Counters;
+
+   ------------
+   -- Create --
+   ------------
+
+   package RxCreate is new Rx.Src.Create (Typed);
+
+   function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
+                    return Typed.Observable renames RxCreate.Parameterless;
+
+   function Create (Observable : RxCreate.Observable'Class) return Typed.Observable
+                    renames RxCreate.Tagged_Stateful;
 
    ------------
    -- Filter --
@@ -109,6 +124,13 @@ package Rx.Observables is
    ----------
 
    function Take  (Max : Natural) return Operator renames Limit;
+
+   ----------
+   -- Wrap --
+   ----------
+
+   function Wrap (Obs : Typed.Observable) return Defob renames Typed.Defobs.From;
+   -- Definite observable
 
    ---------
    -- "&" --

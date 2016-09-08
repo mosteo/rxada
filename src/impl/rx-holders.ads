@@ -22,6 +22,8 @@ package Rx.Holders is
    function "+" (I : Indef)    return Definite with Inline;
    function "+" (D : Definite) return Indef    with Inline;
 
+   function Get (D : Definite) return Indef renames "+";
+
    procedure Hold (D : in out Definite; I : Indef);
    function Hold (I : Indef) return Definite renames "+";
 

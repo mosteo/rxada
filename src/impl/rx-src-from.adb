@@ -9,6 +9,8 @@ package body Rx.Src.From is
 
    package body From_Array is
 
+      package Create is new Src.Create (Arrays.Typed);
+
       package State is new Holders (Arrays.Typed_Array);
 
       procedure On_Subscribe (S : State.Definite;
@@ -19,7 +21,7 @@ package body Rx.Src.From is
          end loop;
       end On_Subscribe;
 
-      package Arrayed is new Src.Create (Arrays.Typed, State.Definite, On_Subscribe);
+      package Arrayed is new Create.With_State (State.Definite, On_Subscribe);
 
       function From (A : Arrays.Typed_Array) return Arrays.Typed.Contracts.Observable'Class
       is
@@ -35,6 +37,8 @@ package body Rx.Src.From is
 
    package body From_Iterable is
 
+      package Create is new Src.Create (Iterable.Typed);
+
       procedure On_Subscribe (State    : Iterable.Cursor;
                               Consumer : in out Iterable.Typed.Subscriber)
       is
@@ -47,7 +51,7 @@ package body Rx.Src.From is
          end loop;
       end On_Subscribe;
 
-      package Iterables is new Rx.Src.Create (Iterable.Typed, Iterable.Cursor, On_Subscribe);
+      package Iterables is new Create.With_State (Iterable.Cursor, On_Subscribe);
 
       function From (C : Iterable.Container) return Iterable.Typed.Contracts.Observable'Class is
       begin
