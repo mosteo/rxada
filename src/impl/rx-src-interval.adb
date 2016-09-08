@@ -3,7 +3,7 @@ with Ada.Calendar;
 with Rx.Debug;
 with Rx.Dispatchers;
 with Rx.Impl.Shared_Subscriber;
-with Rx.Src.Stateless;
+with Rx.Src.Create;
 with Rx.Subscriptions;
 
 package body Rx.Src.Interval is
@@ -61,7 +61,7 @@ package body Rx.Src.Interval is
       S.Scheduler.Schedule (R, Clock + S.First_Pause);
    end On_Subscribe;
 
-   package Source is new Src.Stateless (Typed, State, On_Subscribe, Completes => False);
+   package Source is new Src.Create (Typed, State, On_Subscribe, Completes => False);
 
    ------------
    -- Create --

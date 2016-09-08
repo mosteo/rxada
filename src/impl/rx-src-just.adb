@@ -1,5 +1,5 @@
 with Rx.Src;
-with Rx.Src.Stateless;
+with Rx.Src.Create;
 
 package body Rx.Src.Just is
 
@@ -10,7 +10,7 @@ package body Rx.Src.Just is
       Observer.On_Next (Typed.Type_Traits.To_Indefinite (State));
    end On_Subscribe;
 
-   package Source is new Src.Stateless (Typed, Typed.D, On_Subscribe);
+   package Source is new Src.Create (Typed, Typed.D, On_Subscribe);
 
    function Create (V : Typed.T) return Typed.Observable'Class is
    begin

@@ -1,7 +1,7 @@
 with Rx.Debug;
 with Rx.Subscriptions;
 
-package body Rx.Src.Stateless is
+package body Rx.Src.Create is
 
    ------------
    -- Create --
@@ -27,9 +27,9 @@ package body Rx.Src.Stateless is
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("At Stateless.Subscribe: caught No_Longer_Subscribed");
+         Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed");
       when E : others =>
          Typed.Default_Error_Handler (Consumer, E);
    end Subscribe;
 
-end Rx.Src.Stateless;
+end Rx.Src.Create;

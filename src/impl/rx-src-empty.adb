@@ -1,4 +1,4 @@
-with Rx.Src.Stateless;
+with Rx.Src.Create;
 
 package body Rx.Src.Empty is
 
@@ -7,7 +7,7 @@ package body Rx.Src.Empty is
    procedure On_Subscribe (State    : Void;
                            Observer : in out Typed.Subscriber) is null;
 
-   package Empty_Sources is new Rx.Src.Stateless (Typed, Void);
+   package Empty_Sources is new Rx.Src.Create (Typed, Void);
 
    -----------
    -- Empty --
@@ -22,7 +22,7 @@ package body Rx.Src.Empty is
    -- Never --
    -----------
 
-   package Never_Sources is new Rx.Src.Stateless (Typed, Void, On_Subscribe, Completes => False);
+   package Never_Sources is new Rx.Src.Create (Typed, Void, On_Subscribe, Completes => False);
 
    function Never return Typed.Observable is
    begin
@@ -41,7 +41,7 @@ package body Rx.Src.Empty is
       Observer.On_Error (E);
    end On_Subscribe_Error;
 
-   package Error_Sources is new Rx.Src.Stateless (Typed, Errors.Occurrence, On_Subscribe_Error, Completes => False);
+   package Error_Sources is new Rx.Src.Create (Typed, Errors.Occurrence, On_Subscribe_Error, Completes => False);
 
    function Error
      (E : Rx.Errors.Occurrence)
