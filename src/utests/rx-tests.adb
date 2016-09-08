@@ -136,6 +136,10 @@ package body Rx.Tests is
       return No_Op_Check.Passed;
    end No_Op;
 
+   -------------------
+   -- Subscriptions --
+   -------------------
+
    function Subscriptions return Boolean is
    begin
       Subs :=

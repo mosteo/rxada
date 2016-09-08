@@ -61,7 +61,8 @@ package body Rx.Src.Interval is
       S.Scheduler.Schedule (R, Clock + S.First_Pause);
    end On_Subscribe;
 
-   package Source is new Src.Create (Typed, State, On_Subscribe, Completes => False);
+   package Pre is new Src.Create (Typed);
+   package Source is new Pre.With_State (State, On_Subscribe, Autocompletes => False);
 
    ------------
    -- Create --

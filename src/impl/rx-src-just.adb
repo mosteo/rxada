@@ -10,7 +10,8 @@ package body Rx.Src.Just is
       Observer.On_Next (Typed.Type_Traits.To_Indefinite (State));
    end On_Subscribe;
 
-   package Source is new Src.Create (Typed, Typed.D, On_Subscribe);
+   package SrcCreate is new Src.Create (Typed);
+   package Source is new SrcCreate.With_State (Typed.D, On_Subscribe);
 
    function Create (V : Typed.T) return Typed.Observable'Class is
    begin
