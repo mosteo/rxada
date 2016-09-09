@@ -1,9 +1,5 @@
-with Rx.Std;
-
 package Rx.Bugs is
 
-private
-
-   package IntCount is new Std.Integers.Counters (Integer'Succ);
+   pragma Pure;
 
 end Rx.Bugs;

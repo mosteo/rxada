@@ -30,8 +30,8 @@ package Rx.Std is
    package StrToInt is new Rx.Operators (Strings, Integers);
    package IntToStr is new Rx.Operators (Integers, Strings);
 
-   package IntCount is new Integers.Counters (Integer'Succ);
-   package StrCount is new StrToInt.Counters (Integer'Succ);
+   package IntCount is new Integers.Counters (Integer'Succ, 0);
+   package StrCount is new StrToInt.Counters (Integer'Succ, 0);
 
    --  Standard Rx sources and operators
 

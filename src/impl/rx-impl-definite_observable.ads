@@ -14,6 +14,7 @@ package Rx.Impl.Definite_Observable is
                         Consumer : in out Contracts.Subscriber'Class);
 
    function From (Indef : Contracts.Observable'Class) return Observable;
+   function "+"  (Indef : Contracts.Observable'Class) return Observable renames From;
 
    procedure From (This : in out Observable; Indef : Contracts.Observable'Class);
 

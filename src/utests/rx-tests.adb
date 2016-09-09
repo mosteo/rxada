@@ -13,8 +13,8 @@ package body Rx.Tests is
    package StrToInt is new Rx.Operators (Strings, Integers);
    package IntToStr is new Rx.Operators (Integers, Strings);
 
-   package IntCount is new Ints.Counters (Integer'Succ);
-   package StrCount is new StrToInt.Counters (Integer'Succ);
+   package IntCount is new Ints.Counters (Integer'Succ, 0);
+   package StrCount is new StrToInt.Counters (Integer'Succ, 0);
 
    function Length (S : String) return Integer is (S'Length);
    function Image  (I : Integer) return String is (I'Img);
@@ -49,42 +49,78 @@ package body Rx.Tests is
 
    end Verifier;
 
+   package Verify_Int  is new Verifier (Integer, 1);
+   package Verify_Str is new Verifier (String, "hello");
+   procedure Assert_Int (V : Integer) renames Verify_Int.Verify;
+   procedure Assert_Str (V : String)  renames Verify_Str.Verify;
+
+   function Is_Zero (V : Integer) return Boolean is (V = 0);
+   function Is_One (V : Integer) return Boolean is (V = 1);
+
+   -------------
+   -- Sources --
+   -------------
+
+   Deferred : Integer := 0;
+   function Deferred_Just return Integers.Observable is (Integers.Just (Deferred));
+
+   function Sources return Boolean is
+      Obs : Integers.Defob;
+   begin
+      Verify_Int.Passed := True;
+
+      Subs := Just (Deferred) & Filter (Is_Zero'Access) & Count & Subscribe (Assert_Int'Access);
+      --  Should see a zero, pass the filter, count it and assert 1 as final result
+
+      Obs := + Defer (Deferred_Just'Access);
+      Deferred := 1;
+      Subs := Obs & Subscribe (Assert_Int'Access); -- Must receive the post-defer creation value (1)
+
+      return True;
+   end Sources;
+
+   ---------------
+   -- Operators --
+   ---------------
+
+   function Operators return Boolean is
+   begin
+      return True;
+   end Operators;
+
    -----------------
    -- Basic_Tests --
    -----------------
 
-   package Verify_Basic_1  is new Verifier (Integer, 1);
-   package Verify_Basic_Hi is new Verifier (String, "hello");
-   procedure Verify (V : Integer) renames Verify_Basic_1.Verify;
-
-   function Is_One (V : Integer) return Boolean is (V = 1);
-
    function Basic_Tests return Boolean is
    begin
-      Subs := Just (1) & Subscribe (Verify_Basic_1.Verify'Access);
+      Verify_Int.Passed := True;
+      Verify_Str.Passed := True;
 
-      Subs := Just ("hello") & Subscribe (Verify_Basic_Hi.Verify'Access);
+      Subs := Just (1) & Subscribe (Verify_Int.Verify'Access);
 
-      Subs := Ints.From ((1, 1, 1)) & Subscribe (Verify_Basic_1.Verify'Access);
+      Subs := Just ("hello") & Subscribe (Verify_Str.Verify'Access);
+
+      Subs := Ints.From ((1, 1, 1)) & Subscribe (Verify_Int.Verify'Access);
 
       Subs := Just ("Hello")
         &
         StrCount.Count (0)
         &
-        Subscribe (Verify_Basic_1.Verify'Access);
+        Subscribe (Verify_Int.Verify'Access);
 
       Subs := Ints.From ((1, 2))
         &
         Count (-1)
         &
-        Subscribe (Verify_Basic_1.Verify'Access);
+        Subscribe (Verify_Int.Verify'Access);
 
       -- Test counting reset
       declare
          Ob : constant Integers.Observable := Ints.From ((1, 2, 3, 4)) & Count (-3);
       begin
-         Subs := Ob & Subscribe (Verify_Basic_1.Verify'Access);
-         Subs := Ob & Subscribe (Verify_Basic_1.Verify'Access);
+         Subs := Ob & Subscribe (Verify_Int.Verify'Access);
+         Subs := Ob & Subscribe (Verify_Int.Verify'Access);
       end;
 
       -- Test limit
@@ -92,7 +128,7 @@ package body Rx.Tests is
         &
         Limit (2)
         &
-        Subscribe (Verify_Basic_1.Verify'Access);
+        Subscribe (Verify_Int.Verify'Access);
 
       Subs := Ints.From ((1, 1, 2))
         &
@@ -100,25 +136,25 @@ package body Rx.Tests is
         &
         Count (-1)
         &
-        Subscribe (Verify_Basic_1.Verify'Access);
+        Subscribe (Verify_Int.Verify'Access);
 
       Subs := Ints.From ((1, 1, 1))
         &
         Limit (5) -- Check proper completion when not enough
         &
-        Subscribe (Verify_Basic_1.Verify'Access);
+        Subscribe (Verify_Int.Verify'Access);
 
       -- Filter test
       Subs := Ints.From ((2, 2, 1)) &
         Filter (Is_One'Access) &
-        Subscribe (Verify'Access);
+        Subscribe (Assert_Int'Access);
 
       Subs := Ints.From ((1, 2, 2)) &
         Filter (Is_One'Access) &
         Count (0) &
-        Subscribe (Verify'Access);
+        Subscribe (Assert_Int'Access);
 
-      return Verify_Basic_1.Passed and Verify_Basic_Hi.Passed;
+      return Verify_Int.Passed and Verify_Str.Passed;
    end Basic_Tests;
 
    -----------
