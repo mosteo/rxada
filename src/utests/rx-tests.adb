@@ -72,11 +72,11 @@ package body Rx.Tests is
       Subs := Just (Deferred) & Filter (Is_Zero'Access) & Count & Subscribe (Assert_Int'Access);
       --  Should see a zero, pass the filter, count it and assert 1 as final result
 
-      Obs := + Defer (Deferred_Just'Access);
+      Obs := +Defer (Deferred_Just'Access);
       Deferred := 1;
       Subs := Obs & Subscribe (Assert_Int'Access); -- Must receive the post-defer creation value (1)
 
-      return True;
+      return Verify_Int.Passed;
    end Sources;
 
    ---------------
