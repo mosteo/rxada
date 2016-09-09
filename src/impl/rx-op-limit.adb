@@ -1,5 +1,3 @@
-with Rx.Debug;
-
 package body Rx.Op.Limit is
 
    type Operator is new Operate.Operator with record

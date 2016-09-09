@@ -46,7 +46,7 @@ package body Rx.Op.Count is
    -- Count --
    -----------
 
-   function Count (First : Transform.Into.T) return Transform.Operator'Class
+   function Count (First : Transform.Into.T := Default_Initial_Count) return Transform.Operator'Class
    is
       use Transform.Into.Type_Traits;
    begin

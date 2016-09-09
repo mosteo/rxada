@@ -29,8 +29,9 @@ package Rx.Operators is
 
    generic
       with function Succ (V : Into.T) return Into.T;
+      Default_Initial_Count : Into.T;
    package Counters is
-      package Pkg_Count is new Rx.Op.Count (Typed, Succ);
+      package Pkg_Count is new Rx.Op.Count (Typed, Succ, Default_Initial_Count);
       function Count (First : Into.T) return Operator renames Pkg_Count.Count;
    end Counters;
 

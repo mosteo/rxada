@@ -8,4 +8,8 @@ package Rx.Tests is
 
    function Subscriptions return Boolean;
 
+   function Sources return Boolean;
+
+   function Operators return Boolean;
+
 end Rx.Tests;

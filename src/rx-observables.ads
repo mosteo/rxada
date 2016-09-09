@@ -3,6 +3,7 @@ with Rx.Op.Count;
 with Rx.Operate;
 with Rx.Schedulers;
 with Rx.Src.Create;
+with Rx.Src.Defer;
 with Rx.Src.From;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
@@ -40,10 +41,12 @@ package Rx.Observables is
 
    generic
       with function Succ (V : T) return T;
+      Default_Initial_Count : T;
    package Counters is
-      package Self_Count is new Rx.Op.Count (Operate.Transform, Succ);
+      package Self_Count is new Rx.Op.Count (Operate.Transform, Succ, Default_Initial_Count);
 
-      function Count (First : T) return Operate.Transform.Operator'Class renames Self_Count.Count;
+      function Count (First : T := Default_Initial_Count) return Operate.Transform.Operator'Class
+                      renames Self_Count.Count;
    end Counters;
 
    ------------
@@ -57,6 +60,16 @@ package Rx.Observables is
 
    function Create (Observable : RxCreate.Observable'Class) return Typed.Observable
                     renames RxCreate.Tagged_Stateful;
+
+   -----------
+   -- Defer --
+   -----------
+
+   package RxDefer is new Rx.Src.Defer (Typed);
+
+   function Defer (Factory : RxDefer.Factory'Class) return Typed.Observable renames RxDefer.Create;
+
+   function Defer (Factory : RxDefer.Factory_Func) return Typed.Observable renames RxDefer.Create;
 
    ------------
    -- Filter --
@@ -131,6 +144,7 @@ package Rx.Observables is
 
    function Wrap (Obs : Typed.Observable) return Defob renames Typed.Defobs.From;
    -- Definite observable
+   function "+"  (Obs : Typed.Observable) return Defob renames Wrap;
 
    ---------
    -- "&" --
