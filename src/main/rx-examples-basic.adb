@@ -57,7 +57,7 @@ begin
    --  I think this must go down in flames if the scope is outlived by the chain, with some latency inducing operator
    --  Since there's no accessibility check kicking in, I guess this is a flaw in Gnat and I should use a
    --  named access type in Rx.Src.Create.
-   --  TODO: keep an eye on it
+   --  TODO: keep an eye on it (Issue #18)
    declare
       procedure Custom_Src_2 (Observer : in out Integers.Typedd.Subscriber) is
       begin
