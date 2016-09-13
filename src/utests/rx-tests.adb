@@ -1,4 +1,5 @@
 with Rx.Debug;
+with Rx.Errors;
 with Rx.Operators;
 with Rx.Std;
 with Rx.Subscriptions;
@@ -8,7 +9,6 @@ package body Rx.Tests is
    use Rx.Std;
 
    package Ints renames Std.Integers;
-   package Strs renames Std.Strings;
 
    package StrToInt is new Rx.Operators (Strings, Integers);
    package IntToStr is new Rx.Operators (Integers, Strings);
@@ -16,8 +16,6 @@ package body Rx.Tests is
    package IntCount is new Ints.Counters (Integer'Succ, 0);
    package StrCount is new StrToInt.Counters (Integer'Succ, 0);
 
-   function Length (S : String) return Integer is (S'Length);
-   function Image  (I : Integer) return String is (I'Img);
 
    Subs : Rx.Subscriptions.Subscription;
 
@@ -45,6 +43,7 @@ package body Rx.Tests is
       procedure Verify (I : T) is
       begin
          Passed := Passed and then I = Target;
+         Debug.Put_Line ("Verifying pass... " & Boolean'Image (I = Target));
       end Verify;
 
    end Verifier;
@@ -52,7 +51,19 @@ package body Rx.Tests is
    package Verify_Int  is new Verifier (Integer, 1);
    package Verify_Str is new Verifier (String, "hello");
    procedure Assert_Int (V : Integer) renames Verify_Int.Verify;
-   procedure Assert_Str (V : String)  renames Verify_Str.Verify;
+
+   procedure Fail is
+   begin
+      raise Constraint_Error;
+   end Fail;
+
+   procedure Int_Fail (V : Integer) is
+   begin
+      raise Constraint_Error;
+   end Int_Fail;
+
+   procedure Int_Err_Pass (E : Rx.Errors.Occurrence) is null;
+   Some_Error : Rx.Errors.Occurrence;
 
    function Is_Zero (V : Integer) return Boolean is (V = 0);
    function Is_One (V : Integer) return Boolean is (V = 1);
@@ -74,7 +85,32 @@ package body Rx.Tests is
 
       Obs := +Defer (Deferred_Just'Access);
       Deferred := 1;
-      Subs := Obs & Subscribe (Assert_Int'Access); -- Must receive the post-defer creation value (1)
+      Subs := Obs & Subscribe (Assert_Int'Access);
+      -- Must receive the post-defer creation value (1)
+
+      Subs := Integers.Empty & Count (1) & Subscribe (Assert_Int'Access);
+      --  Should see zero items, hence a count of one
+
+      Subscribe (Integers.Error (Some_Error),
+                 On_Next      => Int_Fail'Access,
+                 On_Completed => Fail'Access,
+                 On_Error     => Int_Err_Pass'Access);
+      --  Should only call On_Error and get a pass
+
+      Subs :=
+        IntEnums.Sequence (First => 1, Count => 1) &
+        Subscribe (Assert_Int'Access);
+
+      Subs :=
+        IntEnums.Sequence (First => 1, Count => 10) &
+--        Print (Tests.Image'Access) &
+        Count (-9) &
+        Subscribe (Assert_Int'Access);
+
+      Subs :=
+        IntEnums.Sequence (First => 1, Count => 0) &
+        Count (1) &
+        Subscribe (Assert_Int'Access);
 
       return Verify_Int.Passed;
    end Sources;

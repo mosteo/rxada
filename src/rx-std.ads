@@ -27,11 +27,18 @@ package Rx.Std is
    package Integers renames Rx.Impl.Integers.Observables;
    package Strings  renames Rx.Impl.Strings.Observables;
 
-   package StrToInt is new Rx.Operators (Strings, Integers);
+   package AnyToInt is new Rx.Operators (Any, Integers);
    package IntToStr is new Rx.Operators (Integers, Strings);
+   package StrToInt is new Rx.Operators (Strings, Integers);
 
    package IntCount is new Integers.Counters (Integer'Succ, 0);
    package StrCount is new StrToInt.Counters (Integer'Succ, 0);
+
+   package IntEnums is new Integers.Enums (Integer'Succ);
+
+   function Succ (S : String) return String; -- Lexicographic enumeration over the Character type. Useless I guess.
+
+   package StrEnums is new Strings.Enums (Succ);
 
    --  Standard Rx sources and operators
 
@@ -66,5 +73,10 @@ private
                       return Integers.Observable renames RxInterval.Create;
 
    function Never return Any.Observable renames RxEmpty.Never;
+
+   function Succ (S : String) return String
+   is (if    S'Length = 0                 then String'(1 => Character'First)
+       elsif S (S'Last) /= Character'Last then S (S'First .. S'Last - 1) & Character'Succ (S (S'Last))
+       else  S & Character'First);
 
 end Rx.Std;
