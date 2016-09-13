@@ -21,6 +21,7 @@ package Rx.Debug is
    procedure Put_Line (I : Integer);
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;
 
+   function Image (I : Integer) return String is (Integer'Image (I));
    function Image (T : Ada.Tags.Tag) return String renames Ada.Tags.Expanded_Name;
 
    procedure Print (E : Ada.Exceptions.Exception_Occurrence);

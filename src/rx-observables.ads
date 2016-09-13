@@ -1,10 +1,15 @@
+with Ada.Exceptions;
+
 with Rx.Actions;
+with Rx.Errors;
 with Rx.Op.Count;
 with Rx.Operate;
 with Rx.Schedulers;
 with Rx.Src.Create;
 with Rx.Src.Defer;
 with Rx.Src.From;
+with Rx.Src.Interval;
+with Rx.Src.Sequence;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
 with Rx.Typed;
@@ -15,6 +20,7 @@ private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
 private with Rx.Op.Subscribe_On;
+private with Rx.Src.Empty;
 private with Rx.Src.Just;
 private with Rx.Subscribe;
 
@@ -40,7 +46,7 @@ package Rx.Observables is
    -----------
 
    generic
-      with function Succ (V : T) return T;
+      with function Succ (V : T) return T is <>;
       Default_Initial_Count : T;
    package Counters is
       package Self_Count is new Rx.Op.Count (Operate.Transform, Succ, Default_Initial_Count);
@@ -48,6 +54,28 @@ package Rx.Observables is
       function Count (First : T := Default_Initial_Count) return Operate.Transform.Operator'Class
                       renames Self_Count.Count;
    end Counters;
+
+   -----------
+   -- Enums --
+   -----------
+
+   generic
+      with function Succ (V : T) return T is <>;
+   package Enums is
+
+      package RxInterval is new Rx.Src.Interval (Typed, Succ);
+      package RxSequence is new Rx.Src.Sequence (Typed, Succ);
+
+      function Interval (First       : Typed.T;
+                         Pause       : Duration := 1.0;
+                         First_Pause : Duration := 1.0;
+                         Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
+                         return Typed.Observable renames RxInterval.Create;
+
+      function Sequence (First : Typed.T;
+                         Count : Natural) return Typed.Observable renames RxSequence.Create;
+
+   end Enums;
 
    ------------
    -- Create --
@@ -70,6 +98,19 @@ package Rx.Observables is
    function Defer (Factory : RxDefer.Factory'Class) return Typed.Observable renames RxDefer.Create;
 
    function Defer (Factory : RxDefer.Factory_Func) return Typed.Observable renames RxDefer.Create;
+
+   -----------
+   -- Empty --
+   -----------
+
+   function Empty return Typed.Observable;
+
+   -----------
+   -- Error --
+   -----------
+
+   function Error (E : Rx.Errors.Occurrence)                return Typed.Observable;
+   function Error (E : Ada.Exceptions.Exception_Occurrence) return Typed.Observable;
 
    ------------
    -- Filter --
@@ -101,6 +142,12 @@ package Rx.Observables is
    function Limit (Max : Natural) return Operator;
 
    -----------
+   -- Never --
+   -----------
+
+   function Never return Typed.Observable;
+
+   -----------
    -- No_Op --
    -----------
 
@@ -125,6 +172,11 @@ package Rx.Observables is
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Sink;
+
+   procedure Subscribe (Producer     : Typed.Observable;
+                        On_Next      : Typed.Actions.Proc1   := null;
+                        On_Completed : Rx.Actions.Proc0      := null;
+                        On_Error     : Rx.Actions.Proc_Error := null);
 
    ------------------
    -- Subscribe_On --
@@ -162,6 +214,13 @@ package Rx.Observables is
    function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
 
 private
+
+   package RxEmpty is new Rx.Src.Empty (Typed);
+   function Empty return Typed.Observable renames RxEmpty.Empty;
+   function Never return Typed.Observable renames RxEmpty.Never;
+
+   function Error (E : Rx.Errors.Occurrence)                return Typed.Observable renames RxEmpty.Error;
+   function Error (E : Ada.Exceptions.Exception_Occurrence) return Typed.Observable renames RxEmpty.Error;
 
    package RxFilter is new Rx.Op.Filter (Operate);
    function Filter (Check : not null Typed.Actions.Filter1) return Operator renames RxFilter.Create;
