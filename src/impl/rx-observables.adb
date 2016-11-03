@@ -26,7 +26,7 @@ package body Rx.Observables is
       S : constant Subscriptions.Subscription := Producer & Subscribe (On_Next, On_Completed, On_Error);
       pragma Unreferenced (S);
    begin
-      null;
+      null; -- Done in the declarative part
    end Subscribe;
 
 end Rx.Observables;

@@ -1,33 +1,12 @@
 with Rx.Debug;
-with Rx.Errors;
-with Rx.Subscriptions;
 
 package body Rx.Subscribe is
-
-   type Obs is new Typed.Contracts.Sink with record
-      On_Next      : Typed.Actions.Proc1;
-      On_Completed : Rx.Actions.Proc0;
-      On_Error     : Rx.Actions.Proc_Error;
-
-      Subscription : Subscriptions.Subscription;
-
-      Completed    : Boolean;
-      Errored      : Boolean;
-   end record;
-
-   overriding procedure On_Next      (This : in out Obs; V : Typed.Type_Traits.T);
-   overriding procedure On_Completed (This : in out Obs);
-   overriding procedure On_Error     (This : in out Obs; Error : in out Errors.Occurrence);
-
-   overriding function Is_Subscribed (This : Obs) return Boolean is (This.Subscription.Is_Subscribed);
-
-   overriding function Get_Subscription (This : Obs) return Subscriptions.Subscription is (This.Subscription);
 
    ------------------
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This : in out Obs) is
+   overriding procedure On_Completed (This : in out Subscribe) is
       use Rx.Actions;
    begin
       if This.Completed then
@@ -39,8 +18,12 @@ package body Rx.Subscribe is
          This.Completed := True;
       end if;
 
-      if This.On_Completed /= null and then This.Is_Subscribed then
-         This.On_Completed.all;
+      if This.Is_Subscribed then
+         if This.Func_On_Completed /= null then
+            This.Func_On_Completed.all;
+         else
+            Subscribe'Class (This).Do_On_Completed;
+         end if;
       end if;
    end On_Completed;
 
@@ -48,7 +31,7 @@ package body Rx.Subscribe is
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Obs; Error : in out Errors.Occurrence) is
+   overriding procedure On_Error (This : in out Subscribe; Error : in out Errors.Occurrence) is
       use Rx.Actions;
    begin
       if This.Errored then
@@ -59,8 +42,12 @@ package body Rx.Subscribe is
          This.Errored := True;
       end if;
 
-      if This.On_Error /= null and then This.Is_Subscribed then
-         This.On_Error (Error);
+      if This.Is_Subscribed then
+         if This.Func_On_Error /= null then
+            This.Func_On_Error (Error);
+         else
+            Subscribe'Class (This).Do_On_Error (Error);
+         end if;
          Error.Set_Handled;
       else
          Debug.Print (Error.Get_Exception.all);
@@ -72,12 +59,16 @@ package body Rx.Subscribe is
    -- On_Next --
    -------------
 
-   overriding procedure On_Next (This : in out Obs; V : Typed.Type_Traits.T) is
+   overriding procedure On_Next (This : in out Subscribe; V : Typed.Type_Traits.T) is
       use Typed.Actions;
    begin
-      if This.On_Next /= null and then This.Is_Subscribed then
-         This.On_Next (V);
-      elsif not This.Is_Subscribed then
+      if This.Is_Subscribed then
+         if This.Func_On_Next /= null then
+            This.Func_On_Next (V);
+         else
+            Subscribe'Class (This).Do_On_Next (V);
+         end if;
+      else
          raise Subscriptions.No_Longer_Subscribed;
       end if;
    end On_Next;
@@ -90,7 +81,7 @@ package body Rx.Subscribe is
                     On_Completed : Rx.Actions.Proc0      := null;
                     On_Error     : Rx.Actions.Proc_Error := null) return Typed.Contracts.Sink'Class is
    begin
-      return Obs'(Typed.Contracts.Sink with
+      return Subscribe'(Typed.Contracts.Sink with
                   On_Next,
                   On_Completed,
                   On_Error,

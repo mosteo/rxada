@@ -10,6 +10,7 @@ with Rx.Src.Defer;
 with Rx.Src.From;
 with Rx.Src.Interval;
 with Rx.Src.Sequence;
+with Rx.Subscribe;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
 with Rx.Typed;
@@ -22,7 +23,6 @@ private with Rx.Op.Print;
 private with Rx.Op.Subscribe_On;
 private with Rx.Src.Empty;
 private with Rx.Src.Just;
-private with Rx.Subscribe;
 
 generic
    with package Typed is new Rx.Typed (<>);
@@ -178,6 +178,10 @@ package Rx.Observables is
                         On_Completed : Rx.Actions.Proc0      := null;
                         On_Error     : Rx.Actions.Proc_Error := null);
 
+   package RxSubscribe is new Rx.Subscribe (Typed);
+   type Subscriptor is abstract new RxSubscribe.Subscribe with null record;
+   --  You can alternatively override methods of this type to more easily provide context
+
    ------------------
    -- Subscribe_On --
    ------------------
@@ -245,7 +249,6 @@ private
    function Print (Func           : Typed.Actions.Func1Str := null;
                    With_Timestamp : Boolean                := True) return Operator renames RxPrint.Create;
 
-   package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Sink renames RxSubscribe.Create;
