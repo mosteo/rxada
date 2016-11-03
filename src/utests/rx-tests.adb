@@ -212,8 +212,22 @@ package body Rx.Tests is
    -- Subscriptions --
    -------------------
 
+   type Subscriptor is new Integers.Subscriptor with null record;
+
+   overriding procedure Do_On_Next (S : in out Subscriptor; V : Integer) is
+      pragma Unreferenced (S);
+   begin
+      Debug.Put_Line ("In class");
+      Assert_Int (V);
+   end Do_On_Next;
+
    function Subscriptions return Boolean is
    begin
+      --  Check subscription using tagged type
+      Subs := Ints.Just (1) &
+        Subscriptor'(Integers.Subscriptor with null record);
+
+      --  Check unsubscription
       Subs :=
         Std.Interval (1) &
         Subscribe (Debug.Put_Line'Access);
@@ -222,7 +236,7 @@ package body Rx.Tests is
 
       Subs.Unsubscribe;
 
-      return not Subs.Is_Subscribed;
+      return Verify_Int.Passed and then not Subs.Is_Subscribed;
    exception
       when others =>
          return False;
