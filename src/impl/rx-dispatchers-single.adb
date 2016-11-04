@@ -39,16 +39,22 @@ package body Rx.Dispatchers.Single is
          begin
             Parent.Queue.Dequeue (Ev, Exists);
             if Exists and not Dispatchers.Terminating then
+               if Ev.Time > Clock then
+                  Parent.Queue.Set_Idle (True);
+               end if;
+
                select
                   -- An earlier event has arrived, so requeue
                   accept Notify;
                   Parent.Queue.Enqueue (Ev);
                or
                   delay until Ev.Time; -- This wait may perfectly well be 0
---                  Put_Line ("id:" & Ev.Id'Img);
+
+                  Parent.Queue.Set_Idle (False);
                   Ev.Code.Ref.Run;
                end select;
             else
+               Parent.Queue.Set_Idle (True);
                select
                   accept Notify;
                or
@@ -110,6 +116,24 @@ package body Rx.Dispatchers.Single is
 --            Put_Line ("dequeue:" & E.Id'Img);
          end if;
       end Dequeue;
+
+      --------------
+      -- Set_Idle --
+      --------------
+
+      procedure Set_Idle (Idle : Boolean) is
+      begin
+         Safe.Idle := Idle;
+      end Set_Idle;
+
+      -------------
+      -- Is_Idle --
+      -------------
+
+      function Is_Idle return Boolean is
+      begin
+         return Idle;
+      end Is_Idle;
 
    end Safe;
 
