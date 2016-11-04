@@ -5,6 +5,8 @@ generic
    type Item_Access is access Item;
 package Rx.Shared_Data is
 
+   --  Your typical refcounted access type
+
    pragma Preelaborate;
 
    type Proxy is tagged private;

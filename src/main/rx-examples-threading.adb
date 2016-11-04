@@ -1,6 +1,7 @@
 with Rx.Debug; use Rx.Debug;
 with Rx.Std;
 with Rx.Schedulers;
+with Rx.Schedulers.Pools;
 
 procedure Rx.Examples.Threading is
    use Integers;
@@ -8,16 +9,24 @@ procedure Rx.Examples.Threading is
    use IntToStr;
    use StrToInt;
 
+   Custom_Pool : Schedulers.Pools.Pool := Schedulers.Pools.Create (Size => 2);
+
 begin
    Sub :=
      Std.Interval
      & Print
-     & Subscribe_On (Schedulers.Computation)
-     & Observe_On (Schedulers.Background)
+     & Subscribe_On (Schedulers.IO)
+     & Observe_On (Schedulers.Idle_Thread)
      & Print
-     & Observe_On (Schedulers.IO)
+     & Observe_On (Schedulers.New_Thread)
      & Print
      & Observe_On (Schedulers.Computation)
+     & Print
+     & Observe_On (Custom_Pool.Get_Next)
+     & Print
+     & Observe_On (Custom_Pool.Get_Next)
+     & Print
+     & Observe_On (Custom_Pool.Get_Idle)
      & Print
      & Subscribe (Put_Line'Access);
 

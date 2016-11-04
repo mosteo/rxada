@@ -15,6 +15,9 @@ package Rx.Dispatchers.Single is
                        What  : in out Runnable'Class;
                        Time  : Ada.Calendar.Time := Ada.Calendar.Clock);
 
+   function Is_Idle (This : in out Dispatcher) return Boolean;
+   --  True if it is not running (but may have queued jobs for the future)
+
 private
 
    -- This type is composed by a queue of events to run and a task that gets the first one and runs it.
@@ -55,14 +58,21 @@ private
       procedure Dequeue (E : out Event; Exists : out Boolean);
       --  Dequeue next event, if it exists
 
+      procedure Set_Idle (Idle : Boolean);
+
+      function Is_Idle return Boolean;
+
    private
       Queue : Event_Queues.Set;
       Seq   : Event_Id := 0;
+      Idle  : Boolean  := True;
    end Safe;
 
    type Dispatcher is limited new Dispatchers.Dispatcher with record
       Thread  : Runner (Dispatcher'Access);
       Queue   : Safe (Dispatcher'Access);
    end record;
+
+   function Is_Idle (This : in out Dispatcher) return Boolean is (This.Queue.Is_Idle);
 
 end Rx.Dispatchers.Single;

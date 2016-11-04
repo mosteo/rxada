@@ -7,7 +7,7 @@ package body Rx.Debug is
    procedure Log (S : String; Level : Levels := Verbose) is
    begin
       if Level >= Debug.Level then
-         Put_Line ("debug: " & S);
+         Put_Line ("debug [" & Level'Img & "]: " & S);
       end if;
    end Log;
 
