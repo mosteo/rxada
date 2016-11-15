@@ -3,6 +3,7 @@ with Ada.Exceptions;
 with Rx.Actions;
 with Rx.Errors;
 with Rx.Op.Count;
+with Rx.Op.Repeat;
 with Rx.Operate;
 with Rx.Schedulers;
 with Rx.Src.Create;
@@ -169,6 +170,21 @@ package Rx.Observables is
 
    function Print (Func : Typed.Actions.Func1Str := null; With_Timestamp : Boolean := True) return Operator;
 
+   ------------
+   -- Repeat --
+   ------------
+
+   package RxRepeat is new Rx.Op.Repeat (Operate);
+
+   function Repeat (Times : Positive) return Operator renames RxRepeat.Repeat;
+
+   function Repeat_Forever return Operator renames RxRepeat.Repeat_Forever;
+
+   function Repeat_Until (Check : Actions.TFilter0'Class) return Operator renames RxRepeat.Repeat_Until;
+
+   function Repeat_Until (Check : Actions.Filter0) return Operator is
+     (RxRepeat.Repeat_Until (Actions.Wrap (Check)));
+
    ---------------
    -- Subscribe --
    ---------------
@@ -197,6 +213,16 @@ package Rx.Observables is
    ----------
 
    function Take  (Max : Natural) return Operator renames Limit;
+
+
+   --------------
+   -- While_Do --
+   --------------
+
+   function While_Do (Check : Actions.TFilter0'Class) return Operator renames RxRepeat.While_Do;
+
+   function While_Do (Check : Actions.Filter0) return Operator is
+      (RxRepeat.While_Do (Actions.Wrap (Check)));
 
    ----------
    -- Wrap --

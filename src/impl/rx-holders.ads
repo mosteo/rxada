@@ -3,7 +3,7 @@ private with Ada.Finalization;
 -- with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 --  This is a workaround for a memory leak in the Indefinite_Holders (as of GPL2016)
 --  It turns out Lists are broken too in instantiation from rx-from.adb
---  Rolling out my own holders (probably buggy too, or inneficient, or whatever...)
+--  Rolling out my own holders (probably buggy too, or inefficient, or whatever...)
 
 generic
    type Indef (<>) is private;

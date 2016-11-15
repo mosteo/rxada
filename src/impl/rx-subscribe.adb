@@ -110,4 +110,13 @@ package body Rx.Subscribe is
                   Errored      => False);
    end Create;
 
+   -----------------
+   -- Unsubscribe --
+   -----------------
+
+   overriding procedure Unsubscribe (This : in out Subscribe) is
+   begin
+      This.Subscription.Unsubscribe;
+   end Unsubscribe;
+
 end Rx.Subscribe;

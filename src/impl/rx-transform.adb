@@ -37,7 +37,7 @@ package body Rx.Transform is
    exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed", Debug.Reduced);
-         This.Release_Child;
+         This.Unsubscribe;
    end On_Next;
 
    ------------------
@@ -48,12 +48,12 @@ package body Rx.Transform is
    begin
       if This.Has_Child then
          Operator'Class (This).On_Completed (This.Get_Child);
-         This.Release_Child;
+         This.Unsubscribe;
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Reduced);
-         This.Release_Child;
+         This.Unsubscribe;
    end On_Completed;
 
    --------------
@@ -69,7 +69,7 @@ package body Rx.Transform is
             when Subscriptions.No_Longer_Subscribed =>
                Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Reduced);
          end;
-         This.Release_Child;
+         This.Unsubscribe;
       else
          Error.Reraise;
       end if;
@@ -103,13 +103,14 @@ package body Rx.Transform is
    end On_Error;
 
    -------------------
-   -- Release_Child --
+   -- Unsubscribe --
    -------------------
 
-   procedure Release_Child (This : in out Operator) is
+   overriding
+   procedure Unsubscribe (This : in out Operator) is
    begin
       This.Child.Clear;
-   end Release_Child;
+   end Unsubscribe;
 
    ---------------
    -- Set_Child --
