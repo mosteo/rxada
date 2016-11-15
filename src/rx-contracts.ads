@@ -30,6 +30,9 @@ package Rx.Contracts is
    function Is_Subscribed (This : Subscriber) return Boolean is abstract;
    --  A subscriber can be interrogated about its desire for more data, to allow premature stop
 
+   procedure Unsubscribe (This : in out Subscriber) is abstract;
+   --  A subscriber can be marked as no longer interested in more data
+
    ----------------
    -- Observable --
    ----------------

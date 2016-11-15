@@ -142,7 +142,19 @@ package body Rx.Tests is
 
    function Operators return Boolean is
    begin
+      Subs :=
+        Just (1) &
+        Repeat (9) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 10,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 1);
+
+      pragma Compile_Time_Warning (True, "Implement missing tests for repeats");
+
       return True;
+   exception
+      when others =>
+         return False;
    end Operators;
 
    -----------------

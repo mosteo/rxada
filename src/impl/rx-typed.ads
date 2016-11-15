@@ -1,3 +1,4 @@
+with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 with Ada.Exceptions;
 
 with Rx.Actions;
@@ -27,5 +28,8 @@ package Rx.Typed is
                                     Except : Ada.Exceptions.Exception_Occurrence);
 
    package Defobs is new Impl.Definite_Observable (Contracts);
+
+   package T_Lists is new Ada.Containers.Indefinite_Doubly_Linked_Lists (T, Type_Traits."=");
+   subtype T_List is T_Lists.List;
 
 end Rx.Typed;

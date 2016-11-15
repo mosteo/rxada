@@ -58,4 +58,15 @@ package body Rx.Impl.Shared_Subscriber is
       This.Release;
    end On_Error;
 
+   -----------------
+   -- Unsubscribe --
+   -----------------
+
+   overriding procedure Unsubscribe  (This : in out Subscriber) is
+   begin
+      if This.Actual /= null then
+         This.Actual.Unsubscribe;
+      end if;
+   end Unsubscribe;
+
 end Rx.Impl.Shared_Subscriber;

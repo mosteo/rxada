@@ -21,6 +21,8 @@ package Rx.Impl.Shared_Subscriber is
 
    overriding function Is_Subscribed (This : in Subscriber) return Boolean;
 
+   overriding procedure Unsubscribe  (This : in out Subscriber);
+
    Null_Observer : constant Subscriber;
 
 private

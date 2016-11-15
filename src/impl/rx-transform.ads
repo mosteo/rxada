@@ -52,6 +52,10 @@ package Rx.Transform is
    procedure Set_Child (This : in out Operator; Child : Into.Subscriber);
    -- Can be used to override the default "&" behavior
 
+   overriding
+   procedure Unsubscribe (This : in out Operator);
+   --  Once the child is no longer needed let it gooo!
+
 
    --  DO NOT OVERRIDE THE STANDARD FOLLOWING METHODS IN NEW OPERATORS
    --  OR ELSE CALL THE PARENT IMPLEMENTATIONS
@@ -89,9 +93,6 @@ private
    function Has_Child (This : Operator) return Boolean is (not This.Child.Is_Empty);
 
    function Get_Child (This : in out Operator) return Child_Holders.Reference is (This.Child.Ref);
-
-   procedure Release_Child (This : in out Operator);
-   --  Once the child is no longer needed let it gooo!
 
    overriding
    function Is_Subscribed (This : Operator) return Boolean is (not This.Child.Is_Empty);

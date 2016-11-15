@@ -53,6 +53,8 @@ private
 
    overriding function Is_Subscribed (This : Subscribe) return Boolean is (This.Subscription.Is_Subscribed);
 
+   overriding procedure Unsubscribe (This : in out Subscribe);
+
    overriding function Get_Subscription (This : Subscribe) return Subscriptions.Subscription is (This.Subscription);
 
 end Rx.Subscribe;
