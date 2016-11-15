@@ -9,7 +9,7 @@ with Rx.Src.Create;
 with Rx.Src.Defer;
 with Rx.Src.From;
 with Rx.Src.Interval;
-with Rx.Src.Sequence;
+with Rx.Src.Ranges;
 with Rx.Subscribe;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
@@ -60,11 +60,12 @@ package Rx.Observables is
    -----------
 
    generic
-      with function Succ (V : T) return T is <>;
+      with function Succ (V : T)    return T       is <>;
+      with function "<"  (L, R : T) return Boolean is <>;
    package Enums is
 
       package RxInterval is new Rx.Src.Interval (Typed, Succ);
-      package RxSequence is new Rx.Src.Sequence (Typed, Succ);
+      package RxRange    is new Rx.Src.Ranges   (Typed, Succ, "<");
 
       function Interval (First       : Typed.T;
                          Pause       : Duration := 1.0;
@@ -72,8 +73,11 @@ package Rx.Observables is
                          Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                          return Typed.Observable renames RxInterval.Create;
 
-      function Sequence (First : Typed.T;
-                         Count : Natural) return Typed.Observable renames RxSequence.Create;
+      function Range_Count (First : Typed.T;
+                            Count : Natural) return Typed.Observable renames RxRange.From_Count;
+
+      function Range_Slice (First : Typed.T;
+                            Last  : Typed.T) return Typed.Observable renames RxRange.From_Slice;
 
    end Enums;
 

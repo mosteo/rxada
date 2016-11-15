@@ -27,7 +27,8 @@ package Rx.Subscribe is
    procedure Do_On_Completed (This : in out Subscribe) is null;
 
    not overriding
-   procedure Do_On_Error     (This : in out Subscribe; Error : in out Errors.Occurrence) is null;
+   procedure Do_On_Error     (This : in out Subscribe; Error : in out Errors.Occurrence);
+   --  By default logs info and raises exception
 
 private
 

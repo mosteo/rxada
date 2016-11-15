@@ -26,7 +26,7 @@ package body Rx.Debug is
 
    procedure Print (E : Ada.Exceptions.Exception_Occurrence) is
    begin
-      Put_Line ("Uh oh...");
+      Put_Line ("RxAda saw an exception:");
       Put_Line (Ada.Exceptions.Exception_Name (E));
       Put_Line (Ada.Exceptions.Exception_Message (E));
       Put_Line (Ada.Exceptions.Exception_Information (E));

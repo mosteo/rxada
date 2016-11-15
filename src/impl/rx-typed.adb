@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Errors;
 
 package body Rx.Typed is
@@ -15,7 +16,9 @@ package body Rx.Typed is
       Error.Fill (Except);
       This.On_Error (Error);
       if not Error.Is_Handled then
-         Error.Reraise;
+         Debug.Log ("Unhandled error", Debug.Erratum);
+         Debug.Print (Error.Get_Exception.all);
+         raise Errors.Unhandled_Error;
       end if;
    end Default_Error_Handler;
 

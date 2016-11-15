@@ -1,4 +1,5 @@
 with Rx.Debug;
+with Rx.Debug.Observers;
 with Rx.Errors;
 with Rx.Operators;
 with Rx.Std;
@@ -16,6 +17,8 @@ package body Rx.Tests is
    package IntCount is new Ints.Counters (Integer'Succ, 0);
    package StrCount is new StrToInt.Counters (Integer'Succ, 0);
 
+   package IntChecker is new Debug.Observers (Std.Integers.Typedd, 0, Integer'Image);
+   use IntChecker;
 
    Subs : Rx.Subscriptions.Subscription;
 
@@ -98,21 +101,39 @@ package body Rx.Tests is
       --  Should only call On_Error and get a pass
 
       Subs :=
-        IntEnums.Sequence (First => 1, Count => 1) &
+        IntEnums.Range_Count (First => 1, Count => 1) &
         Subscribe (Assert_Int'Access);
 
       Subs :=
-        IntEnums.Sequence (First => 1, Count => 10) &
+        IntEnums.Range_Count (First => 1, Count => 10) &
 --        Print (Tests.Image'Access) &
         Count (-9) &
         Subscribe (Assert_Int'Access);
 
       Subs :=
-        IntEnums.Sequence (First => 1, Count => 0) &
+        IntEnums.Range_Slice (First => 1, Last => 10) &
+        Count (-9) &
+        Subscribe (Assert_Int'Access);
+
+      Subs :=
+        IntEnums.Range_Count (First => 1, Count => 0) &
         Count (1) &
         Subscribe (Assert_Int'Access);
 
+      Subs :=
+        IntEnums.Range_Slice (First => 1, Last => 0) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        IntEnums.Range_Slice (First => 5, Last => 8) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 4,
+                           Do_First => True, Ok_First => 5,
+                           Do_Last  => True, Ok_Last  => 8);
+
       return Verify_Int.Passed;
+   exception
+      when others =>
+         return False;
    end Sources;
 
    ---------------
