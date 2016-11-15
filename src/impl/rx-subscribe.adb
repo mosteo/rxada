@@ -1,6 +1,22 @@
+with Ada.Exceptions;
+
 with Rx.Debug;
 
 package body Rx.Subscribe is
+
+   -----------------
+   -- Do_On_Error --
+   -----------------
+
+   not overriding
+   procedure Do_On_Error (This : in out Subscribe; Error : in out Errors.Occurrence) is
+      pragma Unreferenced (This);
+   begin
+      Debug.Log ("On_Error called but not implemented", Debug.Verbose);
+      Debug.Print (Error.Get_Exception.all);
+
+      raise Errors.Unhandled_Error;
+   end Do_On_Error;
 
    ------------------
    -- On_Completed --
@@ -14,8 +30,6 @@ package body Rx.Subscribe is
       elsif
         This.Errored then
          raise Program_Error with "Completed after error";
-      else
-         This.Completed := True;
       end if;
 
       if This.Is_Subscribed then
@@ -25,6 +39,8 @@ package body Rx.Subscribe is
             Subscribe'Class (This).Do_On_Completed;
          end if;
       end if;
+
+      This.Completed := True;
    end On_Completed;
 
    --------------
@@ -32,6 +48,7 @@ package body Rx.Subscribe is
    --------------
 
    overriding procedure On_Error (This : in out Subscribe; Error : in out Errors.Occurrence) is
+      use Ada.Exceptions;
       use Rx.Actions;
    begin
       if This.Errored then
@@ -50,7 +67,10 @@ package body Rx.Subscribe is
          end if;
          Error.Set_Handled;
       else
-         Debug.Print (Error.Get_Exception.all);
+         if Exception_Identity (Error.Get_Exception.all) /= Errors.Unhandled_Error'Identity then
+            Debug.Log ("At unsubscribed Subscribe.On_Error:", Debug.Erratum);
+            Debug.Print (Error.Get_Exception.all);
+         end if;
          Error.Reraise;
       end if;
    end On_Error;

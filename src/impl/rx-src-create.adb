@@ -1,4 +1,5 @@
 with Rx.Debug;
+with Rx.Errors;
 with Rx.Holders;
 with Rx.Subscriptions;
 
@@ -26,6 +27,8 @@ package body Rx.Src.Create is
       exception
          when Subscriptions.No_Longer_Subscribed =>
             Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed");
+         when Errors.Unhandled_Error =>
+            raise;
          when E : others =>
             Typed.Default_Error_Handler (Consumer, E);
       end Subscribe;
@@ -70,6 +73,11 @@ package body Rx.Src.Create is
       Actual : Observable'Class := Initial.Get; -- Local RW copy
    begin
       Actual.On_Subscribe (Observer);
+      exception
+      when Subscriptions.No_Longer_Subscribed =>
+         Debug.Log ("At Create.On_Subscribe: caught No_Longer_Subscribed");
+      when E : others =>
+         Typed.Default_Error_Handler (Observer, E);
    end On_Subscribe;
 
    package Create_Tagged is new With_State (Holder, On_Subscribe, Autocompletes => False);
