@@ -1,18 +1,26 @@
 package body Rx.Actions is
 
-   type WTFilter0 (Filter : Filter0) is new TFilter0 with null record;
+   ---------------
+   --  WTProc0  --
+   ---------------
 
-   overriding function Check (Filter : in out WTFilter0) return Boolean is
-      (Filter.Filter.all);
-
-   ----------
-   -- Wrap --
-   ----------
-
-   function Wrap (Check : Filter0) return TFilter0'Class is
+   type WTProc0 (Proc : Proc0) is new TProc0 with null record;
+   overriding procedure Run (Proc : in out WTProc0) is
    begin
-      return WTFilter0'(TFilter0 with Check);
-   end Wrap;
+      Proc.Proc.all;
+   end Run;
+   function Wrap (Proc : Proc0) return TProc0'Class is (WTProc0'(Proc => Proc));
+
+   ---------------
+   -- WTFilter0 --
+   ---------------
+
+   type WTFilter0 (Filter : Filter0) is new TFilter0 with null record;
+   overriding function Check (Filter : in out WTFilter0) return Boolean is
+   begin
+      return Filter.Filter.all;
+   end Check; -- Cannot be expression function because of GNAT bug
+   function Wrap (Check : Filter0) return TFilter0'Class is (WTFilter0'(Filter => Check));
 
    -------------
    -- Counter --
@@ -50,6 +58,18 @@ package body Rx.Actions is
    end Check;
 
    function "not" (Filter : TFilter0'Class) return TFilter0'Class is
-      (Negator'(Filter => + Filter));
+     (Negator'(Filter => + Filter));
+
+   package body Typed is
+
+      -------------------
+      --  WTFunc1Str  ---
+      -------------------
+
+      type WTFunc1Str (Func : Func1Str) is new TFunc1Str with null record;
+      overriding function Convert (Func : in out WTFunc1Str; V : T) return String is (Func.Func (V));
+      function Wrap (Func : Func1Str) return TFunc1Str'Class is (WTFunc1Str'(Func => Func));
+
+   end Typed;
 
 end Rx.Actions;
