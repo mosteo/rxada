@@ -16,9 +16,9 @@ package body Rx.Typed is
       Error.Fill (Except);
       This.On_Error (Error);
       if not Error.Is_Handled then
-         Debug.Log ("Unhandled error", Debug.Erratum);
+         Debug.Log ("RxAda saw unhandled error:", Debug.Erratum);
          Debug.Print (Error.Get_Exception.all);
-         raise Errors.Unhandled_Error;
+         Error.Reraise;
       end if;
    end Default_Error_Handler;
 

@@ -5,9 +5,6 @@ package Rx.Errors is
 
    pragma Preelaborate;
 
-   Unhandled_Error : exception;
-   --  This exception is raised if a subscriber receives an error without handling it
-
    type Occurrence is new Ada.Finalization.Controlled with private;
 
    procedure Fill (Error : out Occurrence;

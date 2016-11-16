@@ -14,8 +14,7 @@ package body Rx.Subscribe is
    begin
       Debug.Log ("On_Error called but not implemented", Debug.Verbose);
       Debug.Print (Error.Get_Exception.all);
-
-      raise Errors.Unhandled_Error;
+      Error.Reraise;
    end Do_On_Error;
 
    ------------------
@@ -67,10 +66,8 @@ package body Rx.Subscribe is
          end if;
          Error.Set_Handled;
       else
-         if Exception_Identity (Error.Get_Exception.all) /= Errors.Unhandled_Error'Identity then
-            Debug.Log ("At unsubscribed Subscribe.On_Error:", Debug.Erratum);
-            Debug.Print (Error.Get_Exception.all);
-         end if;
+         Debug.Log ("RxAda Subscribe saw unhandled error:", Debug.Erratum);
+         Debug.Print (Error.Get_Exception.all);
          Error.Reraise;
       end if;
    end On_Error;
