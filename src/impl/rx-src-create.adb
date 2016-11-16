@@ -1,5 +1,4 @@
 with Rx.Debug;
-with Rx.Errors;
 with Rx.Holders;
 with Rx.Subscriptions;
 
@@ -27,8 +26,6 @@ package body Rx.Src.Create is
       exception
          when Subscriptions.No_Longer_Subscribed =>
             Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Verbose);
-         when Errors.Unhandled_Error =>
-            raise;
          when E : others =>
             Typed.Default_Error_Handler (Consumer, E);
       end Subscribe;

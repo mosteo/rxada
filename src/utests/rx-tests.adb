@@ -203,6 +203,8 @@ package body Rx.Tests is
       Subs := Just (1)   & Integer_To_Float  & FltChecker.Subscribe (Do_Last => True, Ok_Last => 1.0);
       Subs := Just (1)   & Integer_To_String & StrChecker.Subscribe (Do_Last => True, Ok_Last => "1");
 
+      Subs := Just (1)   & Integer_To_String & StrChecker.Subscribe (Do_Last => True, Ok_Last => "2");
+
       return True;
    exception
       when others =>
