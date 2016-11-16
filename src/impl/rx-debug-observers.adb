@@ -29,7 +29,7 @@ package body Rx.Debug.Observers is
    begin
       if This.Do_First and then This.Counter = 0 and then V /= +This.Ok_First then
          raise Constraint_Error with
-           "Failed first, got" & Image (V) & " instead of" & Image (+This.Ok_First);
+           "Failed first, got [" & Image (V) & "] instead of [" & Image (+This.Ok_First) & "]";
       end if;
 
       This.Last_Seen := +V;
@@ -44,12 +44,12 @@ package body Rx.Debug.Observers is
    begin
       if This.Do_Count and then This.Counter /= This.Ok_Count then
          raise Constraint_Error with
-           "Failed count, got" & This.Counter'Img & " instead of" & This.Ok_Count'Img;
+           "Failed count, got [" & This.Counter'Img & "] instead of [" & This.Ok_Count'Img & "]";
       end if;
 
-      if This.Do_Last and then This.Last_Seen /= This.Ok_Last then
+      if This.Do_Last and then +This.Last_Seen /= +This.Ok_Last then
          raise Constraint_Error with
-           "Failed last, got" & Image (+This.Last_Seen) & " instead of" & Image (+This.Ok_Last);
+           "Failed last, got [" & Image (+This.Last_Seen) & "] instead of [" & Image (+This.Ok_Last) & "]";
       end if;
    end Do_On_Completed;
 
