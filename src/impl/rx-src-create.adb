@@ -26,7 +26,7 @@ package body Rx.Src.Create is
          end if;
       exception
          when Subscriptions.No_Longer_Subscribed =>
-            Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed");
+            Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Verbose);
          when Errors.Unhandled_Error =>
             raise;
          when E : others =>
@@ -75,7 +75,7 @@ package body Rx.Src.Create is
       Actual.On_Subscribe (Observer);
       exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("At Create.On_Subscribe: caught No_Longer_Subscribed");
+         Debug.Log ("At Create.On_Subscribe: caught No_Longer_Subscribed", Debug.Verbose);
       when E : others =>
          Typed.Default_Error_Handler (Observer, E);
    end On_Subscribe;

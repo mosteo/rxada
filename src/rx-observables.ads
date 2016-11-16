@@ -68,14 +68,26 @@ package Rx.Observables is
       package RxInterval is new Rx.Src.Interval (Typed, Succ);
       package RxRange    is new Rx.Src.Ranges   (Typed, Succ, "<");
 
+      --------------
+      -- Interval --
+      --------------
+
       function Interval (First       : Typed.T;
                          Pause       : Duration := 1.0;
                          First_Pause : Duration := 1.0;
                          Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                          return Typed.Observable renames RxInterval.Create;
 
+      -----------------
+      -- Range_Count --
+      -----------------
+
       function Range_Count (First : Typed.T;
                             Count : Natural) return Typed.Observable renames RxRange.From_Count;
+
+      -----------------
+      -- Range_Slice --
+      -----------------
 
       function Range_Slice (First : Typed.T;
                             Last  : Typed.T) return Typed.Observable renames RxRange.From_Slice;

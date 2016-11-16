@@ -16,7 +16,7 @@ package Rx.Debug is
    Level : constant Levels := Reduced;
    --  Minimum level a message has to have for it to be printed
 
-   procedure Log (S : String; Level : Levels := Verbose); -- Prints S if above configured level
+   procedure Log (S : String; Level : Levels); -- Prints S if above configured level
 
    procedure Put_Line (I : Integer);
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;

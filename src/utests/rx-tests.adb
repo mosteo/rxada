@@ -1,3 +1,4 @@
+with Rx.Actions;
 with Rx.Debug;
 with Rx.Debug.Observers;
 with Rx.Errors;
@@ -140,16 +141,60 @@ package body Rx.Tests is
    -- Operators --
    ---------------
 
+   function Never  return Boolean is (False);
+   function Always return Boolean is (True);
+
    function Operators return Boolean is
+      use Actions;
    begin
       Subs :=
         Just (1) &
-        Repeat (9) &
+        Repeat (9) & -- Standard repeating
         Subscribe_Checker (Do_Count => True, Ok_Count => 10,
                            Do_First => True, Ok_First => 1,
                            Do_Last  => True, Ok_Last  => 1);
 
-      pragma Compile_Time_Warning (True, "Implement missing tests for repeats");
+      Subs :=
+        Just (1) &
+        While_Do (Never'Access) & -- Trivial instant exit
+        Subscribe_Checker (Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Just (1) &
+        Repeat (20) &
+        Take (10) & -- Repeat with limit
+        Subscribe_Checker (Do_Count => True, Ok_Count => 10);
+
+      Subs :=
+        Just (1) &
+        Repeat_Forever &
+        Take (10) & -- Repeat forever with limit
+        Subscribe_Checker (Do_Count => True, Ok_Count => 10);
+
+      Subs :=
+        Just (1) &
+        Repeat (4) &
+        Take (10) & -- Repeat with unused limit
+        Subscribe_Checker (Do_Count => True, Ok_Count => 5);
+
+      Subs :=
+        From ((1, 2, 3)) &
+        Repeat_Until (Always'Access) & -- Trivial exit after first repeat
+        Subscribe_Checker (Do_Count => True, Ok_Count => 3);
+
+      Subs :=
+        Ints.From ((1, 2, 3)) &
+        Repeat_Until (Actions.Count (Times => 3)) & -- Trivial exit after first repeat
+        Subscribe_Checker (Do_Count => True, Ok_Count => 9,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 3);
+
+      Subs :=
+        Ints.From ((1, 2, 3)) &
+        While_Do (not Actions.Count (Times => 3)) & -- Trivial exit after first repeat
+        Subscribe_Checker (Do_Count => True, Ok_Count => 6,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 3);
 
       return True;
    exception

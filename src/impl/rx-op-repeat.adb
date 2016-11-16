@@ -81,7 +81,7 @@ package body Rx.Op.Repeat is
    function Repeat_Forever return Operate.Operator'Class is
    begin
       return Operator'(Operate.Operator with
-                       Kind   => Repeat_Until,
+                       Kind   => While_Do,
                        Filter => + Actions.Wrap (Always'Access),
                        others => <>);
    end Repeat_Forever;
@@ -109,7 +109,7 @@ package body Rx.Op.Repeat is
    begin
       return Operator'(Operate.Operator with
                        Kind   => While_Do,
-                       Filter => +Check,
+                       Filter => + Check,
                        others => <>);
    end While_Do;
 
@@ -124,7 +124,7 @@ package body Rx.Op.Repeat is
    begin
       return Operator'(Operate.Operator with
                        Kind   => Repeat_Until,
-                       Filter => +Check,
+                       Filter => + Check,
                        others => <>);
    end Repeat_Until;
 
