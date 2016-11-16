@@ -2,6 +2,7 @@ with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 with Ada.Exceptions;
 
 with Rx.Actions;
+with Rx.Actions.Typed;
 with Rx.Contracts;
 with Rx.Impl.Definite_Observable;
 with Rx.Traits.Types;
