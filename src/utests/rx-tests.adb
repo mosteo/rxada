@@ -2,7 +2,6 @@ with Rx.Actions;
 with Rx.Debug;
 with Rx.Debug.Observers;
 with Rx.Errors;
-with Rx.Operators;
 with Rx.Std;
 with Rx.Subscriptions;
 
@@ -12,21 +11,24 @@ package body Rx.Tests is
 
    package Ints renames Std.Integers;
 
-   package StrToInt is new Rx.Operators (Strings, Integers);
-   package IntToStr is new Rx.Operators (Integers, Strings);
+   function String_Image (S : String) return String is (S);
 
-   package IntCount is new Ints.Counters (Integer'Succ, 0);
-   package StrCount is new StrToInt.Counters (Integer'Succ, 0);
-
-   package IntChecker is new Debug.Observers (Std.Integers.Typedd, 0, Integer'Image);
-   use IntChecker;
+   package FltChecker is new Debug.Observers (Std.Floats.Typedd, 0.0, Float'Image);
+   package IntChecker is new Debug.Observers (Std.Integers.Typedd, 0, Integer'Image); use IntChecker;
+   package StrChecker is new Debug.Observers (Std.Strings.Typedd, "", String_Image);
 
    Subs : Rx.Subscriptions.Subscription;
 
+   use Floats;
    use Integers;
    use Strings;
-   use StrToInt;
+
+   use FltToInt;
+   use FltToStr;
+   use IntToFlt;
    use IntToStr;
+   use StrToInt;
+
    use IntCount;
    use StrCount;
 
@@ -195,6 +197,11 @@ package body Rx.Tests is
         Subscribe_Checker (Do_Count => True, Ok_Count => 6,
                            Do_First => True, Ok_First => 1,
                            Do_Last  => True, Ok_Last  => 3);
+
+      --  Casts
+      Subs := Just (1.0) & Float_To_Integer  & IntChecker.Subscribe (Do_Last => True, Ok_Last => 1);
+      Subs := Just (1)   & Integer_To_Float  & FltChecker.Subscribe (Do_Last => True, Ok_Last => 1.0);
+      Subs := Just (1)   & Integer_To_String & StrChecker.Subscribe (Do_Last => True, Ok_Last => "1");
 
       return True;
    exception
