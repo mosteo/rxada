@@ -33,11 +33,14 @@ package body Rx.Transform is
    begin
       if This.Has_Child then
          Operator'Class (This).On_Next (V, This.Get_Child);
+      else
+         raise Subscriptions.No_Longer_Subscribed;
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed", Debug.Reduced);
+         Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed", Debug.Verbose);
          This.Unsubscribe;
+         raise;
    end On_Next;
 
    ------------------
@@ -49,11 +52,14 @@ package body Rx.Transform is
       if This.Has_Child then
          Operator'Class (This).On_Completed (This.Get_Child);
          This.Unsubscribe;
+      else
+         raise Subscriptions.No_Longer_Subscribed;
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Reduced);
+         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Verbose);
          This.Unsubscribe;
+         raise;
    end On_Completed;
 
    --------------
@@ -67,7 +73,8 @@ package body Rx.Transform is
             Operator'Class (This).On_Error (Error, This.Get_Child); -- Pass it down
          exception
             when Subscriptions.No_Longer_Subscribed =>
-               Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Reduced);
+               Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Verbose);
+               raise;
          end;
          This.Unsubscribe;
       else
