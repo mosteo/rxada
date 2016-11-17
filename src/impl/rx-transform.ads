@@ -10,7 +10,14 @@ package Rx.Transform is
 
    pragma Preelaborate;
 
-   type Func1 is access function (V : From.Type_Traits.T) return Into.Type_Traits.T;
+   --  Actions for mixed types:
+
+   type Func1 is access function (V : From.T) return Into.T;
+
+   type Func2 is access function (F : From.T;
+                                  I : Into.T) return Into.T;
+
+   --  Transformative operator infrastructure:
 
    package Links is new Rx.Impl.Links (From);
 
