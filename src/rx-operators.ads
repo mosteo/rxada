@@ -1,7 +1,9 @@
 with Rx.Observables;
 with Rx.Op.Count;
-with Rx.Op.Map;
 with Rx.Transform;
+
+private with Rx.Op.Map;
+private with Rx.Op.Scan;
 
 generic
    --  These could well be trait packages, but using those the user only has to know about "observables" packages
@@ -43,9 +45,22 @@ package Rx.Operators is
 
    function Map (F : Typed.Func1) return Operator;
 
+   ----------
+   -- Scan --
+   ----------
+
+   function Scan (F         : Typed.Func2;
+                  Seed      : Into.T;
+                  Emit_Seed : Boolean) return Operator;
+
 private
 
    package RxMap is new Rx.Op.Map (Typed);
    function Map (F : Typed.Func1) return Operator renames RxMap.Create;
+
+   package RxScan is new Rx.Op.Scan (Typed);
+   function Scan (F         : Typed.Func2;
+                  Seed      : Into.T;
+                  Emit_Seed : Boolean) return Operator renames RxScan.Create;
 
 end Rx.Operators;
