@@ -11,13 +11,28 @@ package Rx.Actions.Typed with Preelaborate is
 
    type Proc1 is access procedure (V : T);
 
-   type Filter1 is access function (V : T) return Boolean;
+   type Filter1  is access function (V : T) return Boolean;
+   type TFilter1 is interface;
+   function Check (Filter : in out TFilter1; V : T) return Boolean is abstract;
+   function Wrap (Filter : Filter1) return TFilter1'Class;
 
    --  Holders
 
    package Func1Str_Holders is new Rx.Holders (TFunc1Str'Class);
    type HTFunc1Str is new Func1Str_Holders.Definite with null record;
 
+   package Filter1_Holders is new Rx.Holders (TFilter1'Class);
+   type HTFilter1 is new Filter1_Holders.Definite with null record;
+
    --  Predefined actions
+
+   Always_Pass : constant TFilter1'Class;
+   --  Trivial filter that always returns true
+
+private
+
+   function Always_True (V : T) return Boolean is (True);
+
+   Always_Pass : constant TFilter1'Class := Wrap (Always_True'Access);
 
 end Rx.Actions.Typed;
