@@ -13,6 +13,8 @@ package body Rx.Tests is
 
    function String_Image (S : String) return String is (S);
 
+   function Is_Even (I : Integer) return Boolean is (I mod 2 = 0);
+
    package FltChecker is new Debug.Observers (Std.Floats.Typedd, 0.0, Float'Image);
    package IntChecker is new Debug.Observers (Std.Integers.Typedd, 0, Integer'Image); use IntChecker;
    package StrChecker is new Debug.Observers (Std.Strings.Typedd, "", String_Image);
@@ -203,7 +205,41 @@ package body Rx.Tests is
       Subs := Just (1)   & Integer_To_Float  & FltChecker.Subscribe (Do_Last => True, Ok_Last => 1.0);
       Subs := Just (1)   & Integer_To_String & StrChecker.Subscribe (Do_Last => True, Ok_Last => "1");
 
-      Subs := Just (1)   & Integer_To_String & StrChecker.Subscribe (Do_Last => True, Ok_Last => "2");
+      --  Last
+      Subs :=
+        From ((1, 2, 3)) &
+        Last &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 3,
+                           Do_Last  => True, Ok_Last  => 3);
+
+      Subs :=
+        Integers.Empty &
+        Last_Or_Default (3) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 3,
+                           Do_Last  => True, Ok_Last  => 3);
+
+      Subs :=
+        From ((1, 2, 3)) &
+        Last (Is_Even'Access) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 2,
+                           Do_Last  => True, Ok_Last  => 2);
+
+      Subs :=
+        From ((1, 3)) &
+        Last_Or_Default (2, Is_Even'Access) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 2,
+                           Do_Last  => True, Ok_Last  => 2);
+
+      Subs :=
+        From ((1, 4)) &
+        Last_Or_Default (2, Is_Even'Access) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 4,
+                           Do_Last  => True, Ok_Last  => 4);
 
       return True;
    exception

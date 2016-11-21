@@ -17,6 +17,7 @@ with Rx.Traits.Arrays;
 with Rx.Typed;
 
 private with Rx.Op.Filter;
+private with Rx.Op.Last;
 private with Rx.Op.Limit;
 private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
@@ -152,6 +153,18 @@ package Rx.Observables is
    -- Observable from single value
    function Just (V : T) return Observable;
 
+   ----------
+   -- Last --
+   ----------
+
+   function Last return Operator;
+   function Last (Check : Typed.Actions.Filter1) return Operator;
+   function Last (Check : Typed.Actions.TFilter1'Class) return Operator;
+
+   function Last_Or_Default (V : Typed.T) return Operator;
+   function Last_Or_Default (V : Typed.T; Check : Typed.Actions.Filter1) return Operator;
+   function Last_Or_Default (V : Typed.T; Check : Typed.Actions.TFilter1'Class) return Operator;
+
    -----------
    -- Limit --
    -----------
@@ -277,6 +290,19 @@ private
 
    package RxJust is new Rx.Src.Just (Typed);
    function Just (V : T) return Observable renames RxJust.Create;
+
+   package RxLast is new Rx.Op.Last (Operate);
+
+   function Last return Operator is (RxLast.Create);
+   function Last (Check : Typed.Actions.Filter1) return Operator is
+     (RxLast.Create (Typed.Actions.Wrap (Check)));
+   function Last (Check : Typed.Actions.TFilter1'Class) return Operator is (RxLast.Create (Check));
+
+   function Last_Or_Default (V : Typed.T) return Operator is (RxLast.Or_Default (V));
+   function Last_Or_Default (V : Typed.T; Check : Typed.Actions.Filter1) return Operator is
+      (RxLast.Or_Default (V, Typed.Actions.Wrap (Check)));
+   function Last_Or_Default (V : Typed.T; Check : Typed.Actions.TFilter1'Class) return Operator is
+      (RxLast.Or_Default (V, Check));
 
    package RxLimit is new Rx.Op.Limit (Operate);
    function Limit (Max : Natural) return Operator renames RxLimit.Create;
