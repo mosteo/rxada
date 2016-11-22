@@ -12,6 +12,7 @@ with Rx.Schedulers;
 
 private with Rx.Src.Empty;
 private with Rx.Src.Interval;
+private with Rx.Src.Timer;
 
 package Rx.Std is
 
@@ -67,6 +68,9 @@ package Rx.Std is
 
    function Never return Any.Observable;
 
+   function Timer (Pause : Duration) return Integers.Observable;
+   --  Std Timer emits a 0 after Pause seconds an completes
+
    --  Casts for predefined types
 
    Float_To_Integer  : constant FltToInt.Operator := FltToInt.Map (Rx.Impl.Casts.To_Integer'Access);
@@ -80,14 +84,14 @@ package Rx.Std is
 
 private
 
-   package RxEmpty is new Rx.Src.Empty (Any.Typedd);
+   package RxEmpty    is new Rx.Src.Empty (Any.Typedd);
+   package RxInterval is new Rx.Src.Interval (Integers.Typedd, Integer'Succ);
+   package RxTimer    is new Rx.Src.Timer (Integers.Typedd);
 
    function Empty return Any.Observable renames RxEmpty.Empty;
 
    function Error (E : Rx.Errors.Occurrence)                return Any.Observable renames RxEmpty.Error;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable renames RxEmpty.Error;
-
-   package RxInterval is new Rx.Src.Interval (Integers.Typedd, Integer'Succ);
 
    function Interval (First       : Integer := 0;
                       Pause       : Duration := 1.0;
@@ -101,5 +105,8 @@ private
    is (if    S'Length = 0                 then String'(1 => Character'First)
        elsif S (S'Last) /= Character'Last then S (S'First .. S'Last - 1) & Character'Succ (S (S'Last))
        else  S & Character'First);
+
+   function Timer (Pause : Duration) return Integers.Observable is
+      (RxTimer.Create (0, Pause));
 
 end Rx.Std;

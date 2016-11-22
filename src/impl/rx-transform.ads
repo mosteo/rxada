@@ -84,6 +84,10 @@ package Rx.Transform is
                           return Into.Observable;
    --  This does the magic of preparing a passive chain, ready for actual subscription/observation
 
+   function "&" (Producer : From.Observable;
+                 Consumer : Operator'Class)
+                 return Into.Observable renames Will_Observe;
+
 private
 
    package Child_Holders is new Rx.Holders (Into.Subscriber'Class, "transform.observer'class");

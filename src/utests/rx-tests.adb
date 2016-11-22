@@ -143,6 +143,17 @@ package body Rx.Tests is
                            Do_First => True, Ok_First => 42,
                            Do_Last  => True, Ok_Last  => 42);
 
+      Subs :=
+        Timer (1, 0.1) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 1);
+      Subs :=
+        Timer (0.1) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 0,
+                           Do_Last  => True, Ok_Last  => 0);
+
       return Verify_Int.Passed;
    exception
       when others =>

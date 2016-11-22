@@ -26,6 +26,7 @@ private with Rx.Op.Subscribe_On;
 private with Rx.Src.Empty;
 private with Rx.Src.Just;
 private with Rx.Src.Start;
+private with Rx.Src.Timer;
 
 generic
    with package Typed is new Rx.Typed (<>);
@@ -248,6 +249,15 @@ package Rx.Observables is
 
    function Take  (Max : Natural) return Operator renames Limit;
 
+   -----------
+   -- Timer --
+   -----------
+
+   function Timer (V         : T;
+                   Pause     : Duration;
+                   Scheduler : Schedulers.Scheduler := Schedulers.Computation)
+                   return Observable;
+
 
    --------------
    -- While_Do --
@@ -337,5 +347,11 @@ private
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;
+
+   package RxTimer is new Rx.Src.Timer (Typed);
+   function Timer (V         : T;
+                   Pause     : Duration;
+                   Scheduler : Schedulers.Scheduler := Schedulers.Computation)
+                   return Observable renames RxTimer.Create;
 
 end Rx.Observables;
