@@ -68,7 +68,7 @@ package Rx.Std is
 
    function Never return Any.Observable;
 
-   function Timer (Pause : Duration) return Integers.Observable;
+   function Timer (After : Duration) return Integers.Observable;
    --  Std Timer emits a 0 after Pause seconds an completes
 
    --  Casts for predefined types
@@ -106,7 +106,7 @@ private
        elsif S (S'Last) /= Character'Last then S (S'First .. S'Last - 1) & Character'Succ (S (S'Last))
        else  S & Character'First);
 
-   function Timer (Pause : Duration) return Integers.Observable is
-      (RxTimer.Create (0, Pause));
+   function Timer (After : Duration) return Integers.Observable is
+      (RxTimer.Create (0, After));
 
 end Rx.Std;

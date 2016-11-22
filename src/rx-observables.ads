@@ -254,7 +254,7 @@ package Rx.Observables is
    -----------
 
    function Timer (V         : T;
-                   Pause     : Duration;
+                   After     : Duration;
                    Scheduler : Schedulers.Scheduler := Schedulers.Computation)
                    return Observable;
 
@@ -350,7 +350,7 @@ private
 
    package RxTimer is new Rx.Src.Timer (Typed);
    function Timer (V         : T;
-                   Pause     : Duration;
+                   After     : Duration;
                    Scheduler : Schedulers.Scheduler := Schedulers.Computation)
                    return Observable renames RxTimer.Create;
 
