@@ -16,7 +16,7 @@ package body Rx.Src.Timer is
 
    function Create
      (V         : Typed.T;
-      Pause     : Duration;
+      After     : Duration;
       Scheduler : Schedulers.Scheduler := Schedulers.Computation)
       return Typed.Observable
    is
@@ -25,7 +25,7 @@ package body Rx.Src.Timer is
       return
         RxInterval.Create (First       => V,
                            Pause       => 0.0,
-                           First_Pause => Pause,
+                           First_Pause => After,
                            Scheduler   => Scheduler) &
         RxLimit.Create (1);
    end Create;

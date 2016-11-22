@@ -6,7 +6,7 @@ generic
 package Rx.Src.Timer with Elaborate_Body is
 
    function Create (V         : Typed.T;
-                    Pause     : Duration;
+                    After     : Duration;
                     Scheduler : Schedulers.Scheduler := Schedulers.Computation)
                     return Typed.Observable;
 
