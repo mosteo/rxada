@@ -30,6 +30,9 @@ package Rx.Typed is
 
    package Defobs is new Impl.Definite_Observable (Contracts);
 
+   --  Perhaps this should go where it's used, not that many places...
+   --  Or could be a generic child of Type_Traits or this one...
+
    package T_Lists is new Ada.Containers.Indefinite_Doubly_Linked_Lists (T, Type_Traits."=");
    subtype T_List is T_Lists.List;
 

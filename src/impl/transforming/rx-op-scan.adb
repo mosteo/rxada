@@ -3,7 +3,7 @@ package body Rx.Op.Scan is
    use Typed.Into.Type_Traits;
 
    type Operator is new Typed.Operator with record
-      Func : Typed.Func2;
+      Func : Typed.Actions.Func2;
       Acum : Typed.Into.D;
       Emit : Boolean;
 
@@ -52,7 +52,7 @@ package body Rx.Op.Scan is
    ------------
 
    function Create
-     (Func : Typed.Func2;
+     (Func : Typed.Actions.Func2;
       Seed : Typed.Into.T;
       Emit : Boolean      := False)
       return Typed.Operator'Class

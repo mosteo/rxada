@@ -1,3 +1,4 @@
+with Rx.Actions.Transform;
 with Rx.Errors;
 with Rx.Holders;
 with Rx.Impl.Links;
@@ -10,14 +11,9 @@ package Rx.Transform is
 
    pragma Preelaborate;
 
-   --  Actions for mixed types:
+   package Actions is new Rx.Actions.Transform (From.Contracts, Into.Contracts);
 
-   type Func1 is access function (V : From.T) return Into.T;
-
-   type Func2 is access function (F : From.T;
-                                  I : Into.T) return Into.T;
-
-   --  Transformative operator infrastructure:
+   --  Transformative operator scaffolding:
 
    package Links is new Rx.Impl.Links (From);
 
