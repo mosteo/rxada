@@ -3,9 +3,7 @@ with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
-package Rx.Impl.Shared_Subscriber is
-
---     pragma Preelaborate;
+package Rx.Impl.Shared_Subscriber with Preelaborate is
 
    type Subscriber is new Typed.Contracts.Subscriber with private;
    --  In essence this is a carcass for a pointed to observer.
