@@ -23,7 +23,9 @@ package Rx.Transform is
      Links.Downstream and
      Into.Contracts.Observable and
      From.Contracts.Subscriber
-       with private;
+   with private;
+
+   subtype Transformer is Operator'Class;
 
    --  To have common code not lost, new operators should extend this one, leaving the original
    --  Consumer interface intact (On_Next, etc). Instead, these versions that receive the Observer
