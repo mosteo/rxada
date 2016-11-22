@@ -83,6 +83,8 @@ package body Rx.Tests is
    Deferred : Integer := 0;
    function Deferred_Just return Integers.Observable is (Integers.Just (Deferred));
 
+   function Start_With_42 return Integer is (42);
+
    function Sources return Boolean is
       Obs : Integers.Defob;
    begin
@@ -134,6 +136,12 @@ package body Rx.Tests is
         Subscribe_Checker (Do_Count => True, Ok_Count => 4,
                            Do_First => True, Ok_First => 5,
                            Do_Last  => True, Ok_Last  => 8);
+
+      Subs :=
+        Start (Start_With_42'Access) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 42,
+                           Do_Last  => True, Ok_Last  => 42);
 
       return Verify_Int.Passed;
    exception

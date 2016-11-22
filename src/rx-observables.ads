@@ -25,6 +25,7 @@ private with Rx.Op.Print;
 private with Rx.Op.Subscribe_On;
 private with Rx.Src.Empty;
 private with Rx.Src.Just;
+private with Rx.Src.Start;
 
 generic
    with package Typed is new Rx.Typed (<>);
@@ -210,6 +211,14 @@ package Rx.Observables is
    function Repeat_Until (Check : Actions.Filter0) return Operator is
      (RxRepeat.Repeat_Until (Actions.Wrap (Check)));
 
+   -----------
+   -- Start --
+   -----------
+
+   function Start (Func :          Typed.Actions.TFunc0'Class) return Observable;
+
+   function Start (Func : not null Typed.Actions.Func0)        return Observable;
+
    ---------------
    -- Subscribe --
    ---------------
@@ -316,6 +325,11 @@ private
    package RxPrint is new Rx.Op.Print (Operate);
    function Print (Func           : Typed.Actions.Func1Str := null;
                    With_Timestamp : Boolean                := True) return Operator renames RxPrint.Create;
+
+   package RxStart is new Rx.Src.Start (Typed);
+   function Start (Func :          Typed.Actions.TFunc0'Class) return Observable renames RxStart.Create;
+   function Start (Func : not null Typed.Actions.Func0)        return Observable
+     is (Start (Typed.Actions.Wrap (Func)));
 
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;

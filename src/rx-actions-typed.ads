@@ -2,6 +2,11 @@ generic
    type T (<>) is private;
 package Rx.Actions.Typed with Preelaborate is
 
+   type Func0 is access function return T;
+   type TFunc0 is interface;
+   function Get (Func : in out TFunc0) return T is abstract;
+   function Wrap (Func : Func0) return TFunc0'Class;
+
    type Func1 is access function (V : T) return T;
 
    type Func1Str is access function (V : T) return String;
@@ -17,6 +22,9 @@ package Rx.Actions.Typed with Preelaborate is
    function Wrap (Filter : Filter1) return TFilter1'Class;
 
    --  Holders
+
+   package Func0_Holders is new Rx.Holders (TFunc0'Class);
+   type HTFunc0 is new Func0_Holders.Definite with null record;
 
    package Func1Str_Holders is new Rx.Holders (TFunc1Str'Class);
    type HTFunc1Str is new Func1Str_Holders.Definite with null record;
