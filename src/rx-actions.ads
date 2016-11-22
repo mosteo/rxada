@@ -1,9 +1,9 @@
 with Rx.Errors;
 with Rx.Holders;
 
-package Rx.Actions is
+package Rx.Actions with Preelaborate is
 
-   pragma Preelaborate;
+   --  Procedures/Actions that do not require a type
 
    type Proc0      is access procedure;
    type Proc_Error is access procedure (E : Errors.Occurrence);

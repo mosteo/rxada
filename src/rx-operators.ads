@@ -43,23 +43,23 @@ package Rx.Operators is
    -- Map --
    ---------
 
-   function Map (F : Typed.Func1) return Operator;
+   function Map (F : Typed.Actions.Func1) return Operator;
 
    ----------
    -- Scan --
    ----------
 
-   function Scan (F         : Typed.Func2;
+   function Scan (F         : Typed.Actions.Func2;
                   Seed      : Into.T;
                   Emit_Seed : Boolean) return Operator;
 
 private
 
    package RxMap is new Rx.Op.Map (Typed);
-   function Map (F : Typed.Func1) return Operator renames RxMap.Create;
+   function Map (F : Typed.Actions.Func1) return Operator renames RxMap.Create;
 
    package RxScan is new Rx.Op.Scan (Typed);
-   function Scan (F         : Typed.Func2;
+   function Scan (F         : Typed.Actions.Func2;
                   Seed      : Into.T;
                   Emit_Seed : Boolean) return Operator renames RxScan.Create;
 
