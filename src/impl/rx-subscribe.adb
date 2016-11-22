@@ -1,5 +1,3 @@
-with Ada.Exceptions;
-
 with Rx.Debug;
 
 package body Rx.Subscribe is
@@ -47,7 +45,6 @@ package body Rx.Subscribe is
    --------------
 
    overriding procedure On_Error (This : in out Subscribe; Error : in out Errors.Occurrence) is
-      use Ada.Exceptions;
       use Rx.Actions;
    begin
       if This.Errored then

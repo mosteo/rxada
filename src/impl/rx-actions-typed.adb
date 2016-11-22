@@ -1,5 +1,19 @@
 package body Rx.Actions.Typed is
 
+   -- These can't be expression functions because of gnat bug
+
+   ---------------
+   --  WTFunc0  --
+   ---------------
+
+   type WTFunc0 (Func : Func0) is new TFunc0 with null record;
+   overriding function Get (Func : in out WTFunc0) return T is (Func.Func.all);
+
+   function Wrap (Func : Func0) return TFunc0'Class is
+   begin
+      return WTFunc0'(Func => Func);
+   end Wrap;
+
    -------------------
    --  WTFunc1Str  ---
    -------------------
@@ -9,7 +23,11 @@ package body Rx.Actions.Typed is
    function Wrap (Func : Func1Str) return TFunc1Str'Class is
    begin
       return WTFunc1Str'(Func => Func);
-   end Wrap; -- Can't be expression function because of gnat bug
+   end Wrap;
+
+   -----------------
+   --  WTFilter1  --
+   -----------------
 
    type WTFilter1 (Filter : Filter1) is new TFilter1 with null record;
    overriding function Check (Filter : in out WTFilter1; V : T) return Boolean is (Filter.Filter (V));
