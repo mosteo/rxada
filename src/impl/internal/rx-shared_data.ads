@@ -29,9 +29,12 @@ package Rx.Shared_Data is
    --  UNSAFE unless Item is actually synchronized itself
    --  This should ideally be moved to a separate package with a synchronized interface
 
+   generic
    function Tamper (P : Proxy) return Ref;
-   --  This is only safe if Item is in itself thread-safe (or has a thread-safe view), otherwise we are
+   --  This is only safe if Item is in itself thread-safe, otherwise we are
    --  breaking the purpose of the container itself!
+   --  Might probably have a specific refcounter for that so it didn't depend on the client well-behavedness
+   --  Made generic to raise awareness!
 
 private
 
