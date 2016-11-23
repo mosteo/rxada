@@ -17,6 +17,11 @@ package body Rx.Op.Flatmap is
    --  Some other intermediator will be probably needed
    --  This mediator will be in the wrapper probably, since it is it who creates the
    --  observables for the demiurge
+
+   --  Now, since we'll possibly have multiple threads competing of On_Next, Unsubscribe,
+   --  this will require that the mediator be thread safe. The mediator could be a simple No_Op?
+   --  IIUC, this serialization is not needed in the Concat case
+
    --  I knew this fscking flatmap was going to be a handful!
 
    type Demiurge (Func   : Typed.Actions.Flattener1;

@@ -23,6 +23,10 @@ package body Rx.Shared_Data is
       P.Safe.Apply (CB);
    end Apply;
 
+   ---------
+   -- Get --
+   ---------
+
    function Get (P : Proxy) return Const_Ref is
    begin
       return P.Safe.Get;
