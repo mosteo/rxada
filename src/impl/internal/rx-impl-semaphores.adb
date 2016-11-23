@@ -6,7 +6,7 @@ package body Rx.Impl.Semaphores is
 
    overriding procedure Initialize (This : in out Critical_Section) is
    begin
-      This.Mutex.Sem.Seize;
+      This.Mutex.Tamper.Seize;
    end Initialize;
 
    --------------
@@ -15,7 +15,7 @@ package body Rx.Impl.Semaphores is
 
    overriding procedure Finalize (This : in out Critical_Section) is
    begin
-      This.Mutex.Sem.Release;
+      This.Mutex.Tamper.Release;
    end Finalize;
 
 end Rx.Impl.Semaphores;

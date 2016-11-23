@@ -20,7 +20,7 @@ package Rx.Impl.Shared_Subscriber with Preelaborate is
    overriding procedure On_Completed (This : in out Subscriber);
    overriding procedure On_Error     (This : in out Subscriber; Error : in out Errors.Occurrence);
 
-   overriding function Is_Subscribed (This : in Subscriber) return Boolean;
+   overriding function Is_Subscribed (This : in out Subscriber) return Boolean;
 
    overriding procedure Unsubscribe  (This : in out Subscriber);
 
@@ -34,7 +34,7 @@ private
       Actual : Subscriber_Access;
    end record;
 
-   overriding function Is_Subscribed (This : in Subscriber) return Boolean is
+   overriding function Is_Subscribed (This : in out Subscriber) return Boolean is
       (This.Actual /= null and then This.Actual.Is_Subscribed);
 
    Null_Observer : constant Subscriber := (Typed.Contracts.Subscriber with Actual => null);

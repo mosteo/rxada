@@ -23,15 +23,6 @@ package body Rx.Shared_Data is
       P.Safe.Apply (CB);
    end Apply;
 
-   ---------
-   -- Get --
-   ---------
-
-   function Get (P : Proxy) return Const_Ref is
-   begin
-      return P.Safe.Get;
-   end Get;
-
    ---------------
    -- Safe_Item --
    ---------------
@@ -95,6 +86,15 @@ package body Rx.Shared_Data is
             Free (Elem);
          end if;
       end Finalize;
+
+      ------------
+      -- Tamper --
+      ------------
+
+      function Tamper return Item_Access is
+      begin
+         return Elem;
+      end Tamper;
 
    end Safe_Item;
 
