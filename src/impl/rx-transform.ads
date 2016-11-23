@@ -48,7 +48,7 @@ package Rx.Transform is
    --  FOLLOWING CAN BE OVERRIDEN IF DEFAULT BEHAVIOR HAS TO BE MODIFIED, BUT THESE ARE PROPER DEFAULTS
 
    overriding
-   function Is_Subscribed (This : in out Operator) return Boolean;
+   function Is_Subscribed (This : Operator) return Boolean;
 
    overriding
    procedure Subscribe (Producer : in out Operator;
@@ -104,6 +104,6 @@ private
    function Get_Child (This : in out Operator) return Child_Holders.Reference is (This.Child.Ref);
 
    overriding
-   function Is_Subscribed (This : in out Operator) return Boolean is (not This.Child.Is_Empty);
+   function Is_Subscribed (This : Operator) return Boolean is (not This.Child.Is_Empty);
 
 end Rx.Transform;
