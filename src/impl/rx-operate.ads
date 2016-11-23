@@ -21,6 +21,8 @@ package Rx.Operate with Preelaborate is
    -- Not needed but works around some gnat bug on instantiations
    type Operator is abstract new Transform.Operator with null record;
 
+   subtype Preserver is Operator'Class; -- An operator that does not changes the types involved
+
    package From renames Transform.From;
    package Into renames Transform.Into;
 

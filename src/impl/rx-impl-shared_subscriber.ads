@@ -10,6 +10,9 @@ package Rx.Impl.Shared_Subscriber with Preelaborate is
    --  This way, both threads using it access the same actual Observer.
    --  Deallocation is properly done in On_Completed/On_Error
 
+   --  This expects proper serialization of calls, hence is not thread-safe.
+   --  See Operator Serialize for a safeguard for cases where this is not true
+
    function Create (Held : Typed.Subscriber) return Subscriber;
    procedure Release (This : in out Subscriber);
 
