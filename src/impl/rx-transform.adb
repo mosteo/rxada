@@ -116,7 +116,10 @@ package body Rx.Transform is
    overriding
    procedure Unsubscribe (This : in out Operator) is
    begin
-      This.Child.Clear;
+      if This.Is_Subscribed then
+         This.Get_Child.Unsubscribe;
+         This.Child.Clear;
+      end if;
    end Unsubscribe;
 
    ---------------
