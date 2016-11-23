@@ -39,7 +39,7 @@ package body Rx.Transform is
    exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed", Debug.Verbose);
-         This.Unsubscribe;
+         This.Child.Clear;
          raise;
    end On_Next;
 
@@ -58,7 +58,7 @@ package body Rx.Transform is
    exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Verbose);
-         This.Unsubscribe;
+         This.Child.Clear;
          raise;
    end On_Completed;
 
@@ -76,7 +76,7 @@ package body Rx.Transform is
                Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Verbose);
                raise;
          end;
-         This.Unsubscribe;
+         This.Child.Clear;
       else
          Error.Reraise;
       end if;
