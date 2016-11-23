@@ -23,9 +23,9 @@ project RxAda is
    package Builder is
       case Build is
          when "debug" =>
-            for Default_Switches ("ada") use ("-j7", "-s", "-g");
+            for Default_Switches ("ada") use ("-j0", "-s", "-g");
          when "release" =>
-            for Default_Switches ("ada") use ("-j7", "-s");
+            for Default_Switches ("ada") use ("-j0", "-s");
       end case;
    end Builder;
 
