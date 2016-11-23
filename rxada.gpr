@@ -6,7 +6,8 @@ project RxAda is
                  "rx-examples-minimal.adb",
                  "rx-examples-basic.adb",
                  "rx-examples-threading.adb",
-                 "rx-bugs-op_leak.adb");
+                 "rx-bugs-op_leak.adb",
+                 "rx-bugs-testbed.adb");
 
    type Build_Type is ("debug", "release");
    Build : Build_Type := external ("build", "debug");
