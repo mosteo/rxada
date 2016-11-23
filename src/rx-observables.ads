@@ -35,11 +35,15 @@ package Rx.Observables is
    package Typedd renames Typed; -- Bug workaround
 
    -- Shortcuts
-   subtype Sink        is Typed.Contracts.Sink'Class;
    subtype Observable  is Typed.Contracts.Observable'Class;
    subtype Observer    is Typed.Contracts.Observer'Class;
+   subtype Sink        is Typed.Contracts.Sink'Class;
    subtype T           is Typed.Type_Traits.T;
+
    subtype Defob       is Typed.Defobs.Observable;
+
+   subtype Subscription is Subscriptions.Subscription;
+
 
    -- Scaffolding
    package Operate is new Rx.Operate (Typed);
