@@ -6,7 +6,7 @@ package body Rx.Op.Serialize is
    type Sem_Ptr is access Impl.Semaphores.Binary;
 
    type Serializer is new Operate.Operator with record
-
+      Mutex : Impl.Semaphores.Shared_Binary;
    end record;
 
    overriding procedure On_Next (This  : in out Serializer;

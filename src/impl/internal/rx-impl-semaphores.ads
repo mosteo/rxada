@@ -8,7 +8,7 @@ private with System;
 
 package Rx.Impl.Semaphores is
 
-   type Shared_Binary (<>) is private;
+   type Shared_Binary is private;
    --  A ref-counted semaphore which is initially invalid
 
    function Create return Shared_Binary;

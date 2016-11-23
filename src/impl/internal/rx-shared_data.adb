@@ -91,9 +91,9 @@ package body Rx.Shared_Data is
       -- Tamper --
       ------------
 
-      function Tamper return Item_Access is
+      function Tamper return Ref is
       begin
-         return Elem;
+         return Ref'(Actual => Elem);
       end Tamper;
 
    end Safe_Item;
