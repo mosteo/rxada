@@ -1,8 +1,13 @@
 with Rx.Errors;
+with Rx.Impl.Semaphores;
 
 package body Rx.Op.Serialize is
 
-   type Serializer is new Operate.Operator with null record;
+   type Sem_Ptr is access Impl.Semaphores.Binary;
+
+   type Serializer is new Operate.Operator with record
+
+   end record;
 
    overriding procedure On_Next (This  : in out Serializer;
                                  V     :        Operate.T;
@@ -18,6 +23,9 @@ package body Rx.Op.Serialize is
                                   Child : in out Operate.Observer);
 
    overriding procedure Unsubscribe (This : in out Serializer);
+
+   overriding procedure Subscribe (Producer : in out Serializer;
+                                   Consumer : in out Operate.Subscriber);
 
    ------------
    -- Create --

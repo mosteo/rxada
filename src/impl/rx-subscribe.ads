@@ -51,7 +51,7 @@ private
    overriding procedure On_Completed (This : in out Subscribe);
    overriding procedure On_Error     (This : in out Subscribe; Error : in out Errors.Occurrence);
 
-   overriding function Is_Subscribed (This : Subscribe) return Boolean is (This.Subscription.Is_Subscribed);
+   overriding function Is_Subscribed (This : in out Subscribe) return Boolean is (This.Subscription.Is_Subscribed);
 
    overriding procedure Unsubscribe (This : in out Subscribe);
 
