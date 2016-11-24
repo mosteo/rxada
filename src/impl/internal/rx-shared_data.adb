@@ -23,6 +23,12 @@ package body Rx.Shared_Data is
       P.Safe.Apply (CB);
    end Apply;
 
+   ------------
+   -- Tamper --
+   ------------
+
+   function Tamper (P : Proxy) return Ref       is (P.Safe.Tamper);
+
    ---------------
    -- Safe_Item --
    ---------------

@@ -12,7 +12,7 @@ package Rx.Subscriptions is
 
    procedure Unsubscribe (S : in out Subscription);
 
-   function Is_Subscribed (S : in out Subscription) return Boolean;
+   function Is_Subscribed (S : Subscription) return Boolean;
 
    -- For when we do not care at all:
 
@@ -30,6 +30,8 @@ private
    package Shared_Booleans is new Rx.Shared_Data (State, State_Access);
 
    type Subscription is new Shared_Booleans.Proxy with null record;
+
+   function Is_Subscribed (S : Subscription) return Boolean is (S.Is_Valid and then S.Get = Subscribed);
 
    function Subscribe return Subscription is (Wrap (new State'(Subscribed)));
 

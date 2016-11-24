@@ -23,6 +23,7 @@ package Rx.Typed is
    subtype D is Type_Traits.D;
    subtype Observable is Contracts.Observable'Class;
    subtype Observer   is Contracts.Observer'Class;
+   subtype Sink       is Contracts.Sink'Class;
    subtype Subscriber is Contracts.Subscriber'Class;
 
    procedure Default_Error_Handler (This   : in out Observer'Class;

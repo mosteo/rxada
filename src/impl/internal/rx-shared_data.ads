@@ -3,11 +3,17 @@ private with Ada.Finalization;
 generic
    type Item (<>) is limited private;
    type Item_Access is access Item;
-package Rx.Shared_Data is
+package Rx.Shared_Data with Preelaborate is
 
-   --  Your typical refcounted access type
+   --  Your typical refcounted thread-safe access type
 
-   pragma Preelaborate;
+   type Const_Ref (Actual : access constant Item) is limited null record
+     with Implicit_Dereference => Actual;
+
+   type Ref (Actual : access Item) is limited null record
+     with Implicit_Dereference => Actual;
+   --  UNSAFE unless Item is actually synchronized itself
+   --  This should ideally be moved to a separate package with a synchronized interface
 
    type Proxy is tagged private;
 
@@ -18,18 +24,11 @@ package Rx.Shared_Data is
 
    procedure Apply (P : in out Proxy; CB : access procedure (I : in out Item));
 
-   type Const_Ref (Actual : access constant Item) is limited null record
-     with Implicit_Dereference => Actual;
-
    function Get (P : Proxy) return Const_Ref;
    --  Safe because it cannot outlive the Proxy from which it is retrieved
 
-   type Ref (Actual : access Item) is limited null record
-     with Implicit_Dereference => Actual;
-   --  UNSAFE unless Item is actually synchronized itself
-   --  This should ideally be moved to a separate package with a synchronized interface
-
    generic
+      --  WATCH WHATCHA DOIN'!!
    function Tamper (P : Proxy) return Ref;
    --  This is only safe if Item is in itself thread-safe, otherwise we are
    --  breaking the purpose of the container itself!
@@ -64,6 +63,5 @@ private
    function Is_Valid (P : Proxy) return Boolean is (P.Safe /= null);
 
    function Get    (P : Proxy) return Const_Ref is (P.Safe.Get);
-   function Tamper (P : Proxy) return Ref       is (P.Safe.Tamper);
 
 end Rx.Shared_Data;
