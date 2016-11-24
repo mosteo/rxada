@@ -32,8 +32,8 @@ private
      (Wrap (new Binary (Initially_Available => True,
                         Ceiling             => System.Default_Priority)));
 
-   type Critical_Section (Mutex : access Shared_Binary) is new Ada.Finalization.Limited_Controlled with
-     null record;
+   type Critical_Section (Mutex : not null access Shared_Binary) is new Ada.Finalization.Limited_Controlled
+     with null record;
 
    overriding procedure Initialize (This : in out Critical_Section);
    overriding procedure Finalize   (This : in out Critical_Section);

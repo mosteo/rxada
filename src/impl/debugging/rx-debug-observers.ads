@@ -14,7 +14,7 @@ package Rx.Debug.Observers is
       Do_First : Boolean := False;
       Ok_First : Typed.T := Default_T;
       Do_Last  : Boolean := False;
-      Ok_Last  : Typed.T := Default_T) return Typed.Contracts.Sink'Class
+      Ok_Last  : Typed.T := Default_T) return Typed.Sink
      with Pre => Do_Count or Do_First or Do_Last;
 
    function Subscribe
@@ -23,7 +23,10 @@ package Rx.Debug.Observers is
       Do_First : Boolean := False;
       Ok_First : Typed.T := Default_T;
       Do_Last  : Boolean := False;
-      Ok_Last  : Typed.T := Default_T) return Typed.Contracts.Sink'Class
+      Ok_Last  : Typed.T := Default_T) return Typed.Sink
       renames Subscribe_Checker;
+
+   function Subscribe_Count_Printer return Typed.Sink;
+   -- Counts items seen and prints them, counting in both thread safe/unsafe way
 
 end Rx.Debug.Observers;

@@ -1,3 +1,4 @@
+with Rx.Shared_Data;
 with Rx.Subscribe;
 
 package body Rx.Debug.Observers is
@@ -76,5 +77,56 @@ package body Rx.Debug.Observers is
                           Ok_Last  => +Ok_Last,
                           others   => <>);
    end Subscribe_Checker;
+
+   ---------------
+   --  Counter  --
+   ---------------
+
+   type Nat_Ptr is access Natural;
+
+   package Safe_Natural is new Rx.Shared_Data (Natural, Nat_Ptr);
+
+   type Counter is new RxSubscribe.Subscribe with record
+      Count      : Natural := 0;
+      Safe_Count : Safe_Natural.Proxy := Safe_Natural.Wrap (new Natural'(0));
+   end record;
+
+   overriding procedure Do_On_Next      (This : in out Counter; V : Typed.T);
+   overriding procedure Do_On_Completed (This : in out Counter);
+
+   ----------------
+   -- Do_On_Next --
+   ----------------
+
+   overriding procedure Do_On_Next      (This : in out Counter; V : Typed.T) is
+      pragma Unreferenced (V);
+      procedure Inc (I : in out Natural) is
+      begin
+         I := I + 1;
+      end Inc;
+   begin
+      This.Count := This.Count + 1;
+      This.Safe_Count.Apply (Inc'Access);
+   end Do_On_Next;
+
+   ---------------------
+   -- Do_On_Completed --
+   ---------------------
+
+   overriding procedure Do_On_Completed (This : in out Counter) is
+   begin
+      if This.Count /= This.Safe_Count.Get then
+         Put_Line ("Safe count:  " & Natural'Image (This.Safe_Count.Get));
+         Put_Line ("Unsafe count:" & Natural'Image (This.Count));
+         raise Constraint_Error
+           with "Count was mismatched:" & This.Count'Img & " /=" & Natural'Image (This.Safe_Count.Get);
+      end if;
+   end Do_On_Completed;
+
+   -----------------------------
+   -- Subscribe_Count_Printer --
+   -----------------------------
+
+   function Subscribe_Count_Printer return Typed.Sink is (Counter'(RxSubscribe.Subscribe with others => <>));
 
 end Rx.Debug.Observers;

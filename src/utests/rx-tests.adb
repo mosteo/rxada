@@ -260,6 +260,8 @@ package body Rx.Tests is
                            Do_First => True, Ok_First => 4,
                            Do_Last  => True, Ok_Last  => 4);
 
+      pragma Compile_Time_Warning (True, "Missing check for Serialize operation (need mixer observer)");
+
       return True;
    exception
       when others =>

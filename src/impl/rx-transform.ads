@@ -99,11 +99,10 @@ private
       Child : Child_Holder;
    end record;
 
-   function Has_Child (This : Operator) return Boolean is (not This.Child.Is_Empty);
+   not overriding function Has_Child (This : Operator) return Boolean is (not This.Child.Is_Empty);
 
-   function Get_Child (This : in out Operator) return Child_Holders.Reference is (This.Child.Ref);
+   not overriding function Get_Child (This : in out Operator) return Child_Holders.Reference is (This.Child.Ref);
 
-   overriding
-   function Is_Subscribed (This : Operator) return Boolean is (not This.Child.Is_Empty);
+   overriding function Is_Subscribed (This : Operator) return Boolean is (not This.Child.Is_Empty);
 
 end Rx.Transform;
