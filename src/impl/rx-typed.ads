@@ -29,7 +29,7 @@ package Rx.Typed is
    procedure Default_Error_Handler (This   : in out Observer'Class;
                                     Except : Ada.Exceptions.Exception_Occurrence);
 
-   package Defobs is new Impl.Definite_Observables (Contracts);
+   package Definite_Observables is new Impl.Definite_Observables (Contracts);
 
    --  Perhaps this should go where it's used, not that many places...
    --  Or could be a generic child of Type_Traits or this one...

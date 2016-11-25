@@ -40,7 +40,7 @@ package Rx.Observables is
    subtype Sink        is Typed.Contracts.Sink'Class;
    subtype T           is Typed.Type_Traits.T;
 
-   subtype Defob       is Typed.Defobs.Observable;
+   subtype Defob       is Typed.Definite_Observables.Observable;
 
    subtype Subscription is Subscriptions.Subscription;
 
@@ -276,7 +276,7 @@ package Rx.Observables is
    -- Wrap --
    ----------
 
-   function Wrap (Obs : Typed.Observable) return Defob renames Typed.Defobs.From;
+   function Wrap (Obs : Typed.Observable) return Defob renames Typed.Definite_Observables.From;
    -- Definite observable
    function "+"  (Obs : Typed.Observable) return Defob renames Wrap;
 
