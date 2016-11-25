@@ -1,6 +1,7 @@
 with GNAT.Exception_Traces;
 
 with Rx.Tests;
+with Rx.Typed.Meta;
 
 procedure Rx.Examples.Tests is
 begin
