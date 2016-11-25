@@ -1,7 +1,7 @@
-with Rx.Operate;
+with Rx.Preserve;
 
 generic
-   with package Operate is new Rx.Operate (<>);
+   with package Operate is new Rx.Preserve (<>);
 package Rx.Op.Last with Preelaborate is
 
    function Create (Check : Operate.Typed.Actions.TFilter1'Class := Operate.Typed.Actions.Always_Pass)

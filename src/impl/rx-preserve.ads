@@ -4,9 +4,9 @@ with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
-package Rx.Operate with Preelaborate is
+package Rx.Preserve with Preelaborate is
 
-   -- Operate is like Transform, but with type preservation
+   -- Specialized Transform, but with type preservation
    -- A separate package is convenient to allow independent package files for this kind of operators
 
    -- Shortcuts
@@ -28,4 +28,4 @@ package Rx.Operate with Preelaborate is
 
    package Holders is new Rx.Holders (Operator'Class, "operator");
 
-end Rx.Operate;
+end Rx.Preserve;
