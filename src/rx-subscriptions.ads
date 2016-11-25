@@ -1,4 +1,4 @@
-private with Rx.Shared_Data;
+private with Rx.Impl.Shared_Data;
 
 package Rx.Subscriptions is
 
@@ -27,7 +27,7 @@ private
    type State_Access is access State;
 
    --  This probably can be done more lightweight since it involves a single boolean check
-   package Shared_Booleans is new Rx.Shared_Data (State, State_Access);
+   package Shared_Booleans is new Rx.Impl.Shared_Data (State, State_Access);
 
    type Subscription is new Shared_Booleans.Proxy with null record;
 

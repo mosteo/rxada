@@ -10,8 +10,6 @@ generic
    with function Next (C : Cursor) return Cursor is <>;
    with function Element (C : Cursor) return Typed.Type_Traits.T is <>;
    with function Has_Element (C : Cursor) return Boolean is <>;
-package Rx.Traits.Iterable is
-
---     pragma Preelaborate;
+package Rx.Traits.Iterable with Preelaborate is
 
 end Rx.Traits.Iterable;

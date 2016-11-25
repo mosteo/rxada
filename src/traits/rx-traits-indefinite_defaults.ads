@@ -2,7 +2,7 @@ with Rx.Holders;
 with Rx.Traits.Types;
 
 generic
-   type T (<>) is private; -- User type that is already definite;
+   type T (<>) is private; -- User type that is not definite;
 package Rx.Traits.Indefinite_Defaults is
 
    package Holders is new Rx.Holders (T);

@@ -1,6 +1,6 @@
 with Ada.Unchecked_Deallocation;
 
-package body Rx.Shared_Data is
+package body Rx.Impl.Shared_Data is
 
    ----------
    -- Wrap --
@@ -130,4 +130,4 @@ package body Rx.Shared_Data is
       end if;
    end Finalize;
 
-end Rx.Shared_Data;
+end Rx.Impl.Shared_Data;
