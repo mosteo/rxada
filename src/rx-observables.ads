@@ -316,9 +316,12 @@ package Rx.Observables is
 
 private
 
---     package RxBuffer is new Rx.Op.Buffer (Metaobservables,
---                                           Collections.Lists.Empty_List,
---                                           Collections.Lists.Append);
+   package T2List is new Rx.Transform (Typed, Collections.Typed_Lists);
+
+   procedure Append (L : in out Collections.List; V : T);
+
+   package RxBuffer is new Rx.Op.Buffer (T2List,
+                                         Collections.Lists.Empty_List);
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Typed.Observable renames RxEmpty.Empty;

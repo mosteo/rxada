@@ -14,6 +14,15 @@ package body Rx.Observables is
       return Actual_R.Get_Subscription;
    end "&";
 
+   ------------
+   -- Append --
+   ------------
+
+   procedure Append (L : in out Collections.List; V : T) is
+   begin
+      L.Append (V);
+   end Append;
+
    ---------------
    -- Subscribe --
    ---------------
