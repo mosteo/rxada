@@ -1,4 +1,4 @@
-package body Rx.Impl.Definite_Observable is
+package body Rx.Impl.Definite_Observables is
 
    ---------------
    -- Subscribe --
@@ -30,4 +30,4 @@ package body Rx.Impl.Definite_Observable is
       This.Hold (Indef);
    end From;
 
-end Rx.Impl.Definite_Observable;
+end Rx.Impl.Definite_Observables;
