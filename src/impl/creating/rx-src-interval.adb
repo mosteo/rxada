@@ -10,7 +10,7 @@ package body Rx.Src.Interval is
 
    package Shared is new Rx.Impl.Shared_Subscriber (Typed);
 
-   use Typed.Type_Traits;
+   use Typed.Conversions;
 
    type Runner is new Dispatchers.Runnable with record
       Sched  : Schedulers.Scheduler;

@@ -4,7 +4,7 @@ package body Rx.Traits.Arrays is
    -- Builders --
    --------------
 
-   use Typed.Type_Traits;
+   use Typed.Conversions;
 
    -----------
    -- Build --

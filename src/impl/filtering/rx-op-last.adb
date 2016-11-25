@@ -1,6 +1,6 @@
 package body Rx.Op.Last is
 
-   use Operate.Typed.Type_Traits;
+   use Operate.Typed.Conversions;
 
    type Operator is new Operate.Operator with record
       Filter : Operate.Typed.Actions.HTFilter1;

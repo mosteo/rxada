@@ -3,9 +3,9 @@ with Rx.Subscribe;
 
 package body Rx.Debug.Observers is
 
-   package RxSubscribe is new Rx.Subscribe (Typed);
+   use Typed.Conversions;
 
-   use Typed.Type_Traits;
+   package RxSubscribe is new Rx.Subscribe (Typed);
 
    type Checker is new RxSubscribe.Subscribe with record
       Counter   : Natural := 0;
@@ -14,9 +14,9 @@ package body Rx.Debug.Observers is
       Do_Count : Boolean := False;
       Ok_Count : Natural := 0;
       Do_First : Boolean := False;
-      Ok_First : Typed.D := +Default_T;
+      Ok_First : Typed.D := + Default_T;
       Do_Last  : Boolean := False;
-      Ok_Last  : Typed.D := +Default_T;
+      Ok_Last  : Typed.D := + Default_T;
    end record;
 
    overriding procedure Do_On_Next      (This : in out Checker; V : Typed.T);
@@ -28,7 +28,7 @@ package body Rx.Debug.Observers is
 
    overriding procedure Do_On_Next      (This : in out Checker; V : Typed.T) is
    begin
-      if This.Do_First and then This.Counter = 0 and then V /= +This.Ok_First then
+      if This.Do_First and then This.Counter = 0 and then V /= + This.Ok_First then
          raise Constraint_Error with
            "Failed first, got [" & Image (V) & "] instead of [" & Image (+This.Ok_First) & "]";
       end if;

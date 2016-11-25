@@ -1,7 +1,9 @@
 with Ada.Exceptions;
 
 with Rx.Actions;
+with Rx.Collections;
 with Rx.Errors;
+with Rx.Metatyped;
 with Rx.Op.Count;
 with Rx.Op.Repeat;
 with Rx.Preserve;
@@ -14,8 +16,11 @@ with Rx.Src.Ranges;
 with Rx.Subscribe;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
+with Rx.Traits.Definite_Defaults;
+with Rx.Transform;
 with Rx.Typed;
 
+private with Rx.Op.Buffer;
 private with Rx.Op.Filter;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
@@ -32,6 +37,8 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Observables is
 
+   package Collections is new Rx.Collections (Typed);
+
    package Typedd renames Typed; -- Bug workaround
 
    -- Shortcuts
@@ -44,9 +51,12 @@ package Rx.Observables is
 
    subtype Subscription is Subscriptions.Subscription;
 
-
    -- Scaffolding
-   package Operate is new Rx.Preserve (Typed);
+   package Metatyped is new Rx.Metatyped (Typed);
+   package Metaobservables is new Rx.Transform (Typed, Metatyped.Metainstance);
+
+   package Operate   is new Rx.Preserve (Typed);
+
    subtype Operator is Operate.Operator'Class;
 
    -----------
@@ -292,10 +302,23 @@ package Rx.Observables is
    --  Subscribe
    function "&" (Producer : Observable; Consumer : Sink) return Subscriptions.Subscription;
 
+   ------------------
+   --  Metachains  --
+   ------------------
+
+   function "&" (Producer : Metaobservables.From.Observable;
+                 Consumer : Metaobservables.Operator'Class) return Metaobservables.Intoo.Observable
+     renames Metaobservables.Will_Observe;
+
+
    -- Debug helpers
    function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
 
 private
+
+--     package RxBuffer is new Rx.Op.Buffer (Metaobservables,
+--                                           Collections.Lists.Empty_List,
+--                                           Collections.Lists.Append);
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Typed.Observable renames RxEmpty.Empty;

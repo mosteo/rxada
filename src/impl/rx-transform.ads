@@ -11,6 +11,8 @@ package Rx.Transform is
 
    pragma Preelaborate;
 
+   package Intoo renames Into; -- Bug workaround
+
    package Actions is new Rx.Actions.Transform (From.Contracts, Into.Contracts);
 
    --  Transformative operator scaffolding:
