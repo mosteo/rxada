@@ -260,6 +260,12 @@ package body Rx.Tests is
                            Do_First => True, Ok_First => 4,
                            Do_Last  => True, Ok_Last  => 4);
 
+      -- Buffering
+      Subs :=
+        IntEnums.Range_Count (1, 100) &
+        Buffer (10) &
+        Integers.Subscribe;
+
       pragma Compile_Time_Warning (True, "Missing check for Serialize operation (need mixer observer)");
 
       return True;

@@ -1,11 +1,13 @@
 with Ada.Exceptions;
 
+with Rx.Debug;
 with Rx.Errors;
 with Rx.Impl.Any;
 with Rx.Impl.Casts;
 with Rx.Impl.Integers;
 with Rx.Impl.Floats;
 with Rx.Impl.Strings;
+with Rx.Observables.Image;
 with Rx.Operators;
 with Rx.Subscriptions;
 with Rx.Schedulers;
@@ -52,6 +54,8 @@ package Rx.Std is
 
    package IntEnums is new Integers.Enums (Integer'Succ);
    package StrEnums is new Strings.Enums  (String_Succ);
+
+--   package IntImg is new Integers.Image (Integer'Image);
 
    --  Standard Rx sources and operators
 
