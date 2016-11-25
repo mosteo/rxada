@@ -2,7 +2,7 @@ private with Ada.Finalization;
 
 private with GNAT.Semaphores;
 
-private with Rx.Shared_Data;
+private with Rx.Impl.Shared_Data;
 
 private with System;
 
@@ -24,7 +24,7 @@ private
 
    type Binary_Ptr is access Binary;
 
-   package Shared_Semaphores is new Rx.Shared_Data (Binary, Binary_Ptr);
+   package Shared_Semaphores is new Rx.Impl.Shared_Data (Binary, Binary_Ptr);
 
    type Shared_Binary is new Shared_Semaphores.Proxy with null record;
 

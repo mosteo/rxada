@@ -1,4 +1,4 @@
-with Rx.Shared_Data;
+with Rx.Impl.Shared_Data;
 with Rx.Subscribe;
 
 package body Rx.Debug.Observers is
@@ -84,7 +84,7 @@ package body Rx.Debug.Observers is
 
    type Nat_Ptr is access Natural;
 
-   package Safe_Natural is new Rx.Shared_Data (Natural, Nat_Ptr);
+   package Safe_Natural is new Rx.Impl.Shared_Data (Natural, Nat_Ptr);
 
    type Counter is new RxSubscribe.Subscribe with record
       Count      : Natural := 0;
