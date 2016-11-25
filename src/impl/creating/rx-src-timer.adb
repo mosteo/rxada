@@ -1,4 +1,4 @@
-with Rx.Operate;
+with Rx.Preserve;
 with Rx.Op.Limit;
 with Rx.Src.Interval;
 
@@ -6,7 +6,7 @@ package body Rx.Src.Timer is
 
    function Dummy_Succ (V : Typed.T) return Typed.T is (V);
 
-   package Operate    is new Rx.Operate (Typed);
+   package Operate    is new Rx.Preserve (Typed);
    package RxInterval is new Rx.Src.Interval (Typed, Dummy_Succ);
    package RxLimit    is new Rx.Op.Limit (Operate);
 
