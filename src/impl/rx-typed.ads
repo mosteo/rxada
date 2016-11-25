@@ -1,4 +1,3 @@
-with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 with Ada.Exceptions;
 
 with Rx.Actions;
@@ -31,10 +30,18 @@ package Rx.Typed is
 
    package Definite_Observables is new Impl.Definite_Observables (Contracts);
 
-   --  Perhaps this should go where it's used, not that many places...
-   --  Or could be a generic child of Type_Traits or this one...
+   package Conversions is
 
-   package T_Lists is new Ada.Containers.Indefinite_Doubly_Linked_Lists (T, Type_Traits."=");
-   subtype T_List is T_Lists.List;
+   --  This package is purely to work around gnat bugs on visibility and instantiation of tagged with untagged view
+
+      function "=" (L, R : T) return Boolean renames Type_Traits."=";
+
+      function "+" (V : T) return D renames Type_Traits.To_Definite;
+      function "+" (V : D) return T renames Type_Traits.To_Indefinite;
+
+      function Def (V : T) return D renames Type_Traits.To_Definite;
+      function Ind (V : D) return T renames Type_Traits.To_Indefinite;
+
+   end Conversions;
 
 end Rx.Typed;

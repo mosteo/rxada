@@ -1,11 +1,17 @@
+with Ada.Containers.Indefinite_Doubly_Linked_Lists;
+
 package body Rx.Op.Repeat is
+
+   use type Operate.T;
+
+   package T_Lists is new Ada.Containers.Indefinite_Doubly_Linked_Lists (Operate.T);
 
    use type Actions.HTFilter0;
 
    type Kinds is (Counter, While_Do, Repeat_Until);
 
    type Operator (Kind : Kinds) is new Operate.Operator with record
-      Sequence : Operate.Typed.T_List;
+      Sequence : T_Lists.List;
 
       First_Seen : Boolean := False;
 

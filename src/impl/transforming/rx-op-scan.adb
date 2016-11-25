@@ -1,6 +1,6 @@
 package body Rx.Op.Scan is
 
-   use Typed.Into.Type_Traits;
+   use Typed.Into.Conversions;
 
    type Operator is new Typed.Operator with record
       Func : Typed.Actions.Func2;
