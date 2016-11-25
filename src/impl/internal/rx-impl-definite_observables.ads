@@ -3,7 +3,7 @@ with Rx.Holders;
 
 generic
    with package Contracts is new Rx.Contracts (<>);
-package Rx.Impl.Definite_Observable is
+package Rx.Impl.Definite_Observables is
 
    pragma Preelaborate;
 
@@ -24,4 +24,4 @@ private
 
    type Observable is new Obs_Holders.Definite and Contracts.Observable with null record;
 
-end Rx.Impl.Definite_Observable;
+end Rx.Impl.Definite_Observables;
