@@ -1,9 +1,7 @@
 with Ada.Exceptions;
 
 with Rx.Actions;
-with Rx.Collections;
 with Rx.Errors;
-with Rx.Metatyped;
 with Rx.Op.Count;
 with Rx.Op.Repeat;
 with Rx.Preserve;
@@ -16,10 +14,8 @@ with Rx.Src.Ranges;
 with Rx.Subscribe;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
-with Rx.Transform;
 with Rx.Typed;
 
-private with Rx.Op.Buffer;
 private with Rx.Op.Filter;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
@@ -36,8 +32,6 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Observables is
 
-   package Collections is new Rx.Collections (Typed);
-
    package Typedd renames Typed; -- Bug workaround
 
    -- Shortcuts
@@ -45,23 +39,14 @@ package Rx.Observables is
    subtype Observer    is Typed.Contracts.Observer'Class;
    subtype Sink        is Typed.Contracts.Sink'Class;
    subtype T           is Typed.Type_Traits.T;
-   subtype T_List      is Collections.List;
 
    subtype Defob       is Typed.Definite_Observables.Observable;
 
    subtype Subscription is Subscriptions.Subscription;
 
    -- Scaffolding
-   package Metatyped is new Rx.Metatyped (Typed);
-   package Metaobservables is new Rx.Transform (Typed, Metatyped.Metainstance);
-
-   package T_To_List is new Rx.Transform (Typed, Collections.Typed_Lists);
-
    package Operate   is new Rx.Preserve (Typed);
-
-   subtype Operator is Operate.Operator'Class;
-
-   function Buffer (Every : Positive; Skip : Natural := 0) return T_To_List.Operator'Class;
+   subtype Operator  is Operate.Operator'Class;
 
    -----------
    -- Count --
@@ -306,27 +291,10 @@ package Rx.Observables is
    --  Subscribe
    function "&" (Producer : Observable; Consumer : Sink) return Subscriptions.Subscription;
 
-   ------------------
-   --  Metachains  --
-   ------------------
-
-   function "&" (Producer : Typed.Observable;
-                 Consumer : Metaobservables.Operator'Class) return Metaobservables.Intoo.Observable
-     renames Metaobservables.Will_Observe;
-
-
    -- Debug helpers
    function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
 
 private
-
-   procedure Append (L : in out Collections.List; V : T);
-
-   package RxBuffer is new Rx.Op.Buffer (T_To_List,
-                                         Collections.Lists.Empty_List);
-
-   function Buffer (Every : Positive; Skip : Natural := 0) return T_To_List.Operator'Class
-     renames RxBuffer.Create;
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Typed.Observable renames RxEmpty.Empty;

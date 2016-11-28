@@ -7,7 +7,7 @@ package Rx.Observables.Image is
 
    function Print (With_Timestamp : Boolean := True) return Operator;
 
-   function Print_List (With_Timestamp : Boolean := True) return T_To_List.Operator'Class;
+   function Print_List (With_Timestamp : Boolean := True) return T_Lists.Operator'Class;
 
 private
 
