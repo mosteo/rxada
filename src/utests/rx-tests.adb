@@ -264,7 +264,7 @@ package body Rx.Tests is
       Subs :=
         IntEnums.Range_Count (1, 100) &
         Buffer (10) &
-        Integers.Subscribe;
+        T_Lists.Subscribe;
 
       pragma Compile_Time_Warning (True, "Missing check for Serialize operation (need mixer observer)");
 
