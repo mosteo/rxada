@@ -2,7 +2,7 @@ package body Rx.Op.Count is
 
    use Transform.Into.Conversions;
 
-   type Counter is new Transform.Operator with record
+   type Counter is new Transform.Transformer with record
       Count : Transform.Into.Type_Traits.D;
    end record;
 
@@ -46,10 +46,10 @@ package body Rx.Op.Count is
    -- Count --
    -----------
 
-   function Count (First : Transform.Into.T := Default_Initial_Count) return Transform.Operator'Class
+   function Count (First : Transform.Into.T := Default_Initial_Count) return Transform.Transformer'Class
    is
    begin
-      return Counter'(Transform.Operator with Count => +First);
+      return Counter'(Transform.Transformer with Count => +First);
    end Count;
 
 end Rx.Op.Count;

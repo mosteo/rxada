@@ -33,7 +33,7 @@ package body Rx.Op.Print is
 
    function Create (Func : Operate.Typed.Actions.Func1Str := null; With_Timestamp : Boolean := True) return Operate.Operator'Class is
    begin
-      return Op'(Operate.Transform.Operator with Func => Func, With_Timestamp => With_Timestamp);
+      return Op'(Operate.Transform.Transformer with Func => Func, With_Timestamp => With_Timestamp);
    end Create;
 
 end Rx.Op.Print;

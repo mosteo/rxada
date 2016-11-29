@@ -19,7 +19,7 @@ package Rx.Preservers with Preelaborate is
    package Transform is new Rx.Transformers (Typed, Typed);
 
    -- Not needed but works around some gnat bug on instantiations
-   type Operator is abstract new Transform.Operator with null record;
+   type Operator is abstract new Transform.Transformer with null record;
 
    subtype Preserver is Operator'Class; -- An operator that does not changes the types involved
 

@@ -7,6 +7,6 @@ generic
 package Rx.Op.Count is
 
    function Count (First : Transform.Into.T := Default_Initial_Count)
-                   return  Transform.Operator'Class;
+                   return  Transform.Transformer'Class;
 
 end Rx.Op.Count;
