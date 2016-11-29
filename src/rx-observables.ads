@@ -89,6 +89,9 @@ package Rx.Observables is
                       renames List_Count.Count;
       --  This counts the number of lists seen, don't confuse with Length
 
+      pragma Compile_Time_Warning (True, "Length operator for lists");
+      pragma Compile_Time_Warning (True, "Split operator as buffer inverse");
+
    end Counters;
 
    -----------
