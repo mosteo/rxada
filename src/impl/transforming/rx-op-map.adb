@@ -1,6 +1,6 @@
 package body Rx.Op.Map is
 
-   type Op (F : Typed.Actions.Func1) is new Typed.Operator with null record;
+   type Op (F : Typed.Actions.Func1) is new Typed.Transformer with null record;
 
    overriding
    procedure On_Next (This  : in out Op;
@@ -14,9 +14,9 @@ package body Rx.Op.Map is
    -- Create --
    ------------
 
-   function Create (F : Typed.Actions.Func1) return Typed.Operator'Class is
+   function Create (F : Typed.Actions.Func1) return Typed.Transformer'Class is
    begin
-      return Op'(Typed.Operator with F => F);
+      return Op'(Typed.Transformer with F => F);
    end Create;
 
 end Rx.Op.Map;

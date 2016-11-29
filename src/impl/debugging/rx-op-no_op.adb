@@ -1,6 +1,6 @@
 package body Rx.Op.No_Op is
 
-   type Operator is new Operate.Operator with null record;
+   type Operator is new Operate.Preserver with null record;
 
    overriding
    procedure On_Next (This  : in out Operator;
@@ -16,9 +16,9 @@ package body Rx.Op.No_Op is
    -- Create --
    ------------
 
-   function Create return Operate.Operator'Class is
+   function Create return Operate.Preserver'Class is
    begin
-      return Operator'(Operate.Operator with null record);
+      return Operator'(Operate.Preserver with null record);
    end Create;
 
 

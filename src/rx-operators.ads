@@ -1,6 +1,6 @@
 with Rx.Observables;
 with Rx.Op.Count;
-with Rx.Transform;
+with Rx.Transformers;
 
 private with Rx.Op.Map;
 private with Rx.Op.Scan;
@@ -14,9 +14,9 @@ package Rx.Operators is
 -- This package seems unnecessary but by separating it from Transform we can too separate each operator
 -- implementation classes in its own packages, just like with Typed/Observables hierarchy.
 
-   package Typed is new Rx.Transform (From.Typed, Into.Typed);
+   package Typed is new Rx.Transformers (From.Typed, Into.Typed);
 
-   subtype Operator Is Typed.Operator'Class;
+   subtype Operator Is Typed.Transformer'Class;
 
    ---------
    -- "&" --

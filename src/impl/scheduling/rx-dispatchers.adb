@@ -1,7 +1,7 @@
 package body Rx.Dispatchers is
 
-   Shutting_Down : Boolean := False;
-   pragma Atomic (Shutting_Down);
+   Shutting_Down : Boolean := False
+     with Atomic;
 
    --------------
    -- Shutdown --
@@ -24,6 +24,8 @@ package body Rx.Dispatchers is
 
    package body Events is
 
+      use Typed.Conversions;
+
       type Kinds is (On_Next, On_Completed, On_Error);
 
       type Runner (Kind : Kinds) is new Runnable with record
@@ -36,7 +38,6 @@ package body Rx.Dispatchers is
       end record;
 
       overriding procedure Run (R : in out Runner) is
-         use Typed.Type_Traits;
       begin
          case R.Kind is
             when On_Next      =>
@@ -65,7 +66,6 @@ package body Rx.Dispatchers is
          Observer : Shared.Subscriber;
          V : Typed.Type_Traits.T)
       is
-         use Typed.Type_Traits;
          R : Runner := (On_Next, Observer, +V); -- Create a copy so it's in/out
       begin
          Sched.Schedule (R);
@@ -112,7 +112,7 @@ package body Rx.Dispatchers is
          Parent.Subscribe (R.Op.Ref); -- Suspicious... should make a copy of R.Op?
       end Run;
 
-      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Operator'Class) is
+      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Preserver'Class) is
          R : Runner := (Runnable with Operate.Holders.Hold (Operator));
       begin
          Sched.Schedule (R);

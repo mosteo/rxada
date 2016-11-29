@@ -8,7 +8,7 @@ package body Rx.Op.Observe_On is
    package Remote is new Dispatchers.Events (Operate.Typed);
    package Shared renames Remote.Shared;
 
-   type Op is new Operate.Operator with record
+   type Op is new Operate.Preserver with record
       Sched : Schedulers.Scheduler;
    end record;
 
@@ -64,9 +64,9 @@ package body Rx.Op.Observe_On is
    -- Create --
    ------------
 
-   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
+   function Create (Scheduler : Schedulers.Scheduler) return Operate.Preserver'Class is
    begin
-      return Op'(Operate.Transform.Operator with Sched => Scheduler);
+      return Op'(Operate.Transform.Transformer with Sched => Scheduler);
    end Create;
 
 end Rx.Op.Observe_On;

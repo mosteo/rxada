@@ -1,6 +1,6 @@
 package body Rx.Op.Filter is
 
-   type Operator is new Operate.Operator with record
+   type Operator is new Operate.Preserver with record
       Func : Operate.Typed.Actions.Filter1;
    end record;
 
@@ -19,9 +19,9 @@ package body Rx.Op.Filter is
    -- Create --
    ------------
 
-   function Create (Filter : not null Operate.Typed.Actions.Filter1) return Operate.Operator'Class is
+   function Create (Filter : not null Operate.Typed.Actions.Filter1) return Operate.Preserver'Class is
    begin
-      return Operator'(Operate.Operator with Filter);
+      return Operator'(Operate.Preserver with Filter);
    end Create;
 
 

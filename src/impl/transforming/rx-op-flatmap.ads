@@ -12,5 +12,4 @@ package Rx.Op.Flatmap with Preelaborate is
    function Flatten (Func   : Typed.Actions.Flattener1;
                      Policy : Policies) return Typed.Transformer;
 
-
 end Rx.Op.Flatmap;

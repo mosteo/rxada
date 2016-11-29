@@ -66,6 +66,7 @@ package body Rx.Impl.Shared_Subscriber is
    begin
       if This.Actual /= null then
          This.Actual.Unsubscribe;
+         This.Release;
       end if;
    end Unsubscribe;
 

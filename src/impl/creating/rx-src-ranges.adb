@@ -2,6 +2,8 @@ with Rx.Src.Create;
 
 package body Rx.Src.Ranges is
 
+   use Typed.Conversions;
+
    package Source is new Rx.Src.Create (Typed);
 
    type Kinds is (Counter, Interval);
@@ -15,7 +17,6 @@ package body Rx.Src.Ranges is
    end record;
 
    overriding procedure On_Subscribe (This : in out Observable; Observer : in out Typed.Subscriber) is
-      use Typed.Type_Traits;
    begin
       case This.Mode is
          when Counter =>
@@ -52,7 +53,6 @@ package body Rx.Src.Ranges is
    --------------------
 
    function From_Slice (First, Last : Typed.T) return Typed.Observable is
-      use Typed.Type_Traits;
    begin
       return Source.Tagged_Stateful (Observable'(Mode => Interval, Next => +First, Last => +Last));
    end From_Slice;

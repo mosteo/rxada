@@ -3,11 +3,17 @@ private with Ada.Finalization;
 generic
    type Item (<>) is limited private;
    type Item_Access is access Item;
-package Rx.Shared_Data is
+package Rx.Impl.Shared_Data with Preelaborate is
 
-   --  Your typical refcounted access type
+   --  Your typical refcounted thread-safe access type
 
-   pragma Preelaborate;
+   type Const_Ref (Actual : access constant Item) is limited null record
+     with Implicit_Dereference => Actual;
+
+   type Ref (Actual : access Item) is limited null record
+     with Implicit_Dereference => Actual;
+   --  UNSAFE unless Item is actually synchronized itself
+   --  This should ideally be moved to a separate package with a synchronized interface
 
    type Proxy is tagged private;
 
@@ -18,10 +24,16 @@ package Rx.Shared_Data is
 
    procedure Apply (P : in out Proxy; CB : access procedure (I : in out Item));
 
-   type Const_Ref (Actual : access constant Item) is limited private
-     with Implicit_Dereference => Actual;
-
    function Get (P : Proxy) return Const_Ref;
+   --  Safe because it cannot outlive the Proxy from which it is retrieved
+
+   generic
+      --  WATCH WHATCHA DOIN'!!
+   function Tamper (P : Proxy) return Ref;
+   --  This is only safe if Item is in itself thread-safe, otherwise we are
+   --  breaking the purpose of the container itself!
+   --  Might probably have a specific refcounter for that so it didn't depend on the client well-behavedness
+   --  Made generic to raise awareness!
 
 private
 
@@ -30,6 +42,7 @@ private
       function  Get return Const_Ref;
       procedure Set (I : Item_Access);
       function  Get_Count return Natural;
+      function  Tamper return Ref; -- Only for synchronized views of Elem.all
 
       procedure Adjust;
       procedure Finalize;
@@ -49,6 +62,6 @@ private
 
    function Is_Valid (P : Proxy) return Boolean is (P.Safe /= null);
 
-   type Const_Ref (Actual : access constant Item) is limited null record;
+   function Get    (P : Proxy) return Const_Ref is (P.Safe.Get);
 
-end Rx.Shared_Data;
+end Rx.Impl.Shared_Data;

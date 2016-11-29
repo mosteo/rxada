@@ -15,9 +15,9 @@ package body Rx.Tests is
 
    function Is_Even (I : Integer) return Boolean is (I mod 2 = 0);
 
-   package FltChecker is new Debug.Observers (Std.Floats.Typedd, 0.0, Float'Image);
-   package IntChecker is new Debug.Observers (Std.Integers.Typedd, 0, Integer'Image); use IntChecker;
-   package StrChecker is new Debug.Observers (Std.Strings.Typedd, "", String_Image);
+   package FltChecker is new Debug.Observers (Std.Floats.Typed, 0.0, Float'Image);
+   package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Integer'Image); use IntChecker;
+   package StrChecker is new Debug.Observers (Std.Strings.Typed, "", String_Image);
 
    Subs : Rx.Subscriptions.Subscription;
 
@@ -86,7 +86,7 @@ package body Rx.Tests is
    function Start_With_42 return Integer is (42);
 
    function Sources return Boolean is
-      Obs : Integers.Defob;
+      Obs : Integers.Definite_Observable;
    begin
       Verify_Int.Passed := True;
 
@@ -259,6 +259,19 @@ package body Rx.Tests is
         Subscribe_Checker (Do_Count => True, Ok_Count => 1,
                            Do_First => True, Ok_First => 4,
                            Do_Last  => True, Ok_Last  => 4);
+
+      -- Buffering
+      Subs :=
+        IntEnums.Range_Count (1, 101) &
+        Buffer (10) &
+--          Std.Int_Images.Print &
+        IntCount.Count &
+--          Std.Int_Images.Print &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 11,
+                           Do_Last  => True, Ok_Last  => 11);
+
+      pragma Compile_Time_Warning (True, "Missing check for Serialize operation (need mixer observer)");
 
       return True;
    exception
