@@ -91,9 +91,9 @@ package Rx.Std is
 
 private
 
-   package RxEmpty    is new Rx.Src.Empty (Any.Typedd);
-   package RxInterval is new Rx.Src.Interval (Integers.Typedd, Integer'Succ);
-   package RxTimer    is new Rx.Src.Timer (Integers.Typedd);
+   package RxEmpty    is new Rx.Src.Empty    (Any.Typed);
+   package RxInterval is new Rx.Src.Interval (Integers.Typed, Integer'Succ);
+   package RxTimer    is new Rx.Src.Timer    (Integers.Typed);
 
    function Empty return Any.Observable renames RxEmpty.Empty;
 
