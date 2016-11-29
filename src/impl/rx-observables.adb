@@ -1,18 +1,13 @@
 package body Rx.Observables is
 
-   ---------
-   -- "&" --
-   ---------
+   ------------
+   -- Append --
+   ------------
 
-   function "&" (Producer : Observable; Consumer : Sink) return Subscriptions.Subscription
-   is
-      Actual_L : Observable := Producer;
-      Actual_R : Sink       := Consumer;
-      --  We create copies to start chain instantiation with fresh links
+   procedure Append (L : in out Collections.List; V : T) is
    begin
-      Actual_L.Subscribe (Actual_R);
-      return Actual_R.Get_Subscription;
-   end "&";
+      L.Append (V);
+   end Append;
 
    ---------------
    -- Subscribe --

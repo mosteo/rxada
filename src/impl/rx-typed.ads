@@ -1,10 +1,9 @@
-with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 with Ada.Exceptions;
 
 with Rx.Actions;
 with Rx.Actions.Typed;
 with Rx.Contracts;
-with Rx.Impl.Definite_Observable;
+with Rx.Impl.Definite_Observables;
 with Rx.Traits.Types;
 
 generic
@@ -23,17 +22,26 @@ package Rx.Typed is
    subtype D is Type_Traits.D;
    subtype Observable is Contracts.Observable'Class;
    subtype Observer   is Contracts.Observer'Class;
+   subtype Sink       is Contracts.Sink'Class;
    subtype Subscriber is Contracts.Subscriber'Class;
 
    procedure Default_Error_Handler (This   : in out Observer'Class;
                                     Except : Ada.Exceptions.Exception_Occurrence);
 
-   package Defobs is new Impl.Definite_Observable (Contracts);
+   package Definite_Observables is new Impl.Definite_Observables (Contracts);
 
-   --  Perhaps this should go where it's used, not that many places...
-   --  Or could be a generic child of Type_Traits or this one...
+   package Conversions is
 
-   package T_Lists is new Ada.Containers.Indefinite_Doubly_Linked_Lists (T, Type_Traits."=");
-   subtype T_List is T_Lists.List;
+   --  This package is purely to work around gnat bugs on visibility and instantiation of tagged with untagged view
+
+      function "=" (L, R : T) return Boolean renames Type_Traits."=";
+
+      function "+" (V : T) return D renames Type_Traits.To_Definite;
+      function "+" (V : D) return T renames Type_Traits.To_Indefinite;
+
+      function Def (V : T) return D renames Type_Traits.To_Definite;
+      function Ind (V : D) return T renames Type_Traits.To_Indefinite;
+
+   end Conversions;
 
 end Rx.Typed;

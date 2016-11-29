@@ -1,11 +1,17 @@
+with Ada.Containers.Indefinite_Doubly_Linked_Lists;
+
 package body Rx.Op.Repeat is
+
+   use type Operate.T;
+
+   package T_Lists is new Ada.Containers.Indefinite_Doubly_Linked_Lists (Operate.T);
 
    use type Actions.HTFilter0;
 
    type Kinds is (Counter, While_Do, Repeat_Until);
 
-   type Operator (Kind : Kinds) is new Operate.Operator with record
-      Sequence : Operate.Typed.T_List;
+   type Operator (Kind : Kinds) is new Operate.Preserver with record
+      Sequence : T_Lists.List;
 
       First_Seen : Boolean := False;
 
@@ -78,9 +84,9 @@ package body Rx.Op.Repeat is
    -- Repeat_Forever --
    --------------------
 
-   function Repeat_Forever return Operate.Operator'Class is
+   function Repeat_Forever return Operate.Preserver'Class is
    begin
-      return Operator'(Operate.Operator with
+      return Operator'(Operate.Preserver with
                        Kind   => While_Do,
                        Filter => + Actions.Wrap (Always'Access),
                        others => <>);
@@ -90,9 +96,9 @@ package body Rx.Op.Repeat is
    -- Repeat --
    ------------
 
-   function Repeat (Times : Positive) return Operate.Operator'Class is
+   function Repeat (Times : Positive) return Operate.Preserver'Class is
    begin
-            return Operator'(Operate.Operator with
+            return Operator'(Operate.Preserver with
                        Kind    => Counter,
                        Repeats => Times,
                        others  => <>);
@@ -104,10 +110,10 @@ package body Rx.Op.Repeat is
 
    function While_Do
      (Check : Actions.TFilter0'Class)
-      return Operate.Operator'Class
+      return Operate.Preserver'Class
    is
    begin
-      return Operator'(Operate.Operator with
+      return Operator'(Operate.Preserver with
                        Kind   => While_Do,
                        Filter => + Check,
                        others => <>);
@@ -119,10 +125,10 @@ package body Rx.Op.Repeat is
 
    function Repeat_Until
      (Check : Actions.TFilter0'Class)
-      return Operate.Operator'Class
+      return Operate.Preserver'Class
    is
    begin
-      return Operator'(Operate.Operator with
+      return Operator'(Operate.Preserver with
                        Kind   => Repeat_Until,
                        Filter => + Check,
                        others => <>);

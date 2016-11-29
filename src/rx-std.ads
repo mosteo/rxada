@@ -6,6 +6,7 @@ with Rx.Impl.Casts;
 with Rx.Impl.Integers;
 with Rx.Impl.Floats;
 with Rx.Impl.Strings;
+with Rx.Observables.Image;
 with Rx.Operators;
 with Rx.Subscriptions;
 with Rx.Schedulers;
@@ -53,6 +54,8 @@ package Rx.Std is
    package IntEnums is new Integers.Enums (Integer'Succ);
    package StrEnums is new Strings.Enums  (String_Succ);
 
+--   package IntImg is new Integers.Image (Integer'Image);
+
    --  Standard Rx sources and operators
 
    function Empty return Any.Observable;
@@ -82,11 +85,15 @@ package Rx.Std is
    String_To_Float   : constant StrToFlt.Operator := StrToFlt.Map (Rx.Impl.Casts.To_Float'Access);
    String_To_Integer : constant StrToInt.Operator := StrToInt.Map (Rx.Impl.Casts.To_Integer'Access);
 
+   --  Printing
+
+   package Int_Images is new Integers.Image (Impl.Casts.To_String);
+
 private
 
-   package RxEmpty    is new Rx.Src.Empty (Any.Typedd);
-   package RxInterval is new Rx.Src.Interval (Integers.Typedd, Integer'Succ);
-   package RxTimer    is new Rx.Src.Timer (Integers.Typedd);
+   package RxEmpty    is new Rx.Src.Empty    (Any.Typed);
+   package RxInterval is new Rx.Src.Interval (Integers.Typed, Integer'Succ);
+   package RxTimer    is new Rx.Src.Timer    (Integers.Typed);
 
    function Empty return Any.Observable renames RxEmpty.Empty;
 

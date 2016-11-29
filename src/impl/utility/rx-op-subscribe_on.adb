@@ -7,7 +7,7 @@ package body Rx.Op.Subscribe_On is
 
    package Remote is new Dispatchers.Subscribe (Operate);
 
-   type Op is new Operate.Operator with record
+   type Op is new Operate.Preserver with record
       Sched : Schedulers.Scheduler;
    end record;
 
@@ -40,9 +40,9 @@ package body Rx.Op.Subscribe_On is
    -- Create --
    ------------
 
-   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
+   function Create (Scheduler : Schedulers.Scheduler) return Operate.Preserver'Class is
    begin
-      return Op'(Operate.Operator with Sched => Scheduler);
+      return Op'(Operate.Preserver with Sched => Scheduler);
    end Create;
 
 end Rx.Op.Subscribe_On;

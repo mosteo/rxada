@@ -55,4 +55,12 @@ package Rx.Contracts is
    function Get_Subscription (S : Sink) return Subscriptions.Subscription is abstract;
    --  A sink must asynchronously allow a way of stopping incoming data
 
+
+   ---------------
+   -- Subscribe --
+   ---------------
+
+   function Subscribe (Producer : Observable'Class; Consumer : Sink'Class) return Subscriptions.Subscription;
+   --  Execute the subscription
+
 end Rx.Contracts;

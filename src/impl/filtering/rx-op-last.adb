@@ -1,8 +1,8 @@
 package body Rx.Op.Last is
 
-   use Operate.Typed.Type_Traits;
+   use Operate.Typed.Conversions;
 
-   type Operator is new Operate.Operator with record
+   type Operator is new Operate.Preserver with record
       Filter : Operate.Typed.Actions.HTFilter1;
 
       Has_Last : Boolean := False;
@@ -57,11 +57,11 @@ package body Rx.Op.Last is
 
    function Create
      (Check : Operate.Typed.Actions.TFilter1'Class := Operate.Typed.Actions.Always_Pass)
-      return Operate.Operator'Class
+      return Operate.Preserver'Class
    is
       use Operate.Typed.Actions;
    begin
-      return Operator'(Operate.Operator with
+      return Operator'(Operate.Preserver with
                        Has_Last     => False,
                        Filter       => + Check,
                        others       => <>);
@@ -74,11 +74,11 @@ package body Rx.Op.Last is
    function Or_Default
      (Default : Operate.T;
       Check   : Operate.Typed.Actions.TFilter1'Class := Operate.Typed.Actions.Always_Pass)
-      return Operate.Operator'Class
+      return Operate.Preserver'Class
    is
       use Operate.Typed.Actions;
    begin
-      return Operator'(Operate.Operator with
+      return Operator'(Operate.Preserver with
                        Has_Last     => True,
                        Last         => + Default,
                        Filter       => + Check);

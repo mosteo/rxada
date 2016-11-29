@@ -39,23 +39,23 @@ package body Rx.Src.From is
 
       package Create is new Src.Create (Iterable.Typed);
 
-      procedure On_Subscribe (State    : Iterable.Cursor;
+      procedure On_Subscribe (State    : Iterable.Container;
                               Consumer : in out Iterable.Typed.Subscriber)
       is
          use Iterable;
-         I : Cursor := State;
+         procedure For_Each (V : Iterable.Typed.T) is
+         begin
+            Consumer.On_Next (V);
+         end For_Each;
       begin
-         while Has_Element (I) loop
-            Consumer.On_Next (Element (I));
-            I := Next (I);
-         end loop;
+         Iterable.Iterate (State, For_Each'Access);
       end On_Subscribe;
 
-      package Iterables is new Create.With_State (Iterable.Cursor, On_Subscribe);
+      package Iterables is new Create.With_State (Iterable.Container, On_Subscribe);
 
       function From (C : Iterable.Container) return Iterable.Typed.Contracts.Observable'Class is
       begin
-         return Iterables.Create (Iterable.First (C));
+         return Iterables.Create (C);
       end From;
 
    end From_Iterable;

@@ -1,6 +1,6 @@
 with Ada.Unchecked_Deallocation;
 
-package body Rx.Shared_Data is
+package body Rx.Impl.Shared_Data is
 
    ----------
    -- Wrap --
@@ -23,10 +23,11 @@ package body Rx.Shared_Data is
       P.Safe.Apply (CB);
    end Apply;
 
-   function Get (P : Proxy) return Const_Ref is
-   begin
-      return P.Safe.Get;
-   end Get;
+   ------------
+   -- Tamper --
+   ------------
+
+   function Tamper (P : Proxy) return Ref       is (P.Safe.Tamper);
 
    ---------------
    -- Safe_Item --
@@ -92,6 +93,15 @@ package body Rx.Shared_Data is
          end if;
       end Finalize;
 
+      ------------
+      -- Tamper --
+      ------------
+
+      function Tamper return Ref is
+      begin
+         return Ref'(Actual => Elem);
+      end Tamper;
+
    end Safe_Item;
 
    ------------
@@ -120,4 +130,4 @@ package body Rx.Shared_Data is
       end if;
    end Finalize;
 
-end Rx.Shared_Data;
+end Rx.Impl.Shared_Data;
