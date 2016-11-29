@@ -1,10 +1,10 @@
 with Rx.Holders;
-with Rx.Transform;
+with Rx.Transformers;
 with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
-package Rx.Preserve with Preelaborate is
+package Rx.Preservers with Preelaborate is
 
    -- Specialized Transform, but with type preservation
    -- A separate package is convenient to allow independent package files for this kind of operators
@@ -16,7 +16,7 @@ package Rx.Preserve with Preelaborate is
    subtype Subscriber is Typed.Contracts.Subscriber'Class;
 
    -- Scaffolding
-   package Transform is new Rx.Transform (Typed, Typed);
+   package Transform is new Rx.Transformers (Typed, Typed);
 
    -- Not needed but works around some gnat bug on instantiations
    type Operator is abstract new Transform.Operator with null record;
@@ -28,4 +28,4 @@ package Rx.Preserve with Preelaborate is
 
    package Holders is new Rx.Holders (Operator'Class, "operator");
 
-end Rx.Preserve;
+end Rx.Preservers;

@@ -1,7 +1,7 @@
-with Rx.Transform;
+with Rx.Transformers;
 
 generic
-   with package Typed is new Rx.Transform (<>);
+   with package Typed is new Rx.Transformers (<>);
 package Rx.Op.Scan is
 
    function Create (Func : Typed.Actions.Func2;
