@@ -86,7 +86,7 @@ package body Rx.Tests is
    function Start_With_42 return Integer is (42);
 
    function Sources return Boolean is
-      Obs : Integers.Defob;
+      Obs : Integers.Definite_Observable;
    begin
       Verify_Int.Passed := True;
 
@@ -262,9 +262,14 @@ package body Rx.Tests is
 
       -- Buffering
       Subs :=
-        IntEnums.Range_Count (1, 100) &
+        IntEnums.Range_Count (1, 101) &
         Buffer (10) &
-        T_Lists.Subscribe;
+        Std.Int_Images.Print &
+        IntCount.Count &
+--          Std.Int_Images.Print &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 11,
+                           Do_Last  => True, Ok_Last  => 11);
 
       pragma Compile_Time_Warning (True, "Missing check for Serialize operation (need mixer observer)");
 

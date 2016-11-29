@@ -2,11 +2,20 @@ with Ada.Strings.Unbounded;
 
 package body Rx.Observables.Image is
 
-   -----------
-   -- Image --
-   -----------
+   -----------------------
+   -- Addressable_Image --
+   -----------------------
 
-   function Image (L : T_List) return String is
+   function Addressable_Image (V : T) return String is
+   begin
+      return Image (V);
+   end Addressable_Image;
+
+   ----------------
+   -- List_Image --
+   ----------------
+
+   function List_Image (L : T_List) return String is
       use Ada.Strings.Unbounded;
 
       Result : Unbounded_String := To_Unbounded_String ("(");
@@ -22,6 +31,6 @@ package body Rx.Observables.Image is
       end loop;
 
       return To_String (Result & ")");
-   end Image;
+   end List_Image;
 
 end Rx.Observables.Image;

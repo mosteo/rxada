@@ -1,20 +1,23 @@
 with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 
+with Rx.Preserve;
 with Rx.Traits.Types;
+with Rx.Transform;
 with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Collections is
 
-   -------------
-   --  Lists  --
-   -------------
+--   package Typed_Collections is new Rx.Collections (Typed);
+
+   -------------------------
+   --  Emission of Lists  --
+   -------------------------
 
    package Lists is new Ada.Containers.Indefinite_Doubly_Linked_Lists (Typed.T, Typed.Type_Traits."=");
    subtype List is Lists.List;
 
-   --  Work-around for bug using Definite_Defaults
    function Identity (L : List) return List is (L) with Inline;
 
    package List_Traits is new Rx.Traits.Types (List, List, Identity, Identity);
@@ -31,5 +34,14 @@ package Rx.Collections is
 
    package Typed_Observables is new Rx.Typed (Observable_Traits);
 
+   -----------------
+   --  Operators  --
+   -----------------
+
+   package List_Preservers   is new Rx.Preserve  (Typed_Lists);
+   package List_Transformers is new Rx.Transform (Typed, Typed_Lists);
+   package List_Transformers_Reverse is new Rx.Transform (Typed_Lists, Typed);
+
+   package Obs_Transformers  is new Rx.Transform (Typed, Typed_Observables);
 
 end Rx.Collections;

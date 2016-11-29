@@ -1,6 +1,5 @@
 with Ada.Exceptions;
 
-with Rx.Debug;
 with Rx.Errors;
 with Rx.Impl.Any;
 with Rx.Impl.Casts;
@@ -85,6 +84,10 @@ package Rx.Std is
 
    String_To_Float   : constant StrToFlt.Operator := StrToFlt.Map (Rx.Impl.Casts.To_Float'Access);
    String_To_Integer : constant StrToInt.Operator := StrToInt.Map (Rx.Impl.Casts.To_Integer'Access);
+
+   --  Printing
+
+   package Int_Images is new Integers.Image (Impl.Casts.To_String);
 
 private
 

@@ -11,6 +11,10 @@ package Rx.Transform is
 
    pragma Preelaborate;
 
+   --  Shortcuts and also bug workaround
+   subtype Observable is From.Observable;
+   subtype Observer   is Into.Observer;
+
    package Intoo renames Into; -- Bug workaround
 
    package Actions is new Rx.Actions.Transform (From.Contracts, Into.Contracts);
