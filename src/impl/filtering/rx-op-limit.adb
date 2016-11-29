@@ -3,7 +3,7 @@ with Rx.Subscriptions;
 
 package body Rx.Op.Limit is
 
-   type Operator is new Operate.Operator with record
+   type Operator is new Operate.Preserver with record
       Remaining : Natural;
       Completed : Boolean := False;
    end record;
@@ -56,9 +56,9 @@ package body Rx.Op.Limit is
    -- Create --
    ------------
 
-   function Create (Limit : Natural) return Operate.Operator'Class is
+   function Create (Limit : Natural) return Operate.Preserver'Class is
    begin
-      return Operator'(Operate.Operator with
+      return Operator'(Operate.Preserver with
                          Remaining => Limit,
                          Completed => False);
    end Create;

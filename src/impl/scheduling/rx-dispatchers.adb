@@ -112,7 +112,7 @@ package body Rx.Dispatchers is
          Parent.Subscribe (R.Op.Ref); -- Suspicious... should make a copy of R.Op?
       end Run;
 
-      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Operator'Class) is
+      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Preserver'Class) is
          R : Runner := (Runnable with Operate.Holders.Hold (Operator));
       begin
          Sched.Schedule (R);
