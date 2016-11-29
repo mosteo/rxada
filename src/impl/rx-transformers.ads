@@ -14,6 +14,7 @@ package Rx.Transformers is
    --  Shortcuts and also bug workaround
    subtype Observable is From.Observable;
    subtype Observer   is Into.Observer;
+   subtype Subscriber is Into.Subscriber;
 
    package Intoo renames Into; -- Bug workaround
 
@@ -38,17 +39,17 @@ package Rx.Transformers is
    --  as parameter should be overriden.
 
    procedure On_Next (This  : in out Transformer;
-                      V     :        From.Type_Traits.T;
-                      Child : in out Into.Observer'Class) is abstract;
+                      V     :        From.T;
+                      Child : in out Into.Observer) is abstract;
    --  Must always be provided
 
-   procedure On_Completed (This : in out Transformer;
-                           Child : in out Into.Observer'Class);
+   procedure On_Completed (This  : in out Transformer;
+                           Child : in out Into.Observer);
    --  By default calls Child.On_Complete
 
    procedure On_Error (This  : in out Transformer;
                        Error : in out Errors.Occurrence;
-                       Child : in out Into.Observer'Class);
+                       Child : in out Into.Observer);
    --  By default calls Child.On_error
 
    --  FOLLOWING CAN BE OVERRIDEN IF DEFAULT BEHAVIOR HAS TO BE MODIFIED, BUT THESE ARE PROPER DEFAULTS
@@ -107,7 +108,8 @@ private
 
    not overriding function Has_Child (This : Transformer) return Boolean is (not This.Child.Is_Empty);
 
-   not overriding function Get_Child (This : in out Transformer) return Child_Holders.Reference is (This.Child.Ref);
+   not overriding function Get_Child (This : in out Transformer)
+                                      return Child_Holders.Reference is (This.Child.Ref);
 
    overriding function Is_Subscribed (This : Transformer) return Boolean is (not This.Child.Is_Empty);
 
