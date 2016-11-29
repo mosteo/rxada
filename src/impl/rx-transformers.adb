@@ -8,7 +8,7 @@ package body Rx.Transformers is
    ---------------
 
    overriding procedure Subscribe
-     (Producer : in out Operator;
+     (Producer : in out Transformer;
       Consumer : in out Into.Subscriber)
    is
 --      use type Into.Consumers.Holder;
@@ -29,10 +29,10 @@ package body Rx.Transformers is
    -- On_Next --
    -------------
 
-   overriding procedure On_Next (This : in out Operator; V : From.T) is
+   overriding procedure On_Next (This : in out Transformer; V : From.T) is
    begin
       if This.Has_Child then
-         Operator'Class (This).On_Next (V, This.Get_Child);
+         Transformer'Class (This).On_Next (V, This.Get_Child);
       else
          raise Subscriptions.No_Longer_Subscribed;
       end if;
@@ -47,10 +47,10 @@ package body Rx.Transformers is
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This : in out Operator) is
+   overriding procedure On_Completed (This : in out Transformer) is
    begin
       if This.Has_Child then
-         Operator'Class (This).On_Completed (This.Get_Child);
+         Transformer'Class (This).On_Completed (This.Get_Child);
          This.Unsubscribe;
       else
          raise Subscriptions.No_Longer_Subscribed;
@@ -66,11 +66,11 @@ package body Rx.Transformers is
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Operator; Error : in out Errors.Occurrence) is
+   overriding procedure On_Error (This : in out Transformer; Error : in out Errors.Occurrence) is
    begin
       if This.Has_Child then
          begin
-            Operator'Class (This).On_Error (Error, This.Get_Child); -- Pass it down
+            Transformer'Class (This).On_Error (Error, This.Get_Child); -- Pass it down
          exception
             when Subscriptions.No_Longer_Subscribed =>
                Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Verbose);
@@ -88,7 +88,7 @@ package body Rx.Transformers is
    -- On_Completed --
    ------------------
 
-   procedure On_Completed (This : in out Operator;
+   procedure On_Completed (This : in out Transformer;
                            Child : in out Into.Observer'Class)
    is
       pragma Unreferenced (This);
@@ -100,7 +100,7 @@ package body Rx.Transformers is
    -- On_Error --
    --------------
 
-   procedure On_Error (This  : in out Operator;
+   procedure On_Error (This  : in out Transformer;
                        Error : in out Errors.Occurrence;
                        Child : in out Into.Observer'Class)
    is
@@ -114,7 +114,7 @@ package body Rx.Transformers is
    -------------------
 
    overriding
-   procedure Unsubscribe (This : in out Operator) is
+   procedure Unsubscribe (This : in out Transformer) is
    begin
       if This.Is_Subscribed then
          This.Get_Child.Unsubscribe;
@@ -126,7 +126,7 @@ package body Rx.Transformers is
    -- Set_Child --
    ---------------
 
-   procedure Set_Child (This : in out Operator; Child : Into.Subscriber) is
+   procedure Set_Child (This : in out Transformer; Child : Into.Subscriber) is
    begin
       This.Child.Hold (Child);
    end Set_Child;
@@ -136,11 +136,11 @@ package body Rx.Transformers is
    ------------------
 
    function Will_Observe (Producer : From.Observable;
-                          Consumer : Operator'Class)
+                          Consumer : Transformer'Class)
                           return Into.Observable
    is
    begin
-      return Actual : Operator'Class := Consumer do
+      return Actual : Transformer'Class := Consumer do
          Actual.Set_Parent (Producer);
       end return;
    end Will_Observe;

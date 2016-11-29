@@ -55,8 +55,8 @@ package Rx.Observables is
    package Obs_Transformers  renames Collections.Obs_Transformers;
 
    subtype List_Preserver    is List_Preservers.Operator'Class;
-   subtype List_Transformer  is List_Transformers.Operator'Class;
-   subtype Obs_Transformer   is Obs_Transformers.Operator'Class;
+   subtype List_Transformer  is List_Transformers.Transformer'Class;
+   subtype Obs_Transformer   is Obs_Transformers.Transformer'Class;
    subtype T_List            is Collections.List;
 
    -- Preservers Scaffolding
@@ -81,11 +81,11 @@ package Rx.Observables is
       package List_Count is new Rx.Op.Count (Collections.List_Transformers_Reverse, Succ, Default_Initial_Count);
       package Self_Count is new Rx.Op.Count (Operate.Transform, Succ, Default_Initial_Count);
 
-      function Count (First : T := Default_Initial_Count) return Operate.Transform.Operator'Class
+      function Count (First : T := Default_Initial_Count) return Operate.Transform.Transformer'Class
                       renames Self_Count.Count;
 
       function Count (First : T := Default_Initial_Count)
-                      return Collections.List_Transformers_Reverse.Operator'Class
+                      return Collections.List_Transformers_Reverse.Transformer'Class
                       renames List_Count.Count;
       --  This counts the number of lists seen, don't confuse with Length
 
@@ -326,7 +326,7 @@ package Rx.Observables is
                  renames Typed_Lists.Contracts.Subscribe;
    --  Final subscription for observers of T lists
 
-   function "&" (Producer : Observable; Consumer : Operate.Transform.Operator'Class) return Observable
+   function "&" (Producer : Observable; Consumer : Operate.Transform.Transformer'Class) return Observable
                  renames Operate.Transform.Will_Observe;
    --  Concatenation for type preservers
 
@@ -336,12 +336,12 @@ package Rx.Observables is
    --  Concatenation for groupers into lists
 
    function "&" (Producer : Collections.List_Transformers_Reverse.Observable;
-                 Consumer : Collections.List_Transformers_Reverse.Transformer) return Observable
+                 Consumer : Collections.List_Transformers_Reverse.Operator) return Observable
                  renames Collections.List_Transformers_Reverse.Will_Observe;
    --  Concatenation of ungroupers
 
    function "&" (Producer : List_Preservers.Observable;
-                 Consumer : List_Preservers.Transform.Operator'Class)
+                 Consumer : List_Preservers.Transform.Transformer'Class)
                  return     List_Preservers.Observable
                  renames List_Preservers.Transform.Will_Observe;
    --  Concatenation for preservers between lists
@@ -350,19 +350,19 @@ package Rx.Observables is
 
       --  This package can be used instead of using the Rx.Observables one to make the "&" visible
 
-      function "&" (Producer : Observable; Consumer : Operate.Transform.Operator'Class) return Observable
+      function "&" (Producer : Observable; Consumer : Operate.Transform.Transformer'Class) return Observable
                     renames Observables."&";
 
       function "&" (Producer : Observable; Consumer : Sink) return Subscriptions.Subscription
                     renames Observables."&";
 
       function "&" (Producer : List_Preservers.Observable;
-                    Consumer : List_Preservers.Transform.Operator'Class)
+                    Consumer : List_Preservers.Transform.Transformer'Class)
                     return     List_Preservers.Observable
                     renames List_Preservers.Transform.Will_Observe;
 
       function "&" (Producer : Collections.List_Transformers_Reverse.Observable;
-                    Consumer : Collections.List_Transformers_Reverse.Transformer) return Observable
+                    Consumer : Collections.List_Transformers_Reverse.Operator) return Observable
                     renames Collections.List_Transformers_Reverse.Will_Observe;
 
    end Linkers;
@@ -378,7 +378,7 @@ private
    package RxBuffer is new Rx.Op.Buffer (Collections.List_Transformers,
                                          Collections.Lists.Empty_List);
 
-   function Buffer (Every : Positive; Skip : Natural := 0) return List_Transformers.Operator'Class
+   function Buffer (Every : Positive; Skip : Natural := 0) return List_Transformers.Transformer'Class
                     renames RxBuffer.Create;
 
    package RxEmpty is new Rx.Src.Empty (Typed);
