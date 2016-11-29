@@ -10,22 +10,23 @@ package Rx.Preservers with Preelaborate is
    -- A separate package is convenient to allow independent package files for this kind of operators
 
    -- Shortcuts
-   subtype T          is Typed.Type_Traits.T;
-   subtype Observable is Typed.Contracts.Observable'Class;
-   subtype Observer   is Typed.Contracts.Observer'Class;
-   subtype Subscriber is Typed.Contracts.Subscriber'Class;
 
-   -- Scaffolding
+   subtype T          is Typed.Type_Traits.T;
+   subtype Observable is Typed.Observable;
+   subtype Observer   is Typed.Observer;
+   subtype Subscriber is Typed.Subscriber;
+
    package Transform is new Rx.Transformers (Typed, Typed);
+   --  Specialization with type preservation here
 
    -- Not needed but works around some gnat bug on instantiations
-   type Operator is abstract new Transform.Transformer with null record;
+   type Preserver is abstract new Transform.Transformer with null record;
 
-   subtype Preserver is Operator'Class; -- An operator that does not changes the types involved
+   subtype Operator is Preserver'Class; -- An operator that does not changes the types involved
 
    package From renames Transform.From;
    package Into renames Transform.Into;
 
-   package Holders is new Rx.Holders (Operator'Class, "operator");
+   package Holders is new Rx.Holders (Preserver'Class, "operator");
 
 end Rx.Preservers;

@@ -54,7 +54,7 @@ package Rx.Observables is
    package List_Transformers renames Collections.List_Transformers;
    package Obs_Transformers  renames Collections.Obs_Transformers;
 
-   subtype List_Preserver    is List_Preservers.Operator'Class;
+   subtype List_Preserver    is List_Preservers.Preserver'Class;
    subtype List_Transformer  is List_Transformers.Transformer'Class;
    subtype Obs_Transformer   is Obs_Transformers.Transformer'Class;
    subtype T_List            is Collections.List;
@@ -62,7 +62,7 @@ package Rx.Observables is
    -- Preservers Scaffolding
 
    package Operate   is new Rx.Preservers (Typed);
-   subtype Operator  is Operate.Operator'Class;
+   subtype Operator  is Operate.Preserver'Class;
 
    ------------
    -- Buffer --
