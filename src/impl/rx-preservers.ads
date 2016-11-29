@@ -19,13 +19,21 @@ package Rx.Preservers with Preelaborate is
    package Transform is new Rx.Transformers (Typed, Typed);
    --  Specialization with type preservation here
 
-   -- Not needed but works around some gnat bug on instantiations
-   type Preserver is abstract new Transform.Transformer with null record;
+   subtype Preserver is Transform.Transformer;
+   -- Not needed but makes extensions more meaningful in actual operator packages
 
-   subtype Operator is Preserver'Class; -- An operator that does not changes the types involved
+   subtype Transformer is Transform.Transformer;
+
+   subtype Operator is Preserver'Class;
+   -- An operator that does not changes the types involved
 
    package From renames Transform.From;
    package Into renames Transform.Into;
+
+   function Will_Observe (Producer : From.Observable;
+                          Consumer : Operator)
+                          return Into.Observable renames Transform.Will_Observe;
+   -- Shortcut for simpler use elsewhere (particularly in Rx.Observables)
 
    package Holders is new Rx.Holders (Preserver'Class, "operator");
 
