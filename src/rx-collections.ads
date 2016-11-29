@@ -1,8 +1,8 @@
 with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 
-with Rx.Preserve;
+with Rx.Preservers;
 with Rx.Traits.Types;
-with Rx.Transform;
+with Rx.Transformers;
 with Rx.Typed;
 
 generic
@@ -38,10 +38,10 @@ package Rx.Collections is
    --  Operators  --
    -----------------
 
-   package List_Preservers   is new Rx.Preserve  (Typed_Lists);
-   package List_Transformers is new Rx.Transform (Typed, Typed_Lists);
-   package List_Transformers_Reverse is new Rx.Transform (Typed_Lists, Typed);
+   package List_Preservers   is new Rx.Preservers  (Typed_Lists);
+   package List_Transformers is new Rx.Transformers (Typed, Typed_Lists);
+   package List_Transformers_Reverse is new Rx.Transformers (Typed_Lists, Typed);
 
-   package Obs_Transformers  is new Rx.Transform (Typed, Typed_Observables);
+   package Obs_Transformers  is new Rx.Transformers (Typed, Typed_Observables);
 
 end Rx.Collections;

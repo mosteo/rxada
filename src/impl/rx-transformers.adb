@@ -1,7 +1,7 @@
 with Rx.Debug;
 with Rx.Subscriptions;
 
-package body Rx.Transform is
+package body Rx.Transformers is
 
    ---------------
    -- Subscribe --
@@ -145,4 +145,4 @@ package body Rx.Transform is
       end return;
    end Will_Observe;
 
-end Rx.Transform;
+end Rx.Transformers;

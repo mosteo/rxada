@@ -1,7 +1,7 @@
-with Rx.Preserve;
+with Rx.Preservers;
 
 generic
-   with package Operate is new Rx.Preserve (<>);
+   with package Operate is new Rx.Preservers (<>);
 package Rx.Op.Limit is
 
    function Create (Limit : Natural) return Operate.Operator'Class;

@@ -264,7 +264,7 @@ package body Rx.Tests is
       Subs :=
         IntEnums.Range_Count (1, 101) &
         Buffer (10) &
-        Std.Int_Images.Print &
+--          Std.Int_Images.Print &
         IntCount.Count &
 --          Std.Int_Images.Print &
         Subscribe_Checker (Do_Count => True, Ok_Count => 1,

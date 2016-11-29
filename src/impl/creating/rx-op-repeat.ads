@@ -1,8 +1,8 @@
 with Rx.Actions;
-with Rx.Preserve;
+with Rx.Preservers;
 
 generic
-   with package Operate is new Rx.Preserve (<>);
+   with package Operate is new Rx.Preservers (<>);
 package Rx.Op.Repeat is
 
    function Repeat_Forever return Operate.Operator'Class;

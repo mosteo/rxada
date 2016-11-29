@@ -7,7 +7,7 @@ with Rx.Typed;
 generic
    with package From is new Rx.Typed (<>);
    with package Into is new Rx.Typed (<>);
-package Rx.Transform is
+package Rx.Transformers is
 
    pragma Preelaborate;
 
@@ -111,4 +111,4 @@ private
 
    overriding function Is_Subscribed (This : Operator) return Boolean is (not This.Child.Is_Empty);
 
-end Rx.Transform;
+end Rx.Transformers;

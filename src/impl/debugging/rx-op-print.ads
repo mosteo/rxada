@@ -1,7 +1,7 @@
-with Rx.Preserve;
+with Rx.Preservers;
 
 generic
-   with package Operate is new Rx.Preserve (<>);
+   with package Operate is new Rx.Preservers (<>);
 package Rx.Op.Print is
 
    function Create (Func : Operate.Typed.Actions.Func1Str := null; With_Timestamp : Boolean := True)

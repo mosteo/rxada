@@ -5,7 +5,7 @@ with Rx.Collections;
 with Rx.Errors;
 with Rx.Op.Count;
 with Rx.Op.Repeat;
-with Rx.Preserve;
+with Rx.Preservers;
 with Rx.Schedulers;
 with Rx.Src.Create;
 with Rx.Src.Defer;
@@ -61,7 +61,7 @@ package Rx.Observables is
 
    -- Preservers Scaffolding
 
-   package Operate   is new Rx.Preserve (Typed);
+   package Operate   is new Rx.Preservers (Typed);
    subtype Operator  is Operate.Operator'Class;
 
    ------------
