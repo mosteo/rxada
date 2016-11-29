@@ -16,7 +16,7 @@ package Rx.Transformers is
    subtype Observer   is Into.Observer;
    subtype Subscriber is Into.Subscriber;
 
-   package Intoo renames Into; -- Bug workaround
+   subtype Into_Observable is Into.Observable; -- Workarounds a bug
 
    package Actions is new Rx.Actions.Transform (From.Contracts, Into.Contracts);
 
