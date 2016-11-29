@@ -31,6 +31,7 @@ package body Rx.Op.Buffer is
    begin
       This.Have := 0;
       Child.On_Next (+ This.Container);
+      This.Container := Empty;
    end Emit;
 
    -------------
@@ -71,8 +72,8 @@ package body Rx.Op.Buffer is
    begin
       if This.Have > 0 then
          Emit (This, Child);
-         Child.On_Completed;
       end if;
+      Child.On_Completed;
    end On_Completed;
 
    --------------

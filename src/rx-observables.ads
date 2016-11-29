@@ -1,6 +1,7 @@
 with Ada.Exceptions;
 
 with Rx.Actions;
+with Rx.Collections;
 with Rx.Errors;
 with Rx.Op.Count;
 with Rx.Op.Repeat;
@@ -16,6 +17,7 @@ with Rx.Subscriptions;
 with Rx.Traits.Arrays;
 with Rx.Typed;
 
+private with Rx.Op.Buffer;
 private with Rx.Op.Filter;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
@@ -40,13 +42,33 @@ package Rx.Observables is
    subtype Sink        is Typed.Contracts.Sink'Class;
    subtype T           is Typed.Type_Traits.T;
 
-   subtype Defob       is Typed.Definite_Observables.Observable;
+   subtype Definite_Observable is Typed.Definite_Observables.Observable;
 
    subtype Subscription is Subscriptions.Subscription;
 
-   -- Scaffolding
+   -- Collections Scaffolding
+
+   package Collections       is new Rx.Collections (Typed);
+   package Typed_Lists       renames Collections.Typed_Lists;
+   package List_Preservers   renames Collections.List_Preservers;
+   package List_Transformers renames Collections.List_Transformers;
+   package Obs_Transformers  renames Collections.Obs_Transformers;
+
+   subtype List_Preserver    is List_Preservers.Operator'Class;
+   subtype List_Transformer  is List_Transformers.Operator'Class;
+   subtype Obs_Transformer   is Obs_Transformers.Operator'Class;
+   subtype T_List            is Collections.List;
+
+   -- Preservers Scaffolding
+
    package Operate   is new Rx.Preserve (Typed);
    subtype Operator  is Operate.Operator'Class;
+
+   ------------
+   -- Buffer --
+   ------------
+
+   function Buffer (Every : Positive; Skip : Natural := 0) return List_Transformer;
 
    -----------
    -- Count --
@@ -56,10 +78,17 @@ package Rx.Observables is
       with function Succ (V : T) return T is <>;
       Default_Initial_Count : T;
    package Counters is
+      package List_Count is new Rx.Op.Count (Collections.List_Transformers_Reverse, Succ, Default_Initial_Count);
       package Self_Count is new Rx.Op.Count (Operate.Transform, Succ, Default_Initial_Count);
 
       function Count (First : T := Default_Initial_Count) return Operate.Transform.Operator'Class
                       renames Self_Count.Count;
+
+      function Count (First : T := Default_Initial_Count)
+                      return Collections.List_Transformers_Reverse.Operator'Class
+                      renames List_Count.Count;
+      --  This counts the number of lists seen, don't confuse with Length
+
    end Counters;
 
    -----------
@@ -240,6 +269,11 @@ package Rx.Observables is
    type Subscriptor is abstract new RxSubscribe.Subscribe with null record;
    --  You can alternatively override methods of this type to more easily provide context
 
+   function Subscribe (On_Next      : Collections.Typed_Lists.Actions.Proc1 := null;
+                       On_Completed : Rx.Actions.Proc0                      := null;
+                       On_Error     : Rx.Actions.Proc_Error                 := null)
+                       return Collections.Typed_Lists.Sink;
+
    ------------------
    -- Subscribe_On --
    ------------------
@@ -275,26 +309,77 @@ package Rx.Observables is
    -- Wrap --
    ----------
 
-   function Wrap (Obs : Typed.Observable) return Defob renames Typed.Definite_Observables.From;
+   function Wrap (Obs : Typed.Observable) return Definite_Observable renames Typed.Definite_Observables.From;
    -- Definite observable
-   function "+"  (Obs : Typed.Observable) return Defob renames Wrap;
+   function "+"  (Obs : Typed.Observable) return Definite_Observable renames Wrap;
 
    ---------
    -- "&" --
    ---------
 
-   --  Chain preparation
+   function "&" (Producer : Observable; Consumer : Sink) return Subscriptions.Subscription
+                 renames Typed.Contracts.Subscribe;
+   --  Final subscription for T observers
+
+   function "&" (Producer : Typed_Lists.Observable; Consumer : Typed_Lists.Sink)
+                 return Subscriptions.Subscription
+                 renames Typed_Lists.Contracts.Subscribe;
+   --  Final subscription for observers of T lists
 
    function "&" (Producer : Observable; Consumer : Operate.Transform.Operator'Class) return Observable
-   renames Operate.Transform.Will_Observe;
+                 renames Operate.Transform.Will_Observe;
+   --  Concatenation for type preservers
 
-   --  Subscribe
-   function "&" (Producer : Observable; Consumer : Sink) return Subscriptions.Subscription;
+   function "&" (Producer : Observable;
+                 Consumer : List_Transformer) return List_Transformers.Intoo.Observable
+                 renames List_Transformers.Will_Observe;
+   --  Concatenation for groupers into lists
+
+   function "&" (Producer : Collections.List_Transformers_Reverse.Observable;
+                 Consumer : Collections.List_Transformers_Reverse.Transformer) return Observable
+                 renames Collections.List_Transformers_Reverse.Will_Observe;
+   --  Concatenation of ungroupers
+
+   function "&" (Producer : List_Preservers.Observable;
+                 Consumer : List_Preservers.Transform.Operator'Class)
+                 return     List_Preservers.Observable
+                 renames List_Preservers.Transform.Will_Observe;
+   --  Concatenation for preservers between lists
+
+   package Linkers is
+
+      --  This package can be used instead of using the Rx.Observables one to make the "&" visible
+
+      function "&" (Producer : Observable; Consumer : Operate.Transform.Operator'Class) return Observable
+                    renames Observables."&";
+
+      function "&" (Producer : Observable; Consumer : Sink) return Subscriptions.Subscription
+                    renames Observables."&";
+
+      function "&" (Producer : List_Preservers.Observable;
+                    Consumer : List_Preservers.Transform.Operator'Class)
+                    return     List_Preservers.Observable
+                    renames List_Preservers.Transform.Will_Observe;
+
+      function "&" (Producer : Collections.List_Transformers_Reverse.Observable;
+                    Consumer : Collections.List_Transformers_Reverse.Transformer) return Observable
+                    renames Collections.List_Transformers_Reverse.Will_Observe;
+
+   end Linkers;
+
 
    -- Debug helpers
    function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
 
 private
+
+   procedure Append (L : in out Collections.List; V : T);
+
+   package RxBuffer is new Rx.Op.Buffer (Collections.List_Transformers,
+                                         Collections.Lists.Empty_List);
+
+   function Buffer (Every : Positive; Skip : Natural := 0) return List_Transformers.Operator'Class
+                    renames RxBuffer.Create;
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Typed.Observable renames RxEmpty.Empty;
@@ -347,6 +432,12 @@ private
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Sink renames RxSubscribe.Create;
+
+   package RxSubscribeLists is new Rx.Subscribe (Collections.Typed_Lists);
+   function Subscribe (On_Next      : Collections.Typed_Lists.Actions.Proc1 := null;
+                       On_Completed : Rx.Actions.Proc0                      := null;
+                       On_Error     : Rx.Actions.Proc_Error                 := null)
+                       return Collections.Typed_Lists.Sink renames RxSubscribeLists.Create;
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;
