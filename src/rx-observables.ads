@@ -331,7 +331,7 @@ package Rx.Observables is
    --  Concatenation for type preservers
 
    function "&" (Producer : Observable;
-                 Consumer : List_Transformer) return List_Transformers.Intoo.Observable
+                 Consumer : List_Transformer) return List_Transformers.Into_Observable
                  renames List_Transformers.Will_Observe;
    --  Concatenation for groupers into lists
 
