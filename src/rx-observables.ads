@@ -31,10 +31,10 @@ private with Rx.Src.Start;
 private with Rx.Src.Timer;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package User_Typed is new Rx.Typed (<>);
 package Rx.Observables is
 
-   package Typedd renames Typed; -- Bug workaround
+   package Typed renames User_Typed; -- Bug workaround
 
    -- Shortcuts
    subtype Observable  is Typed.Contracts.Observable'Class;

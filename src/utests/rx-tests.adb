@@ -15,9 +15,9 @@ package body Rx.Tests is
 
    function Is_Even (I : Integer) return Boolean is (I mod 2 = 0);
 
-   package FltChecker is new Debug.Observers (Std.Floats.Typedd, 0.0, Float'Image);
-   package IntChecker is new Debug.Observers (Std.Integers.Typedd, 0, Integer'Image); use IntChecker;
-   package StrChecker is new Debug.Observers (Std.Strings.Typedd, "", String_Image);
+   package FltChecker is new Debug.Observers (Std.Floats.Typed, 0.0, Float'Image);
+   package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Integer'Image); use IntChecker;
+   package StrChecker is new Debug.Observers (Std.Strings.Typed, "", String_Image);
 
    Subs : Rx.Subscriptions.Subscription;
 
