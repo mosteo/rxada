@@ -63,4 +63,7 @@ package Rx.Contracts is
    function Subscribe (Producer : Observable'Class; Consumer : Sink'Class) return Subscriptions.Subscription;
    --  Execute the subscription
 
+   pragma Compile_Time_Warning (True, "Try to make the & operator primitive so it works with use type");
+   --  Only useful if it can be made to work on one go for preservers and transformers
+
 end Rx.Contracts;
