@@ -1,7 +1,9 @@
 with Rx.Actions;
 with Rx.Debug;
 with Rx.Debug.Observers;
+with Rx.Definites;
 with Rx.Errors;
+with Rx.Indefinites;
 with Rx.Std;
 with Rx.Subscriptions;
 
@@ -408,5 +410,21 @@ package body Rx.Tests is
       when others =>
          return False;
    end Subscriptions;
+
+   -------------------
+   -- Check_Linking --
+   -------------------
+
+   procedure Check_Linking is
+      package Rx_Str is new Rx.Indefinites (String);
+      package Rx_Int is new Rx.Definites (Integer);
+      S : Rx.Subscriptions.Subscription;
+      use Rx_Str.Observables.Linkers;
+   begin
+      S :=
+        Rx_Str.Observables.Just ("Just this")
+        &
+        Rx_Str.Observables.Subscribe;
+   end Check_Linking;
 
 end Rx.Tests;
