@@ -14,8 +14,8 @@ package Rx with Pure is
    subtype Rx_Natural  is Rx_Integer range 0 .. Rx_Integer'Last;
    subtype Rx_Positive is Rx_Integer range 1 .. Rx_Integer'Last;
 
-   subtype Rx_Float   is Float;
+   subtype Rx_Float   is Long_Long_Float;
 
-   subtype Rx_String  is String; -- Should this better be Wide_Wide_String???
+   subtype Rx_String  is String;
 
 end Rx;
