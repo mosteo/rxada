@@ -15,7 +15,7 @@ package body Rx.Debug is
    -- Put_Line --
    --------------
 
-   procedure Put_Line (I : Integer) is
+   procedure Put_Line (I : Rx_Integer) is
    begin
       Put_Line (I'Img);
    end Put_Line;

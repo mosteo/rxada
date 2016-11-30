@@ -176,7 +176,7 @@ package Rx.Observables is
    -- From --
    ----------
 
-   package Default_Arrays is new Rx.Traits.Arrays (Typed, Integer);
+   package Default_Arrays is new Rx.Traits.Arrays (Typed, Rx_Integer);
    package Arrays renames Default_Arrays;
 
    -- Observable from an array of values, useful for literal arrays

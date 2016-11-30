@@ -13,10 +13,10 @@ package body Rx.Tests is
 
    function String_Image (S : String) return String is (S);
 
-   function Is_Even (I : Integer) return Boolean is (I mod 2 = 0);
+   function Is_Even (I : Rx_Integer) return Boolean is (I mod 2 = 0);
 
    package FltChecker is new Debug.Observers (Std.Floats.Typed, 0.0, Float'Image);
-   package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Integer'Image); use IntChecker;
+   package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Rx_Integer'Image); use IntChecker;
    package StrChecker is new Debug.Observers (Std.Strings.Typed, "", String_Image);
 
    Subs : Rx.Subscriptions.Subscription;
@@ -56,16 +56,16 @@ package body Rx.Tests is
 
    end Verifier;
 
-   package Verify_Int  is new Verifier (Integer, 1);
+   package Verify_Int  is new Verifier (Rx_Integer, 1);
    package Verify_Str is new Verifier (String, "hello");
-   procedure Assert_Int (V : Integer) renames Verify_Int.Verify;
+   procedure Assert_Int (V : Rx_Integer) renames Verify_Int.Verify;
 
    procedure Fail is
    begin
       raise Constraint_Error;
    end Fail;
 
-   procedure Int_Fail (V : Integer) is
+   procedure Int_Fail (V : Rx_Integer) is
    begin
       raise Constraint_Error;
    end Int_Fail;
@@ -73,17 +73,17 @@ package body Rx.Tests is
    procedure Int_Err_Pass (E : Rx.Errors.Occurrence) is null;
    Some_Error : Rx.Errors.Occurrence;
 
-   function Is_Zero (V : Integer) return Boolean is (V = 0);
-   function Is_One (V : Integer) return Boolean is (V = 1);
+   function Is_Zero (V : Rx_Integer) return Boolean is (V = 0);
+   function Is_One (V : Rx_Integer) return Boolean is (V = 1);
 
    -------------
    -- Sources --
    -------------
 
-   Deferred : Integer := 0;
+   Deferred : Rx_Integer := 0;
    function Deferred_Just return Integers.Observable is (Integers.Just (Deferred));
 
-   function Start_With_42 return Integer is (42);
+   function Start_With_42 return Rx_Integer is (42);
 
    function Sources return Boolean is
       Obs : Integers.Definite_Observable;
@@ -364,7 +364,7 @@ package body Rx.Tests is
    -- No_Op --
    -----------
 
-   package No_Op_Check is new Verifier (Integer, 1);
+   package No_Op_Check is new Verifier (Rx_Integer, 1);
    function No_Op return Boolean is
    begin
       Subs :=
@@ -381,7 +381,7 @@ package body Rx.Tests is
 
    type Subscriptor is new Integers.Subscriptor with null record;
 
-   overriding procedure Do_On_Next (S : in out Subscriptor; V : Integer) is
+   overriding procedure Do_On_Next (S : in out Subscriptor; V : Rx_Integer) is
       pragma Unreferenced (S);
    begin
       Debug.Put_Line ("In class");

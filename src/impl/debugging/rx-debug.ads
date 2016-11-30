@@ -18,10 +18,10 @@ package Rx.Debug is
 
    procedure Log (S : String; Level : Levels); -- Prints S if above configured level
 
-   procedure Put_Line (I : Integer);
+   procedure Put_Line (I : Rx_Integer);
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;
 
-   function Image (I : Integer) return String is (Integer'Image (I));
+   function Image (I : Rx_Integer) return String is (Rx_Integer'Image (I));
    function Image (T : Ada.Tags.Tag) return String renames Ada.Tags.Expanded_Name;
 
    procedure Print (E : Ada.Exceptions.Exception_Occurrence);

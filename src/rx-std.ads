@@ -45,14 +45,14 @@ package Rx.Std is
    package FltToStr is new Rx.Operators (Floats,   Strings);
    package IntToStr is new Rx.Operators (Integers, Strings);
 
-   package FltCount is new FltToInt.Counters (Integer'Succ, 0);
-   package IntCount is new Integers.Counters (Integer'Succ, 0);
-   package StrCount is new StrToInt.Counters (Integer'Succ, 0);
+   package FltCount is new FltToInt.Counters (Rx_Integer'Succ, 0);
+   package IntCount is new Integers.Counters (Rx_Integer'Succ, 0);
+   package StrCount is new StrToInt.Counters (Rx_Integer'Succ, 0);
 
    function String_Succ (S : String) return String;
    -- Lexicographic enumeration over the Character type. Useless I guess.
 
-   package IntEnums is new Integers.Enums (Integer'Succ);
+   package IntEnums is new Integers.Enums (Rx_Integer'Succ);
    package StrEnums is new Strings.Enums  (String_Succ);
 
 --   package IntImg is new Integers.Image (Integer'Image);
@@ -64,13 +64,13 @@ package Rx.Std is
    function Error (E : Rx.Errors.Occurrence)                return Any.Observable;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable;
 
-   function Interval (First       : Integer := 0;
+   function Interval (First       : Rx_Integer := 0;
                       Pause       : Duration := 1.0;
                       First_Pause : Duration := 1.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Integers.Observable;
 
-   function List_Length (L : Integers.T_List) return Integer is (Integer (L.Length));
+   function List_Length (L : Integers.T_List) return Rx_Integer is (Rx_Integer (L.Length));
    function Length is new Integers.Length (List_Length);
 
    function Never return Any.Observable;
@@ -96,7 +96,7 @@ package Rx.Std is
 private
 
    package RxEmpty    is new Rx.Src.Empty    (Any.Typed);
-   package RxInterval is new Rx.Src.Interval (Integers.Typed, Integer'Succ);
+   package RxInterval is new Rx.Src.Interval (Integers.Typed, Rx_Integer'Succ);
    package RxTimer    is new Rx.Src.Timer    (Integers.Typed);
 
    function Empty return Any.Observable renames RxEmpty.Empty;
@@ -104,9 +104,9 @@ private
    function Error (E : Rx.Errors.Occurrence)                return Any.Observable renames RxEmpty.Error;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable renames RxEmpty.Error;
 
-   function Interval (First       : Integer := 0;
-                      Pause       : Duration := 1.0;
-                      First_Pause : Duration := 1.0;
+   function Interval (First       : Rx_Integer := 0;
+                      Pause       : Duration   := 1.0;
+                      First_Pause : Duration   := 1.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Integers.Observable renames RxInterval.Create;
 
