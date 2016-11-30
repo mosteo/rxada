@@ -271,11 +271,23 @@ package body Rx.Tests is
                            Do_First => True, Ok_First => 11,
                            Do_Last  => True, Ok_Last  => 11);
 
+      -- Counting list sizes
+      Subs :=
+        IntEnums.Range_Count (1, 11) &
+        Buffer (10) &
+--          Std.Int_Images.Print &
+        Std.Length &
+--          Std.Int_Images.Print &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 2,
+                           Do_First => True, Ok_First => 10,
+                           Do_Last  => True, Ok_Last  => 1);
+
       pragma Compile_Time_Warning (True, "Missing check for Serialize operation (need mixer observer)");
 
       return True;
    exception
-      when others =>
+      when E : others =>
+         Debug.Print (E);
          return False;
    end Operators;
 
