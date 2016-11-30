@@ -48,7 +48,7 @@ package Rx.Observables is
 
    -- Collections Scaffolding
 
-   package Collections       is new Rx.Collections (Typed);
+   package Collections       is new  Rx.Collections (Typed);
    package Typed_Lists       renames Collections.Typed_Lists;
    package List_Preservers   renames Collections.List_Preservers;
    package List_Transformers renames Collections.List_Transformers;
@@ -89,7 +89,6 @@ package Rx.Observables is
                       renames List_Count.Count;
       --  This counts the number of lists seen, don't confuse with Length
 
-      pragma Compile_Time_Warning (True, "Length operator for lists");
       pragma Compile_Time_Warning (True, "Split operator as buffer inverse");
 
    end Counters;
@@ -201,6 +200,14 @@ package Rx.Observables is
    function Last_Or_Default (V : T) return Operator;
    function Last_Or_Default (V : T; Check : Typed.Actions.Filter1) return Operator;
    function Last_Or_Default (V : T; Check : Typed.Actions.TFilter1'Class) return Operator;
+
+   ------------
+   -- Length --
+   ------------
+
+   generic
+      with function Length (V : Typed_Lists.T) return T;
+   function Length return Collections.List_Transformers_Reverse.Operator;
 
    -----------
    -- Limit --

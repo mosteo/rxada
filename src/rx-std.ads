@@ -1,11 +1,10 @@
 with Ada.Exceptions;
 
 with Rx.Errors;
-with Rx.Impl.Any;
 with Rx.Impl.Casts;
-with Rx.Impl.Integers;
-with Rx.Impl.Floats;
-with Rx.Impl.Strings;
+with Rx.Impl.Std;
+--  with Rx.Numeric_Observables;
+-- with Rx.Numeric_Operators;
 with Rx.Observables.Image;
 with Rx.Operators;
 with Rx.Subscriptions;
@@ -21,16 +20,18 @@ package Rx.Std is
 --  Strings, Integers, StrToInt, IntToInt, IntToStr
 --  Also default sources/operators from ReactiveX documentation
 
+   --  Note that default integers are not Standard.Integer but the largest integer type supported
+
    --  Type shortcuts:
 
    subtype Subscription is Rx.Subscriptions.Subscription;
 
    --  Convenience instances
 
-   package Any      renames Rx.Impl.Any.Instance.Observables;
-   package Integers renames Rx.Impl.Integers.Observables;
-   package Floats   renames Rx.Impl.Floats.Observables;
-   package Strings  renames Rx.Impl.Strings.Observables;
+   package Any      renames Rx.Impl.Std.Any.Instance.Observables;
+   package Integers renames Rx.Impl.Std.Integers.Observables;
+   package Floats   renames Rx.Impl.Std.Floats.Observables;
+   package Strings  renames Rx.Impl.Std.Strings.Observables;
 
    package AnyToFlt is new Rx.Operators (Any,      Floats);
    package IntToFlt is new Rx.Operators (Integers, Floats);
@@ -68,6 +69,9 @@ package Rx.Std is
                       First_Pause : Duration := 1.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Integers.Observable;
+
+   function List_Length (L : Integers.T_List) return Integer is (Integer (L.Length));
+   function Length is new Integers.Length (List_Length);
 
    function Never return Any.Observable;
 

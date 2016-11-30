@@ -15,6 +15,7 @@ package Rx.Operators is
 -- implementation classes in its own packages, just like with Typed/Observables hierarchy.
 
    package Typed is new Rx.Transformers (From.Typed, Into.Typed);
+   package Typed_Lists is new Rx.Transformers (From.Typed_Lists, Into.Typed);
 
    subtype Operator Is Typed.Transformer'Class;
 
@@ -39,6 +40,14 @@ package Rx.Operators is
       function Count (First : Into.T) return Operator renames Pkg_Count.Count;
    end Counters;
 
+   ------------
+   -- Length --
+   ------------
+
+   generic
+      with function Length (V : From.Typed_Lists.T) return Into.T;
+   function Length return Typed_Lists.Operator;
+
    ---------
    -- Map --
    ---------
@@ -52,6 +61,14 @@ package Rx.Operators is
    function Scan (F         : Typed.Actions.Func2;
                   Seed      : Into.T;
                   Emit_Seed : Boolean) return Operator;
+
+   ----------
+   -- Size --
+   ----------
+
+   generic
+      with function Size (V : From.T) return Into.T;
+   function Size return Operator;
 
 private
 
