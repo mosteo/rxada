@@ -11,7 +11,7 @@ package body Rx.Src.Ranges is
    type Observable (Mode : Kinds) is new Source.Observable with record
       Next : Typed.D;
       case Mode is
-         when Counter  => Remaining : Natural;
+         when Counter  => Remaining : Rx_Natural;
          when Interval => Last      : Typed.D;
       end case;
    end record;
@@ -40,7 +40,7 @@ package body Rx.Src.Ranges is
 
    function From_Count
      (First : Typed.T;
-      Count : Natural)
+      Count : Rx_Natural)
       return Typed.Observable
    is
       use Typed.Type_Traits;

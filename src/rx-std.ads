@@ -28,10 +28,18 @@ package Rx.Std is
 
    --  Convenience instances
 
+   --  Base Std types
+
    package Any      renames Rx.Impl.Std.Any.Instance.Observables;
    package Integers renames Rx.Impl.Std.Integers.Observables;
    package Floats   renames Rx.Impl.Std.Floats.Observables;
    package Strings  renames Rx.Impl.Std.Strings.Observables;
+
+   --  Numeric self-operations for base types
+
+   package Num renames Rx.Impl.Std.Nums;
+
+   --  Transforming operators between base types
 
    package AnyToFlt is new Rx.Operators (Any,      Floats);
    package IntToFlt is new Rx.Operators (Integers, Floats);
@@ -45,17 +53,8 @@ package Rx.Std is
    package FltToStr is new Rx.Operators (Floats,   Strings);
    package IntToStr is new Rx.Operators (Integers, Strings);
 
-   package FltCount is new FltToInt.Counters (Rx_Integer'Succ, 0);
-   package IntCount is new Integers.Counters (Rx_Integer'Succ, 0);
-   package StrCount is new StrToInt.Counters (Rx_Integer'Succ, 0);
-
    function String_Succ (S : String) return String;
    -- Lexicographic enumeration over the Character type. Useless I guess.
-
-   package IntEnums is new Integers.Enums (Rx_Integer'Succ);
-   package StrEnums is new Strings.Enums  (String_Succ);
-
---   package IntImg is new Integers.Image (Integer'Image);
 
    --  Standard Rx sources and operators
 
@@ -69,9 +68,6 @@ package Rx.Std is
                       First_Pause : Duration := 1.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Integers.Observable;
-
-   function List_Length (L : Integers.T_List) return Rx_Integer is (Rx_Integer (L.Length));
-   function Length is new Integers.Length (List_Length);
 
    function Never return Any.Observable;
 
