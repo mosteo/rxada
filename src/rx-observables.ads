@@ -3,15 +3,12 @@ with Ada.Exceptions;
 with Rx.Actions;
 with Rx.Collections;
 with Rx.Errors;
-with Rx.Op.Count;
 with Rx.Op.Repeat;
 with Rx.Preservers;
 with Rx.Schedulers;
 with Rx.Src.Create;
 with Rx.Src.Defer;
 with Rx.Src.From;
-with Rx.Src.Interval;
-with Rx.Src.Ranges;
 with Rx.Subscribe;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
@@ -48,16 +45,18 @@ package Rx.Observables is
 
    -- Collections Scaffolding
 
-   package Collections       is new  Rx.Collections (Typed);
-   package Typed_Lists       renames Collections.Typed_Lists;
-   package List_Preservers   renames Collections.List_Preservers;
-   package List_Transformers renames Collections.List_Transformers;
-   package Obs_Transformers  renames Collections.Obs_Transformers;
+   package Collections is new  Rx.Collections (Typed);
 
-   subtype List_Preserver    is List_Preservers.Preserver'Class;
-   subtype List_Transformer  is List_Transformers.Transformer'Class;
-   subtype Obs_Transformer   is Obs_Transformers.Transformer'Class;
-   subtype T_List            is Collections.List;
+   package Typed_Lists            renames Collections.Typed_Lists;
+   package List_Preservers        renames Collections.List_Preservers;
+   package Into_List_Transformers renames Collections.Into_List_Transformers;
+   package From_List_Transformers renames Collections.From_List_Transformers;
+   package Obs_Transformers       renames Collections.Obs_Transformers;
+
+   subtype List_Preserver         is List_Preservers.Preserver'Class;
+   subtype Into_List_Transformer  is Into_List_Transformers.Transformer'Class;
+   subtype Obs_Transformer        is Obs_Transformers.Transformer'Class;
+   subtype T_List                 is Collections.List;
 
    -- Preservers Scaffolding
 
@@ -68,68 +67,7 @@ package Rx.Observables is
    -- Buffer --
    ------------
 
-   function Buffer (Every : Positive; Skip : Natural := 0) return List_Transformer;
-
-   -----------
-   -- Count --
-   -----------
-
-   generic
-      with function Succ (V : T) return T is <>;
-      Default_Initial_Count : T;
-   package Counters is
-      package List_Count is new Rx.Op.Count (Collections.List_Transformers_Reverse, Succ, Default_Initial_Count);
-      package Self_Count is new Rx.Op.Count (Operate.Transform, Succ, Default_Initial_Count);
-
-      function Count (First : T := Default_Initial_Count) return Operate.Operator
-                      renames Self_Count.Count;
-
-      function Count (First : T := Default_Initial_Count)
-                      return Collections.List_Transformers_Reverse.Operator
-                      renames List_Count.Count;
-      --  This counts the number of lists seen, don't confuse with Length
-
-      pragma Compile_Time_Warning (True, "Split operator as buffer inverse");
-
-   end Counters;
-
-   -----------
-   -- Enums --
-   -----------
-
-   generic
-      with function Succ (V : T)    return T       is <>;
-      with function "<"  (L, R : T) return Boolean is <>;
-   package Enums is
-
-      package RxInterval is new Rx.Src.Interval (Typed, Succ);
-      package RxRange    is new Rx.Src.Ranges   (Typed, Succ, "<");
-
-      --------------
-      -- Interval --
-      --------------
-
-      function Interval (First       : Typed.T;
-                         Pause       : Duration := 1.0;
-                         First_Pause : Duration := 1.0;
-                         Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
-                         return Observable renames RxInterval.Create;
-
-      -----------------
-      -- Range_Count --
-      -----------------
-
-      function Range_Count (First : Typed.T;
-                            Count : Natural) return Observable renames RxRange.From_Count;
-
-      -----------------
-      -- Range_Slice --
-      -----------------
-
-      function Range_Slice (First : Typed.T;
-                            Last  : Typed.T) return Observable renames RxRange.From_Slice;
-
-   end Enums;
+   function Buffer (Every : Positive; Skip : Natural := 0) return Into_List_Transformer;
 
    ------------
    -- Create --
@@ -200,14 +138,6 @@ package Rx.Observables is
    function Last_Or_Default (V : T) return Operator;
    function Last_Or_Default (V : T; Check : Typed.Actions.Filter1) return Operator;
    function Last_Or_Default (V : T; Check : Typed.Actions.TFilter1'Class) return Operator;
-
-   ------------
-   -- Length --
-   ------------
-
-   generic
-      with function Length (V : Typed_Lists.T) return T;
-   function Length return Collections.List_Transformers_Reverse.Operator;
 
    -----------
    -- Limit --
@@ -341,13 +271,13 @@ package Rx.Observables is
    --  Concatenation for type preservers
 
    function "&" (Producer : Observable;
-                 Consumer : List_Transformer) return List_Transformers.Into_Observable
-                 renames List_Transformers.Will_Observe;
+                 Consumer : Into_List_Transformer) return Into_List_Transformers.Into_Observable
+                 renames Into_List_Transformers.Will_Observe;
    --  Concatenation for groupers into lists
 
-   function "&" (Producer : Collections.List_Transformers_Reverse.Observable;
-                 Consumer : Collections.List_Transformers_Reverse.Operator) return Observable
-                 renames Collections.List_Transformers_Reverse.Will_Observe;
+   function "&" (Producer : From_List_Transformers.Observable;
+                 Consumer : From_List_Transformers.Operator) return Observable
+                 renames From_List_Transformers.Will_Observe;
    --  Concatenation of ungroupers
 
    function "&" (Producer : List_Preservers.Observable;
@@ -371,9 +301,9 @@ package Rx.Observables is
                     return     List_Preservers.Observable
                     renames List_Preservers.Will_Observe;
 
-      function "&" (Producer : Collections.List_Transformers_Reverse.Observable;
-                    Consumer : Collections.List_Transformers_Reverse.Operator) return Observable
-                    renames Collections.List_Transformers_Reverse.Will_Observe;
+      function "&" (Producer : From_List_Transformers.Observable;
+                    Consumer : From_List_Transformers.Operator) return Observable
+                    renames From_List_Transformers.Will_Observe;
 
    end Linkers;
 
@@ -385,10 +315,10 @@ private
 
    procedure Append (L : in out Collections.List; V : T);
 
-   package RxBuffer is new Rx.Op.Buffer (Collections.List_Transformers,
+   package RxBuffer is new Rx.Op.Buffer (Into_List_Transformers,
                                          Collections.Lists.Empty_List);
 
-   function Buffer (Every : Positive; Skip : Natural := 0) return List_Transformers.Operator
+   function Buffer (Every : Positive; Skip : Natural := 0) return Into_List_Transformers.Operator
                     renames RxBuffer.Create;
 
    package RxEmpty is new Rx.Src.Empty (Typed);

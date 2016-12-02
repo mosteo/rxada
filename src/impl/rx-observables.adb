@@ -1,5 +1,3 @@
-with Rx.Op.Length;
-
 package body Rx.Observables is
 
    ------------
@@ -10,16 +8,6 @@ package body Rx.Observables is
    begin
       L.Append (V);
    end Append;
-
-   ------------
-   -- Length --
-   ------------
-
-   function Length return Collections.List_Transformers_Reverse.Operator is
-      package RxLength is new Op.Length (Collections.List_Transformers_Reverse, Length);
-   begin
-      return RxLength.Create;
-   end Length;
 
    ---------------
    -- Subscribe --
