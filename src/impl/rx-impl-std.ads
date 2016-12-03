@@ -14,7 +14,7 @@ package Rx.Impl.Std is
    function To_Float   (I : Rx_Integer) return Rx_Float   is (Rx_Float (I)) with Inline;
    function Succ       (F : Rx_Float)   return Rx_Float   is (F + 1.0) with Inline;
 
-   package Nums is
+   package Numeric is
 
    --  Encapsulate numeric observables
 
@@ -36,6 +36,6 @@ package Rx.Impl.Std is
                                                       To_Integer,
                                                       Rx_Integer'Succ);
 
-   end Nums;
+   end Numeric;
 
 end Rx.Impl.Std;
