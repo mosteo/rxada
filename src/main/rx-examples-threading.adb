@@ -1,5 +1,5 @@
 with Rx.Debug; use Rx.Debug;
-with Rx.Std;
+with Rx.Std;   use Rx.Std;
 with Rx.Schedulers;
 with Rx.Schedulers.Pools;
 

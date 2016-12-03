@@ -1,14 +1,15 @@
 with Rx.Debug; use Rx.Debug;
+with Rx.Std;   use Rx.Std;
 
 procedure Rx.Examples.Basic is
    use Integers;
    use Strings;
    use StrToInt;
    use IntToStr;
-   use IntCount;
+   use Numeric.Integers;
 
 
-   procedure Custom_Src_1 (Observer : in out Integers.Typedd.Subscriber) is
+   procedure Custom_Src_1 (Observer : in out Integers.Typed.Subscriber) is
    begin
       Observer.On_Next (7);
       Observer.On_Next (8);
@@ -55,11 +56,11 @@ begin
 
    Debug.Put_Line ("Custom observable with closure example");
    --  I think this must go down in flames if the scope is outlived by the chain, with some latency inducing operator
-   --  Since there's no accessibility check kicking in, I guess this is a flaw in Gnat and I should use a
+   --  Since there's no accessibility check kicking in, I guess this is a bug in Gnat and I should use a
    --  named access type in Rx.Src.Create.
    --  TODO: keep an eye on it (Issue #18)
    declare
-      procedure Custom_Src_2 (Observer : in out Integers.Typedd.Subscriber) is
+      procedure Custom_Src_2 (Observer : in out Integers.Typed.Subscriber) is
       begin
          Observer.On_Next (4);
          Observer.On_Next (5);

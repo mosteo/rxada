@@ -63,7 +63,7 @@ package body Rx.Dispatchers.Single is
             end if;
          exception
             when E : others =>
-               Debug.Log ("At Dispatchers.Single.Runner: ", Debug.Warning);
+               Debug.Log ("At Dispatchers.Single.Runner: ", Debug.Warn);
                Debug.Print (E);
          end;
       end loop;

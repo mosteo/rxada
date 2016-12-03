@@ -7,13 +7,13 @@ package Rx.Debug is
 
    pragma Preelaborate;
 
-   type Levels is (Verbose, -- Highly chatty
-                   Reduced, -- Out-of-usual
-                   Warning, -- Shouldn't happen but not critical (?)
-                   Erratum  -- Something is definitely not working as expected
+   type Levels is (Note, -- Highly chatty
+                   Info, -- Out-of-usual
+                   Warn, -- Shouldn't happen but not critical (?)
+                   Error  -- Something is definitely not working as expected
                    );
 
-   Level : constant Levels := Reduced;
+   Level : constant Levels := Info;
    --  Minimum level a message has to have for it to be printed
 
    procedure Log (S : String; Level : Levels); -- Prints S if above configured level

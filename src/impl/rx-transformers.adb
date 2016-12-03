@@ -38,7 +38,7 @@ package body Rx.Transformers is
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed", Debug.Verbose);
+         Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed", Debug.Note);
          This.Child.Clear;
          raise;
    end On_Next;
@@ -57,7 +57,7 @@ package body Rx.Transformers is
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Verbose);
+         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Note);
          This.Child.Clear;
          raise;
    end On_Completed;
@@ -73,7 +73,7 @@ package body Rx.Transformers is
             Transformer'Class (This).On_Error (Error, This.Get_Child); -- Pass it down
          exception
             when Subscriptions.No_Longer_Subscribed =>
-               Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Verbose);
+               Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Note);
                raise;
          end;
          This.Child.Clear;

@@ -10,7 +10,7 @@ package body Rx.Subscribe is
    procedure Do_On_Error (This : in out Subscribe; Error : in out Errors.Occurrence) is
       pragma Unreferenced (This);
    begin
-      Debug.Log ("On_Error called but not implemented", Debug.Verbose);
+      Debug.Log ("On_Error called but not implemented", Debug.Note);
       Debug.Print (Error.Get_Exception.all);
       Error.Reraise;
    end Do_On_Error;
@@ -63,7 +63,7 @@ package body Rx.Subscribe is
          end if;
          Error.Set_Handled;
       else
-         Debug.Log ("RxAda Subscribe saw unhandled error:", Debug.Erratum);
+         Debug.Log ("RxAda Subscribe saw unhandled error:", Debug.Error);
          Debug.Print (Error.Get_Exception.all);
          Error.Reraise;
       end if;

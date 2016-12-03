@@ -8,7 +8,7 @@ with Rx.Subscriptions;
 procedure Rx.Bugs.Testbed is
    use Integers;
 
-   package Checkers is new Debug.Observers (Integers.Typedd, 0, Image);
+   package Checkers is new Debug.Observers (Integers.Typed, 0, Image);
 
    task type Dumper (Dumpee : access Integers.Sink);
 

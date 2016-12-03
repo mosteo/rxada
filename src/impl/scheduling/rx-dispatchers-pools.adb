@@ -65,7 +65,7 @@ package body Rx.Dispatchers.Pools is
    overriding procedure Finalize (This : in out Pool) is
    begin
       Debug.Log ("Thread pool "  & This.Name.all & " finalizing with" & This.Safe.Thread_Count'Img &
-                   " live threads", Debug.Reduced);
+                   " live threads", Debug.Info);
    end Finalize;
 
    ---------------

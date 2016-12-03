@@ -38,8 +38,8 @@ package Rx.Std is
 
    --  Transforming operators between base types
 
-   package AnyToFlt renames Impl.Std.AnyToFlt;
-   package IntToFlt renames Impl.Std.IntToFlt;
+   package AnyToFlt renames Impl.Std.Any_To_Float;
+   package IntToFlt renames Impl.Std.Int_To_Float;
    package StrToFlt renames Impl.Std.StrToFlt;
 
    package AnyToInt renames Impl.Std.AnyToInt;

@@ -1,4 +1,5 @@
 with Rx.Debug;
+with Rx.Std; use Rx.Std;
 
 --  This procedure tests unambiguous visibility of "&"
 
@@ -12,8 +13,8 @@ procedure Rx.Examples.Minimal is
 
    use StrToInt;
    use IntToStr;
-   use IntCount;
-   use StrCount;
+   use Numeric.Integers;
+   use Numeric.Str_To_Int;
 
 begin
    Sub :=
@@ -124,7 +125,7 @@ begin
    Nosub := -- Check mixed counting of different types without subscription
      -
      (
-      From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
+      Strings.From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
       &
         Count (First => 0)
       &
@@ -142,7 +143,7 @@ begin
 
    Sub := -- Check mixed counting of different types with subscription
      (
-      From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
+      Strings.From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
       &
         Count (First => 0)
       &
@@ -153,7 +154,7 @@ begin
 
    Sub := -- Check mixed counting of indefinite array types with subscription
      (
-      From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
+      Strings.From (Strings.Arrays.Build ("hello, world!", "so long, john..."))
       &
         Count (First => 0)
       &
