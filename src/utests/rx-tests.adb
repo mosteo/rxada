@@ -19,7 +19,7 @@ package body Rx.Tests is
 
    package FltChecker is new Debug.Observers (Std.Floats.Typed, 0.0, Rx_Float'Image);
    package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Rx_Integer'Image); use IntChecker;
-   package StrChecker is new Debug.Observers (Std.Strings.Typed, "", String_Image);
+   package StrChecker is new Debug.Observers (Std.Strings.Typed, "", String_Image);     use StrChecker;
 
    Subs : Rx.Subscriptions.Subscription;
 
@@ -66,10 +66,31 @@ package body Rx.Tests is
                                             Do_First => True, Ok_First => 1,
                                             Do_Last  => True, Ok_Last  => 1);
 
+      Subs := Just ("hello") & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                                                  Do_First => True, Ok_First => "hello",
+                                                  Do_Last  => True, Ok_Last  => "hello");
+
       Subs := Just (Deferred) & Filter (Is_Zero'Access) & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
                                                                              Do_First => True, Ok_First => 1,
                                                                              Do_Last  => True, Ok_Last  => 1);
       --  Should see a zero, pass the filter, count it and assert 1 as final result
+
+      Subs := Ints.From ((1, 2, 3)) & Subscribe_Checker (Do_Count => True, Ok_Count => 3,
+                                                         Do_First => True, Ok_First => 1,
+                                                         Do_Last  => True, Ok_Last  => 3);
+
+      Subs :=
+        Just ("Hello") &
+        Numeric.Str_To_Int.Count &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 1);
+
+      Subs := Ints.From ((1, 2)) &
+        Numeric.Integers.Count &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 2,
+                           Do_Last  => True, Ok_Last  => 2);
 
       Obs := +Defer (Deferred_Just'Access);
       Deferred := 1;
@@ -152,6 +173,43 @@ package body Rx.Tests is
    function Operators return Boolean is
       use Actions;
    begin
+      -- Test counting reset
+      declare
+         Ob : constant Integers.Observable := Ints.From ((1, 2, 3, 4)) & Numeric.Integers.Count;
+      begin
+         Subs := Ob & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                                         Do_First => True, Ok_First => 4,
+                                         Do_Last  => True, Ok_Last  => 4);
+         --  Both should report the same count
+         Subs := Ob & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                                         Do_First => True, Ok_First => 4,
+                                         Do_Last  => True, Ok_Last  => 4);
+      end;
+
+
+      -- Test limit
+      Subs :=
+        Ints.From ((1, 3, 2)) &
+        Limit (2) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 2,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 3);
+
+      Subs :=
+        Ints.From ((1, 2, 3)) &
+        Limit (5) & -- Check proper completion when not enough
+        Subscribe_Checker (Do_Count => True, Ok_Count => 3,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 3);
+
+      -- Filter test
+      Subs := Ints.From ((2, 2, 1)) &
+        Filter (Is_One'Access) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 1);
+
+      -- Repeats
       Subs :=
         Just (1) &
         Repeat (9) & -- Standard repeating
@@ -185,7 +243,7 @@ package body Rx.Tests is
       Subs :=
         From ((1, 2, 3)) &
         Repeat_Until (Always'Access) & -- Trivial exit after first repeat
-        Subscribe_Checker (Do_Count => True, Ok_Count => 3);
+        IntChecker.Subscribe (Do_Count => True, Ok_Count => 3);
 
       Subs :=
         Ints.From ((1, 2, 3)) &
@@ -242,6 +300,14 @@ package body Rx.Tests is
                            Do_First => True, Ok_First => 4,
                            Do_Last  => True, Ok_Last  => 4);
 
+      -- No_Op
+      Subs :=
+        Just (1) &
+        No_Op &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 1);
+
       -- Buffering
       Subs :=
         Numeric.Integers.Range_Count (1, 101) &
@@ -273,104 +339,24 @@ package body Rx.Tests is
          return False;
    end Operators;
 
-   -----------------
-   -- Basic_Tests --
-   -----------------
+   ----------------
+   -- Misc_Tests --
+   ----------------
 
-   function Basic_Tests return Boolean is
+   function Misc_Tests return Boolean is
    begin
-
-      Subs := Just ("hello") & Subscribe (Verify_Str.Verify'Access);
-
-      Subs := Ints.From ((1, 1, 1)) & Subscribe (Verify_Int.Verify'Access);
-
-      Subs := Just ("Hello")
-        &
-        StrCount.Count (0)
-        &
-        Subscribe (Verify_Int.Verify'Access);
-
-      Subs := Ints.From ((1, 2))
-        &
-        Count (-1)
-        &
-        Subscribe (Verify_Int.Verify'Access);
-
-      -- Test counting reset
-      declare
-         Ob : constant Integers.Observable := Ints.From ((1, 2, 3, 4)) & Count (-3);
-      begin
-         Subs := Ob & Subscribe (Verify_Int.Verify'Access);
-         Subs := Ob & Subscribe (Verify_Int.Verify'Access);
-      end;
-
-      -- Test limit
-      Subs := Ints.From ((1, 1, 2))
-        &
-        Limit (2)
-        &
-        Subscribe (Verify_Int.Verify'Access);
-
-      Subs := Ints.From ((1, 1, 2))
-        &
-        Limit (2)
-        &
-        Count (-1)
-        &
-        Subscribe (Verify_Int.Verify'Access);
-
-      Subs := Ints.From ((1, 1, 1))
-        &
-        Limit (5) -- Check proper completion when not enough
-        &
-        Subscribe (Verify_Int.Verify'Access);
-
-      -- Filter test
-      Subs := Ints.From ((2, 2, 1)) &
-        Filter (Is_One'Access) &
-        Subscribe (Assert_Int'Access);
-
-      Subs := Ints.From ((1, 2, 2)) &
-        Filter (Is_One'Access) &
-        Count (0) &
-        Subscribe (Assert_Int'Access);
-
-      return Verify_Int.Passed and Verify_Str.Passed;
-   end Basic_Tests;
-
-   -----------
-   -- No_Op --
-   -----------
-
-   package No_Op_Check is new Verifier (Rx_Integer, 1);
-   function No_Op return Boolean is
-   begin
-      Subs :=
-        Ints.Just (1) &
-        Ints.No_Op &
-        Subscribe (No_Op_Check.Verify'Access);
-
-      return No_Op_Check.Passed;
-   end No_Op;
+      return True;
+   exception
+      when others =>
+         return False;
+   end Misc_Tests;
 
    -------------------
    -- Subscriptions --
    -------------------
 
-   type Subscriptor is new Integers.Subscriptor with null record;
-
-   overriding procedure Do_On_Next (S : in out Subscriptor; V : Rx_Integer) is
-      pragma Unreferenced (S);
-   begin
-      Debug.Put_Line ("In class");
-      Assert_Int (V);
-   end Do_On_Next;
-
    function Subscriptions return Boolean is
    begin
-      --  Check subscription using tagged type
-      Subs := Ints.Just (1) &
-        Subscriptor'(Integers.Subscriptor with null record);
 
       --  Check unsubscription
       Subs :=
@@ -381,7 +367,7 @@ package body Rx.Tests is
 
       Subs.Unsubscribe;
 
-      return Verify_Int.Passed and then not Subs.Is_Subscribed;
+      return not Subs.Is_Subscribed;
    exception
       when others =>
          return False;
@@ -393,8 +379,8 @@ package body Rx.Tests is
 
    procedure Check_Linking is
       package Rx_Str is new Rx.Indefinites (String);
-      package Rx_Int is new Rx.Definites (Integer);
       S : Rx.Subscriptions.Subscription;
+      pragma Unreferenced (S);
       use Rx_Str.Observables.Linkers;
    begin
       S :=
