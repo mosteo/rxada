@@ -34,7 +34,7 @@ package body Rx.Src.Interval is
       R.Sched.Schedule (R, R.Next);
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Interval runner: caught No_Longer_Subscribed", Debug.Reduced);
+         Debug.Log ("Interval runner: caught No_Longer_Subscribed", Debug.Info);
       when E : others =>
          Typed.Default_Error_Handler (R.Child, E);
    end Run;

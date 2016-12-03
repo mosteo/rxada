@@ -11,8 +11,8 @@ package Rx.Impl.Std is
    package Integers is new Rx.Definites (Rx_Integer);
    package Strings  is new Rx.Indefinites (Rx_String);
 
-   package AnyToFlt is new Rx.Operators (Any.Observables,      Floats.Observables);
-   package IntToFlt is new Rx.Operators (Integers.Observables, Floats.Observables);
+   package Any_To_Float is new Rx.Operators (Any.Observables,      Floats.Observables);
+   package Int_To_Float is new Rx.Operators (Integers.Observables, Floats.Observables);
    package StrToFlt is new Rx.Operators (Strings.Observables,  Floats.Observables);
 
    package AnyToInt is new Rx.Operators (Any.Observables,     Integers.Observables);
