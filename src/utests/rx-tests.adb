@@ -33,35 +33,6 @@ package body Rx.Tests is
    use IntToStr;
    use StrToInt;
 
-   use IntCount;
-   use StrCount;
-
-   generic
-      type T (<>) is private;
-      Target : T;
-   package Verifier is
-
-      Passed : Boolean := True;
-      pragma Atomic (Passed);
-
-      procedure Verify (I : T);
-
-   end Verifier;
-
-   package body Verifier is
-
-      procedure Verify (I : T) is
-      begin
-         Passed := Passed and then I = Target;
-         Debug.Put_Line ("Verifying pass... " & Boolean'Image (I = Target));
-      end Verify;
-
-   end Verifier;
-
-   package Verify_Int  is new Verifier (Rx_Integer, 1);
-   package Verify_Str is new Verifier (String, "hello");
-   procedure Assert_Int (V : Rx_Integer) renames Verify_Int.Verify;
-
    procedure Fail is
    begin
       raise Constraint_Error;
@@ -76,7 +47,7 @@ package body Rx.Tests is
    Some_Error : Rx.Errors.Occurrence;
 
    function Is_Zero (V : Rx_Integer) return Boolean is (V = 0);
-   function Is_One (V : Rx_Integer) return Boolean is (V = 1);
+   function Is_One  (V : Rx_Integer) return Boolean is (V = 1);
 
    -------------
    -- Sources --
@@ -90,18 +61,25 @@ package body Rx.Tests is
    function Sources return Boolean is
       Obs : Integers.Definite_Observable;
    begin
-      Verify_Int.Passed := True;
 
-      Subs := Just (Deferred) & Filter (Is_Zero'Access) & Count & Subscribe (Assert_Int'Access);
+      Subs := Just (1) & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                                            Do_First => True, Ok_First => 1,
+                                            Do_Last  => True, Ok_Last  => 1);
+
+      Subs := Just (Deferred) & Filter (Is_Zero'Access) & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                                                                             Do_First => True, Ok_First => 1,
+                                                                             Do_Last  => True, Ok_Last  => 1);
       --  Should see a zero, pass the filter, count it and assert 1 as final result
 
       Obs := +Defer (Deferred_Just'Access);
       Deferred := 1;
-      Subs := Obs & Subscribe (Assert_Int'Access);
+      Subs := Obs & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                                       Do_First => True, Ok_First => 1,
+                                       Do_Last  => True, Ok_Last  => 1);
       -- Must receive the post-defer creation value (1)
 
-      Subs := Integers.Empty & Count (1) & Subscribe (Assert_Int'Access);
-      --  Should see zero items, hence a count of one
+      Subs := Integers.Empty & Subscribe_Checker (Do_Count => True, Ok_Count => 0);
+      --  Should see zero items
 
       Subscribe (Integers.Error (Some_Error),
                  On_Next      => Int_Fail'Access,
@@ -110,31 +88,33 @@ package body Rx.Tests is
       --  Should only call On_Error and get a pass
 
       Subs :=
-        IntEnums.Range_Count (First => 1, Count => 1) &
-        Subscribe (Assert_Int'Access);
+        Numeric.Integers.Range_Count (First => 1, Count => 1) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 1);
 
       Subs :=
-        IntEnums.Range_Count (First => 1, Count => 10) &
---        Print (Tests.Image'Access) &
-        Count (-9) &
-        Subscribe (Assert_Int'Access);
+        Numeric.Integers.Range_Count (First => 1, Count => 10) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 10,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 10);
 
       Subs :=
-        IntEnums.Range_Slice (First => 1, Last => 10) &
-        Count (-9) &
-        Subscribe (Assert_Int'Access);
+        Numeric.Integers.Range_Slice (First => 1, Last => 10) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 10,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 10);
 
       Subs :=
-        IntEnums.Range_Count (First => 1, Count => 0) &
-        Count (1) &
-        Subscribe (Assert_Int'Access);
-
-      Subs :=
-        IntEnums.Range_Slice (First => 1, Last => 0) &
+        Numeric.Integers.Range_Count (First => 1, Count => 0) &
         Subscribe_Checker (Do_Count => True, Ok_Count => 0);
 
       Subs :=
-        IntEnums.Range_Slice (First => 5, Last => 8) &
+        Numeric.Integers.Range_Slice (First => 1, Last => 0) &
+        Subscribe_Checker (Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Numeric.Integers.Range_Slice (First => 5, Last => 8) &
         Subscribe_Checker (Do_Count => True, Ok_Count => 4,
                            Do_First => True, Ok_First => 5,
                            Do_Last  => True, Ok_Last  => 8);
@@ -156,7 +136,7 @@ package body Rx.Tests is
                            Do_First => True, Ok_First => 0,
                            Do_Last  => True, Ok_Last  => 0);
 
-      return Verify_Int.Passed;
+      return True;
    exception
       when others =>
          return False;
@@ -222,9 +202,9 @@ package body Rx.Tests is
                            Do_Last  => True, Ok_Last  => 3);
 
       --  Casts
-      Subs := Just (1.0) & Float_To_Integer  & IntChecker.Subscribe (Do_Last => True, Ok_Last => 1);
-      Subs := Just (1)   & Integer_To_Float  & FltChecker.Subscribe (Do_Last => True, Ok_Last => 1.0);
-      Subs := Just (1)   & Integer_To_String & StrChecker.Subscribe (Do_Last => True, Ok_Last => "1");
+      Subs := Just (1.0) & Casts.To_Integer & IntChecker.Subscribe (Do_Last => True, Ok_Last => 1);
+      Subs := Just (1)   & Casts.To_Float   & FltChecker.Subscribe (Do_Last => True, Ok_Last => 1.0);
+      Subs := Just (1)   & Casts.To_String  & StrChecker.Subscribe (Do_Last => True, Ok_Last => "1");
 
       --  Last
       Subs :=
@@ -264,10 +244,10 @@ package body Rx.Tests is
 
       -- Buffering
       Subs :=
-        IntEnums.Range_Count (1, 101) &
+        Numeric.Integers.Range_Count (1, 101) &
         Buffer (10) &
 --          Std.Int_Images.Print &
-        IntCount.Count &
+        Numeric.Integers.Count &
 --          Std.Int_Images.Print &
         Subscribe_Checker (Do_Count => True, Ok_Count => 1,
                            Do_First => True, Ok_First => 11,
@@ -275,10 +255,10 @@ package body Rx.Tests is
 
       -- Counting list sizes
       Subs :=
-        IntEnums.Range_Count (1, 11) &
+        Numeric.Integers.Range_Count (1, 11) &
         Buffer (10) &
 --          Std.Int_Images.Print &
-        Std.Length &
+        Numeric.Integers.Length &
 --          Std.Int_Images.Print &
         Subscribe_Checker (Do_Count => True, Ok_Count => 2,
                            Do_First => True, Ok_First => 10,
@@ -299,10 +279,6 @@ package body Rx.Tests is
 
    function Basic_Tests return Boolean is
    begin
-      Verify_Int.Passed := True;
-      Verify_Str.Passed := True;
-
-      Subs := Just (1) & Subscribe (Verify_Int.Verify'Access);
 
       Subs := Just ("hello") & Subscribe (Verify_Str.Verify'Access);
 

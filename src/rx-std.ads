@@ -3,8 +3,6 @@ with Ada.Exceptions;
 with Rx.Errors;
 with Rx.Impl.Casts;
 with Rx.Impl.Std;
---  with Rx.Numeric_Observables;
--- with Rx.Numeric_Operators;
 with Rx.Observables.Image;
 with Rx.Operators;
 with Rx.Subscriptions;
@@ -16,9 +14,8 @@ private with Rx.Src.Timer;
 
 package Rx.Std is
 
---  Instances and default visibility for the common predefined types:
---  Strings, Integers, StrToInt, IntToInt, IntToStr
---  Also default sources/operators from ReactiveX documentation
+   --  Instances and default visibility for some predefined types
+   --  Also default sources/operators from ReactiveX documentation
 
    --  Note that default integers are not Standard.Integer but the largest integer type supported
 
@@ -37,7 +34,7 @@ package Rx.Std is
 
    --  Numeric self-operations for base types
 
-   package Num renames Rx.Impl.Std.Nums;
+   package Numeric renames Rx.Impl.Std.Numeric;
 
    --  Transforming operators between base types
 
@@ -58,10 +55,32 @@ package Rx.Std is
 
    --  Standard Rx sources and operators
 
+   package Casts is
+
+      --  Casts for predefined types
+
+      function To_Float return IntToFlt.Operator is (IntToFlt.Map (Rx.Impl.Casts.To_Float'Access));
+      function To_Float return StrToFlt.Operator is (StrToFlt.Map (Rx.Impl.Casts.To_Float'Access));
+
+      function To_Integer return FltToInt.Operator is (FltToInt.Map (Rx.Impl.Casts.To_Integer'Access));
+      function To_Integer return StrToInt.Operator is (StrToInt.Map (Rx.Impl.Casts.To_Integer'Access));
+
+      function To_String return FltToStr.Operator is (FltToStr.Map (Rx.Impl.Casts.To_String'Access));
+      function To_String return IntToStr.Operator is (IntToStr.Map (Rx.Impl.Casts.To_String'Access));
+
+   end Casts;
+
    function Empty return Any.Observable;
 
    function Error (E : Rx.Errors.Occurrence)                return Any.Observable;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable;
+
+   package Images is
+
+      package Floats   is new Std.Floats.Image   (Impl.Casts.To_String);
+      package Integers is new Std.Integers.Image (Impl.Casts.To_String);
+
+   end Images;
 
    function Interval (First       : Rx_Integer := 0;
                       Pause       : Duration := 1.0;
@@ -73,21 +92,6 @@ package Rx.Std is
 
    function Timer (After : Duration) return Integers.Observable;
    --  Std Timer emits a 0 after Pause seconds an completes
-
-   --  Casts for predefined types
-
-   Float_To_Integer  : constant FltToInt.Operator := FltToInt.Map (Rx.Impl.Casts.To_Integer'Access);
-   Float_To_String   : constant FltToStr.Operator := FltToStr.Map (Rx.Impl.Casts.To_String'Access);
-
-   Integer_To_Float  : constant IntToFlt.Operator := IntToFlt.Map (Rx.Impl.Casts.To_Float'Access);
-   Integer_To_String : constant IntToStr.Operator := IntToStr.Map (Rx.Impl.Casts.To_String'Access);
-
-   String_To_Float   : constant StrToFlt.Operator := StrToFlt.Map (Rx.Impl.Casts.To_Float'Access);
-   String_To_Integer : constant StrToInt.Operator := StrToInt.Map (Rx.Impl.Casts.To_Integer'Access);
-
-   --  Printing
-
-   package Int_Images is new Integers.Image (Impl.Casts.To_String);
 
 private
 
