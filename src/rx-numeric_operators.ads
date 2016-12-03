@@ -1,18 +1,19 @@
-with Rx.Observables;
-with Rx.Transformers;
+with Rx.Operators;
 
 private with Rx.Op.Count;
 private with Rx.Op.Length;
 
 generic
-   with package From is new Rx.Observables (<>);
-   with package Into is new Rx.Observables (<>);
-   with function To_Numeric (I : Rx_Integer) return Into.T;
-   with function Succ (V : Into.T) return Into.T;
+   with package Operators is new Rx.Operators (<>);
+   with function To_Numeric (I : Rx_Integer) return Operators.Into.T;
+   with function Succ (V : Operators.Into.T) return Operators.Into.T;
 package Rx.Numeric_Operators is
 
-   package Transformers           is new Rx.Transformers (From.Typed,       Into.Typed);
-   package From_List_Transformers is new Rx.Transformers (From.Typed_Lists, Into.Typed);
+   package From renames Operators.From;
+   package Into renames Operators.Into;
+
+   package Transformers           renames Operators.Typed;
+   package From_List_Transformers renames Operators.Typed_Lists;
 
    subtype Operator is Transformers.Operator;
 

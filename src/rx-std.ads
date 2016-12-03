@@ -27,28 +27,28 @@ package Rx.Std is
 
    --  Base Std types
 
-   package Any      renames Rx.Impl.Std.Any.Instance.Observables;
-   package Integers renames Rx.Impl.Std.Integers.Observables;
-   package Floats   renames Rx.Impl.Std.Floats.Observables;
-   package Strings  renames Rx.Impl.Std.Strings.Observables;
+   package Any      renames Impl.Std.Any.Instance.Observables;
+   package Integers renames Impl.Std.Integers.Observables;
+   package Floats   renames Impl.Std.Floats.Observables;
+   package Strings  renames Impl.Std.Strings.Observables;
 
    --  Numeric self-operations for base types
 
-   package Numeric renames Rx.Impl.Std.Numeric;
+   package Numeric renames Impl.Std.Numeric;
 
    --  Transforming operators between base types
 
-   package AnyToFlt is new Rx.Operators (Any,      Floats);
-   package IntToFlt is new Rx.Operators (Integers, Floats);
-   package StrToFlt is new Rx.Operators (Strings,  Floats);
+   package AnyToFlt renames Impl.Std.AnyToFlt;
+   package IntToFlt renames Impl.Std.IntToFlt;
+   package StrToFlt renames Impl.Std.StrToFlt;
 
-   package AnyToInt is new Rx.Operators (Any,     Integers);
-   package FltToInt is new Rx.Operators (Floats,  Integers);
-   package StrToInt is new Rx.Operators (Strings, Integers);
+   package AnyToInt renames Impl.Std.AnyToInt;
+   package FltToInt renames Impl.Std.FltToInt;
+   package StrToInt renames Impl.Std.StrToInt;
 
-   package AnyToStr is new Rx.Operators (Any,      Strings);
-   package FltToStr is new Rx.Operators (Floats,   Strings);
-   package IntToStr is new Rx.Operators (Integers, Strings);
+   package AnyToStr renames Impl.Std.AnyToStr;
+   package FltToStr renames Impl.Std.FltToStr;
+   package IntToStr renames Impl.Std.IntToStr;
 
    function String_Succ (S : String) return String;
    -- Lexicographic enumeration over the Character type. Useless I guess.
