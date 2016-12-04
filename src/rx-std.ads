@@ -4,13 +4,8 @@ with Rx.Errors;
 with Rx.Impl.Casts;
 with Rx.Impl.Std;
 with Rx.Observables.Image;
-with Rx.Operators;
 with Rx.Subscriptions;
 with Rx.Schedulers;
-
-private with Rx.Src.Empty;
-private with Rx.Src.Interval;
-private with Rx.Src.Timer;
 
 package Rx.Std is
 
@@ -38,17 +33,17 @@ package Rx.Std is
 
    --  Transforming operators between base types
 
-   package AnyToFlt renames Impl.Std.Any_To_Float;
-   package IntToFlt renames Impl.Std.Int_To_Float;
-   package StrToFlt renames Impl.Std.StrToFlt;
+   package Any_To_Float      renames Impl.Std.Any_To_Float;
+   package Integer_To_Float  renames Impl.Std.Int_To_Float;
+   package String_To_Float   renames Impl.Std.String_To_Float;
 
-   package AnyToInt renames Impl.Std.AnyToInt;
-   package FltToInt renames Impl.Std.FltToInt;
-   package StrToInt renames Impl.Std.StrToInt;
+   package Any_To_Integer    renames Impl.Std.Any_To_Integer;
+   package Float_To_Integer  renames Impl.Std.Float_To_Integer;
+   package String_To_Integer renames Impl.Std.String_To_Integer;
 
-   package AnyToStr renames Impl.Std.AnyToStr;
-   package FltToStr renames Impl.Std.FltToStr;
-   package IntToStr renames Impl.Std.IntToStr;
+   package Any_To_String     renames Impl.Std.Any_To_String;
+   package Float_To_String   renames Impl.Std.Float_To_String;
+   package Integer_To_String renames Impl.Std.Integer_To_String;
 
    function String_Succ (S : String) return String;
    -- Lexicographic enumeration over the Character type. Useless I guess.
@@ -59,21 +54,21 @@ package Rx.Std is
 
       --  Casts for predefined types
 
-      function To_Float return IntToFlt.Operator is (IntToFlt.Map (Rx.Impl.Casts.To_Float'Access));
-      function To_Float return StrToFlt.Operator is (StrToFlt.Map (Rx.Impl.Casts.To_Float'Access));
+      function To_Float return Integer_To_Float.Operator is (Integer_To_Float.Map (Rx.Impl.Casts.To_Float'Access));
+      function To_Float return String_To_Float.Operator is (String_To_Float.Map (Rx.Impl.Casts.To_Float'Access));
 
-      function To_Integer return FltToInt.Operator is (FltToInt.Map (Rx.Impl.Casts.To_Integer'Access));
-      function To_Integer return StrToInt.Operator is (StrToInt.Map (Rx.Impl.Casts.To_Integer'Access));
+      function To_Integer return Float_To_Integer.Operator is (Float_To_Integer.Map (Rx.Impl.Casts.To_Integer'Access));
+      function To_Integer return String_To_Integer.Operator is (String_To_Integer.Map (Rx.Impl.Casts.To_Integer'Access));
 
-      function To_String return FltToStr.Operator is (FltToStr.Map (Rx.Impl.Casts.To_String'Access));
-      function To_String return IntToStr.Operator is (IntToStr.Map (Rx.Impl.Casts.To_String'Access));
+      function To_String return Float_To_String.Operator is (Float_To_String.Map (Rx.Impl.Casts.To_String'Access));
+      function To_String return Integer_To_String.Operator is (Integer_To_String.Map (Rx.Impl.Casts.To_String'Access));
 
    end Casts;
 
-   function Empty return Any.Observable;
+   function Empty return Any.Observable renames Any.Empty;
 
-   function Error (E : Rx.Errors.Occurrence)                return Any.Observable;
-   function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable;
+   function Error (E : Rx.Errors.Occurrence)                return Any.Observable renames Any.Error;
+   function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable renames Any.Error;
 
    package Images is
 
@@ -86,38 +81,18 @@ package Rx.Std is
                       Pause       : Duration := 1.0;
                       First_Pause : Duration := 1.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
-                      return Integers.Observable;
+                      return Integers.Observable renames Numeric.Integers.Interval;
 
-   function Never return Any.Observable;
+   function Never return Any.Observable renames Any.Never;
 
-   function Timer (After : Duration) return Integers.Observable;
+   function Timer (After : Duration) return Integers.Observable is (Integers.Timer (0, After));
    --  Std Timer emits a 0 after Pause seconds an completes
 
 private
-
-   package RxEmpty    is new Rx.Src.Empty    (Any.Typed);
-   package RxInterval is new Rx.Src.Interval (Integers.Typed, Rx_Integer'Succ);
-   package RxTimer    is new Rx.Src.Timer    (Integers.Typed);
-
-   function Empty return Any.Observable renames RxEmpty.Empty;
-
-   function Error (E : Rx.Errors.Occurrence)                return Any.Observable renames RxEmpty.Error;
-   function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable renames RxEmpty.Error;
-
-   function Interval (First       : Rx_Integer := 0;
-                      Pause       : Duration   := 1.0;
-                      First_Pause : Duration   := 1.0;
-                      Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
-                      return Integers.Observable renames RxInterval.Create;
-
-   function Never return Any.Observable renames RxEmpty.Never;
 
    function String_Succ (S : String) return String
    is (if    S'Length = 0                 then String'(1 => Character'First)
        elsif S (S'Last) /= Character'Last then S (S'First .. S'Last - 1) & Character'Succ (S (S'Last))
        else  S & Character'First);
-
-   function Timer (After : Duration) return Integers.Observable is
-      (RxTimer.Create (0, After));
 
 end Rx.Std;

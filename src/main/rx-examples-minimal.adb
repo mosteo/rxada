@@ -11,8 +11,8 @@ procedure Rx.Examples.Minimal is
 --     use Chars.Observables;
 --     use Intarrs.Observables;
 
-   use StrToInt;
-   use IntToStr;
+   use String_To_Integer;
+   use Integer_To_String;
    use Numeric.Integers;
    use Numeric.Str_To_Int;
 
