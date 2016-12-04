@@ -13,15 +13,15 @@ package Rx.Impl.Std is
 
    package Any_To_Float is new Rx.Operators (Any.Observables,      Floats.Observables);
    package Int_To_Float is new Rx.Operators (Integers.Observables, Floats.Observables);
-   package StrToFlt is new Rx.Operators (Strings.Observables,  Floats.Observables);
+   package String_To_Float is new Rx.Operators (Strings.Observables,  Floats.Observables);
 
-   package AnyToInt is new Rx.Operators (Any.Observables,     Integers.Observables);
-   package FltToInt is new Rx.Operators (Floats.Observables,  Integers.Observables);
-   package StrToInt is new Rx.Operators (Strings.Observables, Integers.Observables);
+   package Any_To_Integer is new Rx.Operators (Any.Observables,     Integers.Observables);
+   package Float_To_Integer is new Rx.Operators (Floats.Observables,  Integers.Observables);
+   package String_To_Integer is new Rx.Operators (Strings.Observables, Integers.Observables);
 
-   package AnyToStr is new Rx.Operators (Any.Observables,      Strings.Observables);
-   package FltToStr is new Rx.Operators (Floats.Observables,   Strings.Observables);
-   package IntToStr is new Rx.Operators (Integers.Observables, Strings.Observables);
+   package Any_To_String is new Rx.Operators (Any.Observables,      Strings.Observables);
+   package Float_To_String is new Rx.Operators (Floats.Observables,   Strings.Observables);
+   package Integer_To_String is new Rx.Operators (Integers.Observables, Strings.Observables);
 
    function To_Integer (I : Rx_Integer) return Rx_Integer is (I) with Inline;
    function To_Float   (I : Rx_Integer) return Rx_Float   is (Rx_Float (I)) with Inline;
@@ -39,11 +39,11 @@ package Rx.Impl.Std is
                                                  To_Float,
                                                  Succ);
 
-      package Any_To_Int is new Rx.Numeric_Operators (AnyToInt,
+      package Any_To_Int is new Rx.Numeric_Operators (Any_To_Integer,
                                                       To_Integer,
                                                       Rx_Integer'Succ);
 
-      package Str_To_Int is new Rx.Numeric_Operators (StrToInt,
+      package Str_To_Int is new Rx.Numeric_Operators (String_To_Integer,
                                                       To_Integer,
                                                       Rx_Integer'Succ);
 

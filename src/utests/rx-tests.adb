@@ -27,11 +27,11 @@ package body Rx.Tests is
    use Integers;
    use Strings;
 
-   use FltToInt;
-   use FltToStr;
-   use IntToFlt;
-   use IntToStr;
-   use StrToInt;
+   use Float_To_Integer;
+   use Float_To_String;
+   use Integer_To_Float;
+   use Integer_To_String;
+   use String_To_Integer;
 
    procedure Fail is
    begin

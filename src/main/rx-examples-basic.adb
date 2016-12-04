@@ -4,8 +4,8 @@ with Rx.Std;   use Rx.Std;
 procedure Rx.Examples.Basic is
    use Integers;
    use Strings;
-   use StrToInt;
-   use IntToStr;
+   use String_To_Integer;
+   use Integer_To_String;
    use Numeric.Integers;
 
 
