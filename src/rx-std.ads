@@ -55,12 +55,12 @@ package Rx.Std is
       --  Casts for predefined types
 
       function To_Float return Integer_To_Float.Operator is (Integer_To_Float.Map (Rx.Impl.Casts.To_Float'Access));
-      function To_Float return String_To_Float.Operator is (String_To_Float.Map (Rx.Impl.Casts.To_Float'Access));
+      function To_Float return String_To_Float.Operator  is (String_To_Float.Map (Rx.Impl.Casts.To_Float'Access));
 
-      function To_Integer return Float_To_Integer.Operator is (Float_To_Integer.Map (Rx.Impl.Casts.To_Integer'Access));
+      function To_Integer return Float_To_Integer.Operator  is (Float_To_Integer.Map (Rx.Impl.Casts.To_Integer'Access));
       function To_Integer return String_To_Integer.Operator is (String_To_Integer.Map (Rx.Impl.Casts.To_Integer'Access));
 
-      function To_String return Float_To_String.Operator is (Float_To_String.Map (Rx.Impl.Casts.To_String'Access));
+      function To_String return Float_To_String.Operator   is (Float_To_String.Map (Rx.Impl.Casts.To_String'Access));
       function To_String return Integer_To_String.Operator is (Integer_To_String.Map (Rx.Impl.Casts.To_String'Access));
 
    end Casts;
