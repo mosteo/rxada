@@ -21,6 +21,7 @@ private with Rx.Op.Limit;
 private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
+private with Rx.Op.Split;
 private with Rx.Op.Subscribe_On;
 private with Rx.Src.Empty;
 private with Rx.Src.Just;
@@ -55,6 +56,7 @@ package Rx.Observables is
 
    subtype List_Preserver         is List_Preservers.Preserver'Class;
    subtype Into_List_Transformer  is Into_List_Transformers.Transformer'Class;
+   subtype From_List_Transformer  is From_List_Transformers.Transformer'Class;
    subtype Obs_Transformer        is Obs_Transformers.Transformer'Class;
    subtype T_List                 is Collections.List;
 
@@ -109,6 +111,12 @@ package Rx.Observables is
    ------------
 
    function Filter (Check : not null Typed.Actions.Filter1) return Operator;
+
+   --------------
+   -- Flat_Map --
+   --------------
+
+   function Flat_Map return From_List_Transformer;
 
    ----------
    -- From --
@@ -183,6 +191,12 @@ package Rx.Observables is
 
    function Repeat_Until (Check : Actions.Filter0) return Operator is
      (RxRepeat.Repeat_Until (Actions.Wrap (Check)));
+
+   -----------
+   -- Split --
+   -----------
+
+   function Split return From_List_Transformer;
 
    -----------
    -- Start --
@@ -331,6 +345,8 @@ private
    package RxFilter is new Rx.Op.Filter (Operate);
    function Filter (Check : not null Typed.Actions.Filter1) return Operator renames RxFilter.Create;
 
+   function Flat_Map return From_List_Transformer renames Split;
+
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable
                   renames From_Arrays.From;
@@ -368,6 +384,11 @@ private
    function Start (Func :          Typed.Actions.TFunc0'Class) return Observable renames RxStart.Create;
    function Start (Func : not null Typed.Actions.Func0)        return Observable
      is (Start (Typed.Actions.Wrap (Func)));
+
+   procedure Iterate (V        : T_List;
+                      For_Each : access procedure (V : T));
+   package RxSplit is new Rx.Op.Split (From_List_Transformers, Iterate);
+   function Split return From_List_Transformer renames RxSplit.Create;
 
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;

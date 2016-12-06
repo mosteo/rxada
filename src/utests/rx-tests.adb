@@ -71,8 +71,8 @@ package body Rx.Tests is
                                                   Do_Last  => True, Ok_Last  => "hello");
 
       Subs := Just (Deferred) & Filter (Is_Zero'Access) & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
-                                                                             Do_First => True, Ok_First => 1,
-                                                                             Do_Last  => True, Ok_Last  => 1);
+                                                                             Do_First => True, Ok_First => 0,
+                                                                             Do_Last  => True, Ok_Last  => 0);
       --  Should see a zero, pass the filter, count it and assert 1 as final result
 
       Subs := Ints.From ((1, 2, 3)) & Subscribe_Checker (Do_Count => True, Ok_Count => 3,
@@ -329,6 +329,17 @@ package body Rx.Tests is
         Subscribe_Checker (Do_Count => True, Ok_Count => 2,
                            Do_First => True, Ok_First => 10,
                            Do_Last  => True, Ok_Last  => 1);
+
+      -- Splitting lists into elements
+      Subs :=
+        Numeric.Integers.Range_Count (1, 101) &
+        Buffer (10) &
+        Split &
+        Buffer (7) &
+        Flat_Map & -- This kind of flatmap is equivalent to split
+        Subscribe_Checker (Do_Count => True, Ok_Count => 101,
+                           Do_First => True, Ok_First => 1,
+                           Do_Last  => True, Ok_Last  => 101);
 
       pragma Compile_Time_Warning (True, "Missing check for Serialize operation (need mixer observer)");
 
