@@ -9,6 +9,18 @@ package body Rx.Observables is
       L.Append (V);
    end Append;
 
+   -------------
+   -- Iterate --
+   -------------
+
+   procedure Iterate (V        : T_List;
+                      For_Each : access procedure (V : T)) is
+   begin
+      for E of V loop
+         For_Each (E);
+      end loop;
+   end Iterate;
+
    ---------------
    -- Subscribe --
    ---------------

@@ -52,6 +52,11 @@ package body Rx.Debug.Observers is
          raise Constraint_Error with
            "Failed last, got [" & Image (+This.Last_Seen) & "] instead of [" & Image (+This.Ok_Last) & "]";
       end if;
+
+      Log ("OK " &
+           (if This.Do_Count then This.Counter'Img else "-") &
+           (if This.Do_First then Image (+This.Ok_First) else " -") &
+           (if This.Do_Last then Image (+This.Ok_Last) else " -"), Note);
    end Do_On_Completed;
 
    -----------------
