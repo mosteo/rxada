@@ -1,7 +1,6 @@
 with Rx.Actions;
 with Rx.Debug;
 with Rx.Debug.Observers;
-with Rx.Definites;
 with Rx.Errors;
 with Rx.Indefinites;
 with Rx.Std;
@@ -388,7 +387,7 @@ package body Rx.Tests is
    -- Check_Linking --
    -------------------
 
-   procedure Check_Linking is
+   procedure Check_Linking with Unreferenced is
       package Rx_Str is new Rx.Indefinites (String);
       S : Rx.Subscriptions.Subscription;
       pragma Unreferenced (S);
