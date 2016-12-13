@@ -20,8 +20,16 @@ package body Rx.Op.Debounce is
    task body Debouncer is
       Child     : Shared.Subscriber;
       Window    : Duration;
+
       Completed : Boolean := False;
-      V    	: Operate.Typed.D;
+
+      E         : Errors.Occurrence;
+      Errored   : Boolean := False;
+
+      V         : Operate.Typed.D;
+      V_Stored  : Boolean := False;
+
+      procedure Wait
    begin
       accept Init (Window : Duration; Child : Shared.Subscriber) do
          Debouncer.Window := Window;
