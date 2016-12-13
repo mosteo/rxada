@@ -20,6 +20,7 @@ procedure Rx.Bugs.Testbed is
    end Dumper;
 
    procedure Test_001_Shared_Leak with Unreferenced is
+      -- There should be no leak here
       S : Integers.Subscription;
       pragma Unreferenced (S);
    begin
@@ -31,6 +32,7 @@ procedure Rx.Bugs.Testbed is
    end Test_001_Shared_Leak;
 
    procedure Test_002_Blocking with Unreferenced is
+      -- There should be no blocking operation exception here
       Sem  : aliased Impl.Semaphores.Shared_Binary := Impl.Semaphores.Create;
       Crit : Impl.Semaphores.Critical_Section (Sem'Access) with Unreferenced;
    begin
@@ -38,6 +40,7 @@ procedure Rx.Bugs.Testbed is
    end Test_002_Blocking;
 
    procedure Test_003_Serialize with Unreferenced is
+      --  Check for serialize efectiveness
       Dumpee  : aliased Integers.Sink := Checkers.Subscribe_Count_Printer;
    begin
       declare
@@ -50,9 +53,20 @@ procedure Rx.Bugs.Testbed is
       Dumpee.On_Completed;
    end Test_003_Serialize;
 
+   procedure Test_004_Task_Leak with Unreferenced is
+      --  Check of old gnat leak with every finished task
+      task type X;
+      task body X is begin null; end X;
+
+      type Ptr is access X;
+
+   begin
+      null;
+   end Test_004_Task_Leak;
+
 begin
    for I in 1 .. 1 loop
-      Test_003_Serialize;
+      Test_004_Task_Leak;
    end loop;
 
    Put_Line ("END");
