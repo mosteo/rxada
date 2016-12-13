@@ -58,6 +58,8 @@ package body Rx.Op.Debounce is
    ---------------
 
    task body Debouncer is
+      Reaper    : Impl.Tasks.Reaper (Debouncer'Unchecked_Access);
+
       Child     : Shared.Subscriber;
       Window    : Duration;
 
