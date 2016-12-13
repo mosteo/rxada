@@ -1,7 +1,13 @@
-private with Ada.Finalization;
+package Rx.Impl.Tasks with Preelaborate is
 
-package Rx.Impl.Tasks is
+   --  Root task interface for short-lived tasks
+   --  Tasks of this kind can be reaped more easily
 
-   --  A root task type and a companion controller that reaps it on completion
+   type Transient is task interface;
+
+   type Transient_Ptr is access all Transient'Class;
+
+   procedure Reap_Now (This : in out Transient_Ptr);
+   --  Will block until the task has Terminated
 
 end Rx.Impl.Tasks;
