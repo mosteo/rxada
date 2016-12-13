@@ -25,18 +25,19 @@ package body Rx.Src.Interval is
    -- Run --
    ---------
 
-   overriding procedure Run (R : in out Runner) is
+   overriding procedure Run (R : Runner) is
       use Ada.Calendar;
+      RW : Runner := R;
    begin
-      R.Child.On_Next (+R.Value);
-      R.Value := +Succ (+R.Value);
-      R.Next  := R.Next + R.Pause;
-      R.Sched.Schedule (R, R.Next);
+      RW.Child.On_Next (+R.Value);
+      RW.Value := +Succ (+R.Value);
+      RW.Next  := R.Next + R.Pause;
+      RW.Sched.Schedule (RW, RW.Next);
    exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("Interval runner: caught No_Longer_Subscribed", Debug.Info);
       when E : others =>
-         Typed.Default_Error_Handler (R.Child, E);
+         Typed.Default_Error_Handler (RW.Child, E);
    end Run;
 
    type State is record
@@ -52,11 +53,11 @@ package body Rx.Src.Interval is
 
    procedure On_Subscribe (S : State; Observer : in out Typed.Subscriber) is
       use Ada.Calendar;
-      R : Runner := (S.Scheduler,
-                     S.Pause,
-                     S.First,
-                     Clock + S.First_Pause,
-                     Shared.Create (Observer));
+      R : constant Runner := (S.Scheduler,
+                              S.Pause,
+                              S.First,
+                              Clock + S.First_Pause,
+                              Shared.Create (Observer));
    begin
       S.Scheduler.Schedule (R, Clock + S.First_Pause);
    end On_Subscribe;

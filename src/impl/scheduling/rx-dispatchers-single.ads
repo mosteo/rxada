@@ -12,7 +12,7 @@ package Rx.Dispatchers.Single is
    --  Schedule a code to be run at a certain point from now, in a certain Dispatcher (thread)
    overriding
    procedure Schedule (Where : in out Dispatcher;
-                       What  : in out Runnable'Class;
+                       What  : Runnable'Class;
                        Time  : Ada.Calendar.Time := Ada.Calendar.Clock);
 
    function Is_Idle (This : in out Dispatcher) return Boolean;

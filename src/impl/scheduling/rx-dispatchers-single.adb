@@ -10,7 +10,7 @@ package body Rx.Dispatchers.Single is
 
    overriding procedure Schedule
      (Where : in out Dispatcher;
-      What : in out Runnable'Class;
+      What  : Runnable'Class;
       Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
    is
       use Ada.Calendar;

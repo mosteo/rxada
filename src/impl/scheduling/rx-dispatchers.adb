@@ -37,23 +37,24 @@ package body Rx.Dispatchers is
          end case;
       end record;
 
-      overriding procedure Run (R : in out Runner) is
+      overriding procedure Run (R : Runner) is
+         RW : Runner := R; -- Local writable copy
       begin
          case R.Kind is
             when On_Next      =>
                begin
-                  R.Child.On_Next (+R.V);
+                  RW.Child.On_Next (+R.V);
                exception
                   when E : others =>
-                     Typed.Default_Error_Handler (R.Child, E);
+                     Typed.Default_Error_Handler (RW.Child, E);
                end;
             when On_Error     =>
-               R.Child.On_Error (R.E);
+               RW.Child.On_Error (RW.E);
                if not R.E.Is_Handled then
                   R.E.Reraise; -- Because we are in a new thread, the Error won't go any further
                end if;
             when On_Completed =>
-               R.Child.On_Completed;
+               RW.Child.On_Completed;
          end case;
       end Run;
 
@@ -66,9 +67,8 @@ package body Rx.Dispatchers is
          Observer : Shared.Subscriber;
          V : Typed.Type_Traits.T)
       is
-         R : Runner := (On_Next, Observer, +V); -- Create a copy so it's in/out
       begin
-         Sched.Schedule (R);
+         Sched.Schedule (Runner'(On_Next, Observer, +V));
       end On_Next;
 
       ------------------
@@ -79,9 +79,8 @@ package body Rx.Dispatchers is
         (Sched : in out Dispatcher'Class;
          Observer : Shared.Subscriber)
       is
-         R : Runner := (On_Completed, Observer);
       begin
-         Sched.Schedule (R);
+         Sched.Schedule (Runner'(On_Completed, Observer));
       end On_Completed;
 
       --------------
@@ -93,9 +92,8 @@ package body Rx.Dispatchers is
          Observer : Shared.Subscriber;
          E : Rx.Errors.Occurrence)
       is
-         R : Runner := (On_Error, Observer, E);
       begin
-         Sched.Schedule (R);
+         Sched.Schedule (Runner'(On_Error, Observer, E));
       end On_Error;
 
    end Events;
@@ -106,16 +104,16 @@ package body Rx.Dispatchers is
          Op : Operate.Holders.Definite;
       end record;
 
-      overriding procedure Run (R : in out Runner) is
+      overriding procedure Run (R : Runner) is
          Parent : Operate.Observable := R.Op.CRef.Get_Parent;
+         Child  : Operate.Subscriber := R.Op.CRef;
       begin
-         Parent.Subscribe (R.Op.Ref); -- Suspicious... should make a copy of R.Op?
+         Parent.Subscribe (Child);
       end Run;
 
       procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Preserver'Class) is
-         R : Runner := (Runnable with Operate.Holders.Hold (Operator));
       begin
-         Sched.Schedule (R);
+         Sched.Schedule (Runner'(Runnable with Operate.Holders.Hold (Operator)));
       end On_Subscribe;
 
    end Subscribe;

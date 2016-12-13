@@ -4,6 +4,7 @@ with Ada.Unchecked_Deallocation;
 with Rx.Debug; use Rx.Debug;
 with Rx.Debug.Observers;
 with Rx.Impl.Semaphores;
+with Rx.Impl.Tasks;
 with Rx.Std;   use Rx.Std;
 with Rx.Schedulers;
 with Rx.Subscriptions;
@@ -98,17 +99,33 @@ procedure Rx.Bugs.Testbed is
       task type X;
       task body X is
          C : Cont with Unreferenced;
-         Self : access X := X'Access;
+         Self : access X := X'Access with Unreferenced;
       begin
          Put_Line ("X out");
       end X;
+
+      XX : X;
 
    begin
       Put_Line ("T005 out");
    end Test_005_Task_Scope;
 
+   procedure Test_006_Reaping with Unreferenced is
+   -- Verifies that task reaping works properly
+      task type X is new Impl.Tasks.Transient with end X;
+      task body X is
+         Reaper : Impl.Tasks.Reaper (X'Unchecked_Access) with Unreferenced;
+      begin
+         Put_Line (Reaper.Victim.all'Terminated'Img);
+      end X;
+
+      XX : access X := new X;
+   begin
+      null;
+   end Test_006_Reaping;
+
 begin
-   Test_005_Task_Scope;
+   Test_006_Reaping;
 
    Put_Line ("END");
 end Rx.Bugs.Testbed;
