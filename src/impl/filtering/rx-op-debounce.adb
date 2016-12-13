@@ -1,11 +1,14 @@
 with Rx.Errors;
 with Rx.Impl.Shared_Subscriber;
-
+with Rx.Impl.Tasks;
 package body Rx.Op.Debounce is
+
+   package From renames Operate.From;
+   package Into renames Operate.Into;
 
    package Shared is new Rx.Impl.Shared_Subscriber (Operate.Into);
 
-   task type Debouncer is
+   task type Debouncer is new Impl.Tasks.Transient with
 
       entry Init (Window : Duration; Child : Shared.Subscriber);
 
@@ -15,7 +18,44 @@ package body Rx.Op.Debounce is
 
       entry On_Error (E : Errors.Occurrence);
 
+      entry Unsubscribe;
+
    end Debouncer;
+
+   type Debouncer_Ptr is access Debouncer'Class;
+
+   type Operator is new Operate.Preserver with record
+      Window : Duration;
+      Child  : Shared.Subscriber;
+      Live   : Debouncer_Ptr;
+   end record;
+
+   overriding
+   procedure On_Next (This  : in out Operator;
+                      V     :        From.T;
+                      Child : in out Into.Observer);
+   --  Must always be provided
+
+   overriding
+   procedure On_Completed (This  : in out Operator;
+                           Child : in out Into.Observer);
+   --  By default calls Child.On_Complete
+
+   overriding
+   procedure On_Error (This  : in out Operator;
+                       Error : in out Errors.Occurrence;
+                       Child : in out Into.Observer);
+
+   overriding
+   procedure Subscribe (Producer : in out Operator;
+                        Consumer : in out Into.Subscriber);
+
+   overriding
+   procedure Unsubscribe (This : in out Operator);
+
+   ---------------
+   -- Debouncer --
+   ---------------
 
    task body Debouncer is
       Child     : Shared.Subscriber;
@@ -29,7 +69,8 @@ package body Rx.Op.Debounce is
       V         : Operate.Typed.D;
       V_Stored  : Boolean := False;
 
-      procedure Wait
+      Unsubscribed : Boolean := False;
+
    begin
       accept Init (Window : Duration; Child : Shared.Subscriber) do
          Debouncer.Window := Window;
@@ -37,6 +78,8 @@ package body Rx.Op.Debounce is
       end;
 
       loop
+         exit when Completed or else Errored or else Unsubscribed;
+
          select
             accept On_Next (V : Operate.T);
          or
@@ -44,10 +87,62 @@ package body Rx.Op.Debounce is
          or
             accept On_Error (E : Errors.Occurrence);
          or
-            terminate;
+            accept Unsubscribe;
+         or
+            delay Window;
          end select;
       end loop;
    end Debouncer;
+
+   overriding
+   procedure On_Next (This  : in out Operator;
+                      V     :        From.T;
+                      Child : in out Into.Observer) is
+   begin
+      null;
+   end On_Next;
+
+   overriding
+   procedure On_Completed (This  : in out Operator;
+                           Child : in out Into.Observer) is
+   begin
+      This.Live.On_Completed;
+      Impl.Tasks.Reap_Now (Impl.Tasks.Transient_Ptr (This.Live));
+   end On_Completed;
+
+   overriding
+   procedure On_Error (This  : in out Operator;
+                       Error : in out Errors.Occurrence;
+                       Child : in out Into.Observer)
+   is
+   begin
+      This.Live.On_Error (Error);
+      Impl.Tasks.Reap_Now (Impl.Tasks.Transient_Ptr (This.Live));
+   end On_Error;
+
+     ---------------
+     -- Subscribe --
+     ---------------
+
+   overriding
+   procedure Subscribe (Producer : in out Operator;
+                        Consumer : in out Into.Subscriber)
+   is
+   begin
+      Producer.Child := Shared.Create (Consumer);
+      Producer.Live  := new Debouncer;
+      Producer.Live.Init (Producer.Window, Producer.Child);
+      Operate.Preserver (Producer).Subscribe (Consumer);
+   end Subscribe;
+
+   -----------------
+   -- Unsubscribe --
+   -----------------
+
+   overriding procedure Unsubscribe (This : in out Operator) is begin
+      This.Live.Unsubscribe;
+      Impl.Tasks.Reap_Now (Impl.Tasks.Transient_Ptr (This.Live));
+   end Unsubscribe;
 
    ------------
    -- Create --
@@ -55,10 +150,9 @@ package body Rx.Op.Debounce is
 
    function Create (Window : Duration) return Operate.Operator is
    begin
-      --  Generated stub: replace with real body!
-      pragma Compile_Time_Warning (Standard.True, "Create unimplemented");
-      raise Program_Error with "Unimplemented function Create";
-      return Create (Window => Window);
+      return Op : Operator do
+         Op.Window := Window;
+      end return;
    end Create;
 
 end Rx.Op.Debounce;

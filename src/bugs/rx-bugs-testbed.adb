@@ -1,3 +1,5 @@
+with Ada.Unchecked_Deallocation;
+
 with Rx.Debug; use Rx.Debug;
 with Rx.Debug.Observers;
 with Rx.Impl.Semaphores;
@@ -54,14 +56,33 @@ procedure Rx.Bugs.Testbed is
    end Test_003_Serialize;
 
    procedure Test_004_Task_Leak with Unreferenced is
-      --  Check of old gnat leak with every finished task
-      task type X;
-      task body X is begin null; end X;
+   --  Check of old gnat leak with every finished task
+   --  It seems not: it has been fixed even if you free prior to 'Terminated
+   --  (but then you're freeing the local task data)
+   --  Conclusion: a synchronized root type could serve
+
+      task type X (I : Integer);
+      task body X is
+      begin
+         Put_Line (">>>" & I'Img);
+         delay 1.0;
+         Put_Line ("<<<" & I'Img);
+      end X;
 
       type Ptr is access X;
+      procedure Free is new Ada.Unchecked_Deallocation (X, Ptr);
+
+      Arr : array (1 .. 9) of Ptr;
 
    begin
-      null;
+      for I in Arr'Range loop
+         Arr (I) := new X (I);
+      end loop;
+      for I in Arr'Range loop
+         while not Arr(I)'Terminated loop delay 0.001; end loop;
+         Free (Arr (I));
+         Put_Line ("FFF" & I'Img);
+      end loop;
    end Test_004_Task_Leak;
 
 begin
