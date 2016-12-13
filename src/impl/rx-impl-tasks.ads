@@ -12,13 +12,13 @@ package Rx.Impl.Tasks with Elaborate_Body is
    procedure Reap_Now (This : in out Transient_Ptr);
    --  Will block until the task has Terminated
 
-   type Reaper (Victim : Transient_Ptr) is limited private;
+   type Reaper (Victim : not null Transient_Ptr) is limited private;
    --  This type must be declared at the task outer scope.
    --  Upon task termination will claim the task memory
 
 private
 
-   type Reaper (Victim : Transient_Ptr) is new Ada.Finalization.Limited_Controlled
+   type Reaper (Victim : not null Transient_Ptr) is new Ada.Finalization.Limited_Controlled
    with null record;
 
    overriding procedure Finalize (This : in out Reaper);

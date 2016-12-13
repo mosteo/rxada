@@ -35,11 +35,13 @@ package body Rx.Impl.Tasks is
    -- Run --
    ---------
 
-   overriding procedure Run (This : in out Reap_Attempt) is
+   overriding procedure Run (This : Reap_Attempt) is
       use Ada.Calendar;
+      Victim : Transient_Ptr := This.Victim;
    begin
+      Debug.Log ("HUSH", Debug.Warn);
       if This.Victim.all'Terminated then
-         Free (This.Victim);
+         Free (Victim);
          Debug.Log ("RIP", Debug.Warn);
       else
          DEATH.Schedule (This, Clock + Grace_Period);
@@ -52,9 +54,9 @@ package body Rx.Impl.Tasks is
    --------------
 
    overriding procedure Finalize (This : in out Reaper) is
-      R : Reap_Attempt := Reap_Attempt'(Victim => This.Victim);
+      use Ada.Calendar;
    begin
-      DEATH.Schedule (R);
+      DEATH.Schedule (Reap_Attempt'(Victim => This.Victim), Clock + Grace_Period);
    end Finalize;
 
 end Rx.Impl.Tasks;

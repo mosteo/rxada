@@ -32,8 +32,6 @@ package Rx.Numeric_Observables is
    function Count (First : T := To_Numeric (0))
                    return From_List_Transformers.Operator;
 
-   pragma Compile_Time_Warning (True, "Split operator as buffer inverse");
-
    --------------
    -- Interval --
    --------------
