@@ -17,7 +17,7 @@ package Rx.Dispatchers is
 
    --  Schedule a code to be run at a certain time, in a certain scheduler (thread)
    procedure Schedule (Where : in out Dispatcher;
-                       What  : in out Runnable'Class;
+                       What  : in out Runnable'Class; -- in out for Immediate Scheduler
                        Time  : Ada.Calendar.Time := Ada.Calendar.Clock) is abstract;
 
    generic

@@ -1,3 +1,4 @@
+with Ada.Finalization;
 with Ada.Unchecked_Deallocation;
 
 with Rx.Debug; use Rx.Debug;
@@ -85,10 +86,29 @@ procedure Rx.Bugs.Testbed is
       end loop;
    end Test_004_Task_Leak;
 
+   procedure Test_005_Task_Scope with Unreferenced is
+      type Cont is new Ada.Finalization.Limited_Controlled with null record;
+      overriding procedure Finalize (C : in out Cont) is
+         pragma Unreferenced (C);
+      begin
+         Put_Line ("Cont out");
+      end Finalize;
+
+   --  Check that Controlled is called at task end
+      task type X;
+      task body X is
+         C : Cont with Unreferenced;
+         Self : access X := X'Access;
+      begin
+         Put_Line ("X out");
+      end X;
+
+   begin
+      Put_Line ("T005 out");
+   end Test_005_Task_Scope;
+
 begin
-   for I in 1 .. 1 loop
-      Test_004_Task_Leak;
-   end loop;
+   Test_005_Task_Scope;
 
    Put_Line ("END");
 end Rx.Bugs.Testbed;
