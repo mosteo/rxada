@@ -57,59 +57,6 @@ procedure Rx.Bugs.Testbed is
       Dumpee.On_Completed;
    end Test_003_Serialize;
 
-   procedure Test_004_Task_Leak with Unreferenced is
-   --  Check of old gnat leak with every finished task
-   --  It seems not: it has been fixed even if you free prior to 'Terminated
-   --  (but then you're freeing the local task data)
-   --  Conclusion: a synchronized root type could serve
-
-      task type X (I : Integer);
-      task body X is
-      begin
-         Put_Line (">>>" & I'Img);
-         delay 1.0;
-         Put_Line ("<<<" & I'Img);
-      end X;
-
-      type Ptr is access X;
-      procedure Free is new Ada.Unchecked_Deallocation (X, Ptr);
-
-      Arr : array (1 .. 9) of Ptr;
-
-   begin
-      for I in Arr'Range loop
-         Arr (I) := new X (I);
-      end loop;
-      for I in Arr'Range loop
-         while not Arr(I)'Terminated loop delay 0.001; end loop;
-         Free (Arr (I));
-         Put_Line ("FFF" & I'Img);
-      end loop;
-   end Test_004_Task_Leak;
-
-   procedure Test_005_Task_Scope with Unreferenced is
-      type Cont is new Ada.Finalization.Limited_Controlled with null record;
-      overriding procedure Finalize (C : in out Cont) is
-         pragma Unreferenced (C);
-      begin
-         Put_Line ("Cont out");
-      end Finalize;
-
-   --  Check that Controlled is called at task end
-      task type X;
-      task body X is
-         C : Cont with Unreferenced;
-         Self : access X := X'Access with Unreferenced;
-      begin
-         Put_Line ("X out");
-      end X;
-
-      XX : X;
-
-   begin
-      Put_Line ("T005 out");
-   end Test_005_Task_Scope;
-
    procedure Test_006_Reaping with Unreferenced is
    -- Verifies that task reaping (via Tasks) works properly
       XX : Support.Y_Ptr := new Support.Y with Unreferenced;
@@ -117,15 +64,8 @@ procedure Rx.Bugs.Testbed is
       null;
    end Test_006_Reaping;
 
-   procedure Test_007_Reaping_WA with Unreferenced is
-   -- Verifies that task reaping (via Task_Deallocation) works properly
-      XX : Support.X_Ptr := new Support.X with Unreferenced;
-   begin
-      null;
-   end Test_007_Reaping_WA;
-
 begin
-   for I in 1 .. 999 loop
+   for I in 1 .. 99 loop
       Test_006_Reaping;
    end loop;
 
