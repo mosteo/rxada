@@ -2,6 +2,17 @@ with Ada.Unchecked_Deallocation;
 
 package body Rx.Errors is
 
+   ------------
+   -- Create --
+   ------------
+
+   function Create (From : Ada.Exceptions.Exception_Occurrence) return Occurrence is
+   begin
+      return E : Occurrence do
+         Fill (E, From);
+      end return;
+   end Create;
+
    ----------
    -- Fill --
    ----------

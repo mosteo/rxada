@@ -1,6 +1,7 @@
+with Ada.Unchecked_Deallocation;
+
 with Rx.Errors;
 with Rx.Impl.Shared_Subscriber;
-with Rx.Impl.Tasks;
 package body Rx.Op.Debounce is
 
    package From renames Operate.From;
@@ -8,7 +9,7 @@ package body Rx.Op.Debounce is
 
    package Shared is new Rx.Impl.Shared_Subscriber (Operate.Into);
 
-   task type Debouncer is new Impl.Tasks.Transient with
+   task type Debouncer is
 
       entry Init (Window : Duration; Child : Shared.Subscriber);
 
@@ -22,7 +23,9 @@ package body Rx.Op.Debounce is
 
    end Debouncer;
 
-   type Debouncer_Ptr is access Debouncer'Class;
+   type Debouncer_Ptr is access Debouncer;
+
+   procedure Free is new Ada.Unchecked_Deallocation (Debouncer, Debouncer_Ptr);
 
    type Operator is new Operate.Preserver with record
       Window : Duration;
@@ -58,8 +61,6 @@ package body Rx.Op.Debounce is
    ---------------
 
    task body Debouncer is
-      Reaper    : Impl.Tasks.Reaper (Debouncer'Unchecked_Access);
-
       Child     : Shared.Subscriber;
       Window    : Duration;
 
@@ -109,7 +110,6 @@ package body Rx.Op.Debounce is
                            Child : in out Into.Observer) is
    begin
       This.Live.On_Completed;
-      Impl.Tasks.Reap_Now (Impl.Tasks.Transient_Ptr (This.Live));
    end On_Completed;
 
    overriding
@@ -119,7 +119,6 @@ package body Rx.Op.Debounce is
    is
    begin
       This.Live.On_Error (Error);
-      Impl.Tasks.Reap_Now (Impl.Tasks.Transient_Ptr (This.Live));
    end On_Error;
 
      ---------------
@@ -132,7 +131,12 @@ package body Rx.Op.Debounce is
    is
    begin
       Producer.Child := Shared.Create (Consumer);
+
       Producer.Live  := new Debouncer;
+      Free (Producer.Live);
+      --  See http://www.adacore.com/developers/development-log/NF-65-H911-007-gnat and
+      --  https://groups.google.com/d/msg/comp.lang.ada/6p-_Dwjlr4o/POiIWk6AX0cJ
+
       Producer.Live.Init (Producer.Window, Producer.Child);
       Operate.Preserver (Producer).Subscribe (Consumer);
    end Subscribe;
@@ -143,7 +147,6 @@ package body Rx.Op.Debounce is
 
    overriding procedure Unsubscribe (This : in out Operator) is begin
       This.Live.Unsubscribe;
-      Impl.Tasks.Reap_Now (Impl.Tasks.Transient_Ptr (This.Live));
    end Unsubscribe;
 
    ------------

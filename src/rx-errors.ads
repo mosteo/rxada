@@ -10,6 +10,8 @@ package Rx.Errors is
    procedure Fill (Error : out Occurrence;
                    From  :     Ada.Exceptions.Exception_Occurrence);
 
+   function Create (From : Ada.Exceptions.Exception_Occurrence) return Occurrence;
+
    procedure Set_Handled (Error : in out Occurrence; Dealt_With : Boolean := True);
 
    function Is_Handled (Error : Occurrence) return Boolean;

@@ -29,6 +29,7 @@ package Rx.Dispatchers is
       procedure On_Next      (Sched : in out Dispatcher'Class; Observer : Shared.Subscriber; V : Typed.Type_Traits.T);
       procedure On_Completed (Sched : in out Dispatcher'Class; Observer : Shared.Subscriber);
       procedure On_Error     (Sched : in out Dispatcher'Class; Observer : Shared.Subscriber; E : Rx.Errors.Occurrence);
+      procedure Unsubscribe  (Sched : in out Dispatcher'Class; Observer : Shared.Subscriber);
 
    end Events;
 
