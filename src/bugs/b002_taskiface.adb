@@ -1,33 +1,32 @@
-with Ada.Unchecked_Deallocation;
+-- with B002_Pkg;
 
 procedure B002_Taskiface is
-   type Some_Task is task interface;
 
-   type Some_Ptr is access Some_Task'Class;
+   package Inner is
 
-   task type T is new Some_Task with end T;
+      type Some_Task is task interface;
 
-   type T_Ptr is access T;
+      type Some_Ptr is access all Some_Task'Class;
+
+      type Wrapper (Ptr : Some_Ptr) is limited private;
+
+   private
+
+      type Wrapper (Ptr : Some_Ptr) is limited null record;
+
+   end Inner;
+
+   task type T is new Inner.Some_Task with end T;
 
    task body T is
+      S : Inner.Some_Ptr := T'Unchecked_Access;
+      W : Inner.Wrapper (T'Unchecked_Access);
    begin
-      null;
+      if T'Terminated then null; end if;
+  --    if W.Ptr.all'Terminated then null; end if; -- Likewise fails
+      if S.all'Terminated then null; end if;
    end T;
 
-   procedure Free_S is new Ada.Unchecked_Deallocation (Some_Task'Class, Some_Ptr);
-   procedure Free_T is new Ada.Unchecked_Deallocation (T, T_Ptr);
-
-   T_Arr : array (1 .. 99) of T_Ptr    := (others => new T);
-   S_Arr : array (1 .. 99) of Some_Ptr := (others => new T);
-
 begin
-   delay 2.0; -- Wait for tasks termination
-
-   for T of T_Arr loop
-      Free_T (T);
-   end loop;
-
-   for S of S_Arr loop
-      Free_S (S);
-   end loop;
+   null;
 end B002_Taskiface;

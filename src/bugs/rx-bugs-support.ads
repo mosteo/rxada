@@ -5,7 +5,7 @@ package Rx.Bugs.Support is
 
    --  For things that must be at library level
 
-   task type X is new Impl.Tasks.Transient with end X;
+   task type X;
    type X_Ptr is access all X;
 
    --  X uses Task_Deallocation

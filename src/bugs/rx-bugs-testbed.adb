@@ -126,7 +126,7 @@ procedure Rx.Bugs.Testbed is
 
 begin
    for I in 1 .. 999 loop
-      Test_007_Reaping_WA;
+      Test_006_Reaping;
    end loop;
 
    Put_Line ("END");
