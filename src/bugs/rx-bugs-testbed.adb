@@ -1,10 +1,10 @@
 with Ada.Finalization;
 with Ada.Unchecked_Deallocation;
 
+with Rx.Bugs.Support;
 with Rx.Debug; use Rx.Debug;
 with Rx.Debug.Observers;
 with Rx.Impl.Semaphores;
-with Rx.Impl.Tasks;
 with Rx.Std;   use Rx.Std;
 with Rx.Schedulers;
 with Rx.Subscriptions;
@@ -111,21 +111,23 @@ procedure Rx.Bugs.Testbed is
    end Test_005_Task_Scope;
 
    procedure Test_006_Reaping with Unreferenced is
-   -- Verifies that task reaping works properly
-      task type X is new Impl.Tasks.Transient with end X;
-      task body X is
-         Reaper : Impl.Tasks.Reaper (X'Unchecked_Access) with Unreferenced;
-      begin
-         Put_Line (Reaper.Victim.all'Terminated'Img);
-      end X;
-
-      XX : access X := new X;
+   -- Verifies that task reaping (via Tasks) works properly
+      XX : Support.Y_Ptr := new Support.Y with Unreferenced;
    begin
       null;
    end Test_006_Reaping;
 
+   procedure Test_007_Reaping_WA with Unreferenced is
+   -- Verifies that task reaping (via Task_Deallocation) works properly
+      XX : Support.X_Ptr := new Support.X with Unreferenced;
+   begin
+      null;
+   end Test_007_Reaping_WA;
+
 begin
-   Test_006_Reaping;
+   for I in 1 .. 999 loop
+      Test_007_Reaping_WA;
+   end loop;
 
    Put_Line ("END");
 end Rx.Bugs.Testbed;
