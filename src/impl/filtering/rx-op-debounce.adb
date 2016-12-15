@@ -1,31 +1,25 @@
-with Ada.Unchecked_Deallocation;
-
 with Rx.Errors;
+with Rx.Impl.Events;
 with Rx.Impl.Shared_Subscriber;
+with Rx.Impl.Task_Deallocation;
+
 package body Rx.Op.Debounce is
 
    package From renames Operate.From;
    package Into renames Operate.Into;
 
-   package Shared is new Rx.Impl.Shared_Subscriber (Operate.Into);
+   package Events is new Rx.Impl.Events (Operate.Typed);
+   package Shared is new Rx.Impl.Shared_Subscriber (Operate.Typed);
 
    task type Debouncer is
 
       entry Init (Window : Duration; Child : Shared.Subscriber);
 
-      entry On_Next (V : Operate.T);
-
-      entry On_Completed;
-
-      entry On_Error (E : Errors.Occurrence);
-
-      entry Unsubscribe;
+      entry On_Event (Event : Events.Event);
 
    end Debouncer;
 
    type Debouncer_Ptr is access Debouncer;
-
-   procedure Free is new Ada.Unchecked_Deallocation (Debouncer, Debouncer_Ptr);
 
    type Operator is new Operate.Preserver with record
       Window : Duration;
@@ -64,37 +58,72 @@ package body Rx.Op.Debounce is
       Child     : Shared.Subscriber;
       Window    : Duration;
 
-      Completed : Boolean := False;
+      Next	 : Events.Event (Events.On_Next);
+      Next_Valid : Boolean := False;
 
-      E         : Errors.Occurrence;
-      Errored   : Boolean := False;
+      Other      : Events.Event (Events.On_Completed);
+      Other_Valid: Boolean := False;
 
-      V         : Operate.Typed.D;
-      V_Stored  : Boolean := False;
+      use all type Events.Kinds;
 
-      Unsubscribed : Boolean := False;
+      procedure Flush (Elapsed : Boolean) is
+         --  When Elapsed, the window has expired with nothing received
+      begin
+         if (Elapsed or else Other_Valid) and then Next_Valid then
+            Child.On_Next (Events.Value (Next));
+            Next_Valid := False;
+         end if;
 
+         if Other_Valid then
+            case Other.Kind is
+               when On_Completed =>
+                  Child.On_Completed;
+               when On_Error =>
+                  declare
+                     Error : Errors.Occurrence := Events.Error (Other);
+                  begin
+                     Child.On_Error (Error);
+                  end;
+               when Unsubscribe =>
+                  Child.Unsubscribe;
+               when On_Next =>
+                  raise Program_Error with "Should never happen";
+            end case;
+         end if;
+
+      end Flush;
    begin
+
       accept Init (Window : Duration; Child : Shared.Subscriber) do
          Debouncer.Window := Window;
          Debouncer.Child  := Child;
       end;
 
       loop
-         exit when Completed or else Errored or else Unsubscribed;
-
          select
-            accept On_Next (V : Operate.T);
-         or
-            accept On_Completed;
-         or
-            accept On_Error (E : Errors.Occurrence);
-         or
-            accept Unsubscribe;
+            accept On_Event (Event : Events.Event) do
+               if Event.Kind = On_Next then
+                  Next       := Event;
+                  Next_Valid := True;
+               else
+                  Other       := Event;
+                  Other_Valid := True;
+               end if;
+            end;
+            Flush (Elapsed => False);
          or
             delay Window;
+            Flush (Elapsed => True);
          end select;
+
+         exit when Other_Valid; -- Some other event
+
       end loop;
+   exception
+      when E : others =>
+         if Child.Is_Subscribed then
+            Operate.Typed.Default_Error_Handler (Child, E);
+         end if;
    end Debouncer;
 
    overriding
@@ -129,14 +158,11 @@ package body Rx.Op.Debounce is
    procedure Subscribe (Producer : in out Operator;
                         Consumer : in out Into.Subscriber)
    is
+      procedure Free_When_Terminated is new Impl.Task_Deallocation (Debouncer, Debouncer_Ptr);
    begin
       Producer.Child := Shared.Create (Consumer);
-
       Producer.Live  := new Debouncer;
-      Free (Producer.Live);
-      --  See http://www.adacore.com/developers/development-log/NF-65-H911-007-gnat and
-      --  https://groups.google.com/d/msg/comp.lang.ada/6p-_Dwjlr4o/POiIWk6AX0cJ
-
+      Free_When_Terminated (Producer.Live);
       Producer.Live.Init (Producer.Window, Producer.Child);
       Operate.Preserver (Producer).Subscribe (Consumer);
    end Subscribe;
