@@ -15,6 +15,7 @@ with Rx.Traits.Arrays;
 with Rx.Typed;
 
 private with Rx.Op.Buffer;
+private with Rx.Op.Debounce;
 private with Rx.Op.Filter;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
@@ -82,6 +83,12 @@ package Rx.Observables is
 
    function Create (Source : RxCreate.Observable'Class) return Observable
                     renames RxCreate.Tagged_Stateful;
+
+   --------------
+   -- Debounce --
+   --------------
+
+   function Debounce (Window : Duration) return Operator;
 
    -----------
    -- Defer --
@@ -334,6 +341,9 @@ private
 
    function Buffer (Every : Positive; Skip : Natural := 0) return Into_List_Transformers.Operator
                     renames RxBuffer.Create;
+
+   package RxDebounce is new Op.Debounce (Operate);
+   function Debounce (Window : Duration) return Operator renames RxDebounce.Create;
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Observable renames RxEmpty.Empty;

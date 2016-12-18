@@ -1,6 +1,3 @@
-with Ada.Finalization;
-with Ada.Unchecked_Deallocation;
-
 with Rx.Bugs.Support;
 with Rx.Debug; use Rx.Debug;
 with Rx.Debug.Observers;
@@ -57,16 +54,9 @@ procedure Rx.Bugs.Testbed is
       Dumpee.On_Completed;
    end Test_003_Serialize;
 
-   procedure Test_006_Reaping with Unreferenced is
-   -- Verifies that task reaping (via Tasks) works properly
-      XX : Support.Y_Ptr := new Support.Y with Unreferenced;
-   begin
-      null;
-   end Test_006_Reaping;
-
 begin
    for I in 1 .. 99 loop
-      Test_006_Reaping;
+      null;
    end loop;
 
    Put_Line ("END");

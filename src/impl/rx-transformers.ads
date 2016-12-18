@@ -24,6 +24,9 @@ package Rx.Transformers is
 
    package Links is new Rx.Impl.Links (From);
 
+   package Child_Holders is new Rx.Holders (Into.Subscriber'Class, "transform.observer'class");
+   type Child_Holder is new Child_Holders.Definite with null record;
+
    --  This type is not strictly necessary, but by having it with its own "&" we can disambiguate better
    --  from same-type operators, leading to less prefixing necessary
    type Transformer is abstract new
@@ -64,6 +67,9 @@ package Rx.Transformers is
    procedure Set_Child (This : in out Transformer; Child : Into.Subscriber);
    -- Can be used to override the default "&" behavior
 
+   not overriding function Get_Child (This : in out Transformer)
+                                      return Child_Holders.Reference;
+
    overriding
    procedure Unsubscribe (This : in out Transformer);
    --  Once the child is no longer needed let it gooo!
@@ -94,9 +100,6 @@ package Rx.Transformers is
                  return Into.Observable renames Will_Observe;
 
 private
-
-   package Child_Holders is new Rx.Holders (Into.Subscriber'Class, "transform.observer'class");
-   type Child_Holder is new Child_Holders.Definite with null record;
 
    type Transformer is abstract new
      Links.Downstream and
