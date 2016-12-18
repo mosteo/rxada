@@ -340,7 +340,14 @@ package body Rx.Tests is
                            Do_First => True, Ok_First => 1,
                            Do_Last  => True, Ok_Last  => 101);
 
-      pragma Compile_Time_Warning (True, "Missing check for Serialize operation (need mixer observer)");
+      -- Debouncing
+      Subs :=
+        Interval (1, 0.1)
+        & Limit (3)
+        & Debounce (0.2) -- Should let pass only the last one
+        & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+                             Do_First => True, Ok_First => 3,
+                             Do_Last  => True, Ok_Last  => 3);
 
       return True;
    exception
