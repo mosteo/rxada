@@ -101,10 +101,10 @@ package body Rx.Tests is
       Subs := Integers.Empty & Subscribe_Checker (Do_Count => True, Ok_Count => 0);
       --  Should see zero items
 
-      Subscribe (Integers.Error (Some_Error),
-                 On_Next      => Int_Fail'Access,
-                 On_Completed => Fail'Access,
-                 On_Error     => Int_Err_Pass'Access);
+      For_Each (Integers.Error (Some_Error),
+                On_Next      => Int_Fail'Access,
+                On_Completed => Fail'Access,
+                On_Error     => Int_Err_Pass'Access);
       --  Should only call On_Error and get a pass
 
       Subs :=

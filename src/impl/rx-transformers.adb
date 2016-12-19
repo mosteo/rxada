@@ -57,7 +57,7 @@ package body Rx.Transformers is
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Note);
+         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Warn);
          This.Child.Clear;
          raise;
    end On_Completed;

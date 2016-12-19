@@ -2,7 +2,8 @@ project RxAda is
 
    for Source_Dirs use ("src/**");
    for Object_Dir use "./obj";
-   for Main use ("rx-examples-tests.adb",
+   for Main use ("rx-devel.adb",
+                 "rx-examples-tests.adb",
                  "rx-examples-minimal.adb",
                  "rx-examples-basic.adb",
                  "rx-examples-threading.adb",

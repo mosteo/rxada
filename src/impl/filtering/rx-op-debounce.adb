@@ -2,6 +2,7 @@ with Ada.Unchecked_Deallocation;
 
 with Rx.Debug;
 with Rx.Errors;
+with Rx.Holders;
 with Rx.Impl.Events;
 
 package body Rx.Op.Debounce is
@@ -20,7 +21,9 @@ package body Rx.Op.Debounce is
 
    end Debouncer;
 
-   type Debouncer_Ptr is access Debouncer;
+   type Debouncer_Ptr is access all Debouncer;
+
+   procedure Free_When_Terminated is new Ada.Unchecked_Deallocation (Debouncer, Debouncer_Ptr);
 
    type Operator is new Operate.Preserver with record
       Window : Duration;
@@ -55,14 +58,17 @@ package body Rx.Op.Debounce is
    ---------------
 
    task body Debouncer is
+
+      Self : Debouncer_Ptr := Debouncer'Unchecked_Access;
+
       Child     : Operate.Transform.Child_Holder;
       Window    : Duration;
 
-      Next	 : Events.Event (Events.On_Next);
-      Next_Valid : Boolean := False;
+      package Event_Holders is new Rx.Holders (Events.Event, "debounce_events");
+      type Event_Holder is new Event_Holders.Definite with null record;
 
-      Other      : Events.Event (Events.On_Completed);
-      Other_Valid: Boolean := False;
+      Next	 : Event_Holder;
+      Other      : Event_Holder;
 
       use all type Events.Kinds;
 
@@ -73,20 +79,21 @@ package body Rx.Op.Debounce is
       procedure Flush (Elapsed : Boolean) is
          --  When Elapsed, the window has expired with nothing received
       begin
-         Debug.Log ("Flushing e:" & Elapsed'Img & " n:" & Next_Valid'Img & " o:" & Other_Valid'Img, Debug.Warn);
 
-         if (Elapsed or else Other_Valid) and then Next_Valid then
-            Child.Ref.On_Next (Events.Value (Next));
-            Next_Valid := False;
+         if (Elapsed or else Other.Is_Valid) and then Next.Is_Valid then
+            Child.Ref.On_Next (Events.Value (Next.CRef));
+            Next.Clear;
          end if;
 
-         if Other_Valid then
-            case Other.Kind is
+         if Other.Is_Valid then
+            case Other.CRef.Kind is
                when On_Completed =>
+                  Debug.Log ("Pre On_Completed", Debug.Warn);
                   Child.Ref.On_Completed;
+                  Debug.Log ("Post On_Completed", Debug.Warn);
                when On_Error =>
                   declare
-                     Error : Errors.Occurrence := Events.Error (Other);
+                     Error : Errors.Occurrence := Events.Error (Other.CRef);
                   begin
                      Child.Ref.On_Error (Error);
                   end;
@@ -98,6 +105,7 @@ package body Rx.Op.Debounce is
          end if;
 
       end Flush;
+
    begin
 
       accept Init (Window : Duration; Child : Into.Subscriber) do
@@ -106,33 +114,54 @@ package body Rx.Op.Debounce is
       end;
 
       loop
-         select
-            accept On_Event (Event : Events.Event) do
-               if Event.Kind = On_Next then
-                  Next       := Event;
-                  Next_Valid := True;
-                  Debug.Log ("Got On_Next", Debug.Warn);
-               else
-                  Other       := Event;
-                  Other_Valid := True;
-                  Debug.Log ("Got Other", Debug.Warn);
-               end if;
-            end;
-            Flush (Elapsed => False);
-         or
-            delay Window;
-            Debug.Log ("Got ELAPSED", Debug.Warn);
-            Flush (Elapsed => True);
-         end select;
+         if not Next.Is_Valid then
+            select
+               accept On_Event (Event : Events.Event) do
+                  if Event.Kind = On_Next then
+                     Next.Hold (Event);
+                  else
+                     Other.Hold (Event);
+                     Flush (Elapsed => False);
+                  end if;
+               end;
+            or
+               terminate;
+            end select;
+         else
+            select
+               accept On_Event (Event : Events.Event) do
+                  if Event.Kind = On_Next then
+                     Next.Hold (Event);
+                  else
+                     Other.Hold (Event);
+                  end if;
+               end;
+               Flush (Elapsed => False);
+            or
+               delay Window;
+               Flush (Elapsed => True);
+            end select;
+         end if;
 
-         exit when Other_Valid; -- Some other event
+         exit when Other.Is_Valid; -- Some other event
 
       end loop;
+
+      Debug.Log ("FREEIN", Debug.Warn);
+      Free_When_Terminated (Self);
+      Debug.Log ("FREED", Debug.Warn);
    exception
       when E : others =>
-         if Child.Ref.Is_Subscribed then
-            Operate.Typed.Default_Error_Handler (Child.Ref, E);
-         end if;
+         begin
+            if Child.Ref.Is_Subscribed then
+               Operate.Typed.Default_Error_Handler (Child.Ref, E);
+            end if;
+         exception
+            when E : others =>
+               Debug.Print (E);
+         end;
+
+         Free_When_Terminated (Self);
    end Debouncer;
 
    overriding
@@ -172,10 +201,8 @@ package body Rx.Op.Debounce is
    procedure Subscribe (Producer : in out Operator;
                         Consumer : in out Into.Subscriber)
    is
-      procedure Free_When_Terminated is new Ada.Unchecked_Deallocation (Debouncer, Debouncer_Ptr);
    begin
       Producer.Live  := new Debouncer;
-      Free_When_Terminated (Producer.Live);
       Producer.Live.Init (Producer.Window, Consumer);
       Operate.Preserver (Producer).Subscribe (Consumer);
       -- Consumer never to be used, so ideally we should use some always-failing consumer as child
