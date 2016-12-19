@@ -18,7 +18,7 @@ package Rx.Impl.Shared_Subscriber with Preelaborate is
 
    overriding procedure On_Next      (This : in out Subscriber; V : Typed.Type_Traits.T);
    overriding procedure On_Completed (This : in out Subscriber);
-   overriding procedure On_Error     (This : in out Subscriber; Error : in out Errors.Occurrence);
+   overriding procedure On_Error     (This : in out Subscriber; Error : Errors.Occurrence);
 
    overriding function Is_Subscribed (This :        Subscriber) return Boolean;
 

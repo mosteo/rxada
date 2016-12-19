@@ -87,7 +87,7 @@ package Rx.Transformers is
    --  By default calls downstream On_Completed
 
    overriding
-   procedure On_Error (This : in out Transformer; Error : in out Errors.Occurrence);
+   procedure On_Error (This : in out Transformer; Error : Errors.Occurrence);
    --  By default calls downstream On_Error
 
    function Will_Observe (Producer : From.Observable;

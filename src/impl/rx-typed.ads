@@ -3,6 +3,7 @@ with Ada.Exceptions;
 with Rx.Actions;
 with Rx.Actions.Typed;
 with Rx.Contracts;
+with Rx.Holders;
 with Rx.Impl.Definite_Observables;
 with Rx.Traits.Types;
 
@@ -43,5 +44,15 @@ package Rx.Typed is
       function Ind (V : D) return T renames Type_Traits.To_Indefinite;
 
    end Conversions;
+
+   package Holders is
+
+      package Observers is new Rx.Holders (Observer'Class);
+      type Observer is new Observers.Definite with null record;
+
+      package Subscribers is new Rx.Holders (Subscriber'Class);
+      type Subscriber is new Subscribers.Definite with null record;
+
+   end Holders;
 
 end Rx.Typed;
