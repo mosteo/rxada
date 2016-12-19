@@ -32,6 +32,8 @@ package Rx.Holders is
 
    function Is_Empty (D : Definite) return Boolean with Inline;
 
+   function Is_Valid (D : Definite) return Boolean is (not Is_Empty (D)) with Inline;
+
    procedure Clear (D : in out Definite);
    --  Dispose of the stored definite
 

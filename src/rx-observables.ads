@@ -125,6 +125,19 @@ package Rx.Observables is
 
    function Flat_Map return From_List_Transformer;
 
+
+   --------------
+   -- For_Each --
+   --------------
+
+   procedure For_Each (Producer     : Typed.Observable;
+                       On_Next      : Typed.Actions.Proc1   := null;
+                       On_Completed : Rx.Actions.Proc0      := null;
+                       On_Error     : Rx.Actions.Proc_Error := null);
+
+   procedure For_Each (Producer : Typed.Observable;
+                       Consumer : Typed.Sink);
+
    ----------
    -- From --
    ----------
@@ -220,11 +233,6 @@ package Rx.Observables is
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Sink;
-
-   procedure Subscribe (Producer     : Typed.Observable;
-                        On_Next      : Typed.Actions.Proc1   := null;
-                        On_Completed : Rx.Actions.Proc0      := null;
-                        On_Error     : Rx.Actions.Proc_Error := null);
 
    package RxSubscribe is new Rx.Subscribe (Typed);
    type Subscriptor is abstract new RxSubscribe.Subscribe with null record;

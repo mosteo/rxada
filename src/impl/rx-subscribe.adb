@@ -110,6 +110,7 @@ package body Rx.Subscribe is
 
    overriding procedure Unsubscribe (This : in out Subscribe) is
    begin
+      Debug.Log ("UNSUBS", Debug.Warn);
       This.Subscription.Unsubscribe;
    end Unsubscribe;
 

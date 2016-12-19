@@ -55,13 +55,12 @@ package body Rx.Errors is
       Ada.Exceptions.Reraise_Occurrence (Error.Instance.all);
    end Reraise;
 
-   procedure Free is new Ada.Unchecked_Deallocation (Ada.Exceptions.Exception_Occurrence, Except_Access);
-
    --------------
    -- Finalize --
    --------------
 
    overriding procedure Finalize   (E : in out Occurrence) is
+      procedure Free is new Ada.Unchecked_Deallocation (Ada.Exceptions.Exception_Occurrence, Except_Access);
    begin
       Free (E.Instance);
    end Finalize;
@@ -76,7 +75,6 @@ package body Rx.Errors is
       if E.Instance /= null then
          Mine := new Ada.Exceptions.Exception_Occurrence;
          Ada.Exceptions.Save_Occurrence (Mine.all, E.Instance.all);
-         Free (E.Instance);
          E.Instance := Mine;
       end if;
    end Adjust;

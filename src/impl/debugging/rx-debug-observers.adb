@@ -28,13 +28,16 @@ package body Rx.Debug.Observers is
 
    overriding procedure Do_On_Next      (This : in out Checker; V : Typed.T) is
    begin
+      Log ("AAA", Warn);
       if This.Do_First and then This.Counter = 0 and then V /= + This.Ok_First then
+         Debug.Log ("Failed first, got [" & Image (V) & "] instead of [" & Image (+This.Ok_First) & "]", Debug.Warn);
          raise Constraint_Error with
            "Failed first, got [" & Image (V) & "] instead of [" & Image (+This.Ok_First) & "]";
       end if;
 
       This.Last_Seen := +V;
       This.Counter   := This.Counter + 1;
+      Log ("BBB", Warn);
    end Do_On_Next;
 
    ---------------------
@@ -43,12 +46,15 @@ package body Rx.Debug.Observers is
 
    overriding procedure Do_On_Completed (This : in out Checker) is
    begin
+      Log ("XXX", Warn);
       if This.Do_Count and then This.Counter /= This.Ok_Count then
+         Debug.Log ("Failed count, got [" & This.Counter'Img & "] instead of [" & This.Ok_Count'Img & "]", Debug.Warn);
          raise Constraint_Error with
            "Failed count, got [" & This.Counter'Img & "] instead of [" & This.Ok_Count'Img & "]";
       end if;
 
       if This.Do_Last and then +This.Last_Seen /= +This.Ok_Last then
+         Debug.Log ("Failed last, got [" & Image (+This.Last_Seen) & "] instead of [" & Image (+This.Ok_Last) & "]", Debug.Warn);
          raise Constraint_Error with
            "Failed last, got [" & Image (+This.Last_Seen) & "] instead of [" & Image (+This.Ok_Last) & "]";
       end if;
@@ -57,6 +63,7 @@ package body Rx.Debug.Observers is
            (if This.Do_Count then This.Counter'Img else "-") &
            (if This.Do_First then Image (+This.Ok_First) else " -") &
            (if This.Do_Last then Image (+This.Ok_Last) else " -"), Note);
+      Log ("YYY", Warn);
    end Do_On_Completed;
 
    -----------------
