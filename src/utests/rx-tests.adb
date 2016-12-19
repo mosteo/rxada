@@ -342,8 +342,7 @@ package body Rx.Tests is
 
       -- Debouncing
       Subs :=
-        Interval (1, 0.1)
-        & Limit (3)
+        Numeric.Integers.Range_Slice (1, 3)
         & Debounce (0.2) -- Should let pass only the last one
         & Subscribe_Checker (Do_Count => True, Ok_Count => 1,
                              Do_First => True, Ok_First => 3,
