@@ -10,38 +10,41 @@ package Rx.Subscribe is
 
    pragma Preelaborate;
 
+   procedure Default_On_Error (E : Errors.Occurrence);
+
+   type Proc_Error is access procedure (E : Errors.Occurrence);
+   --  Needed to circumbent a forbidden 'Access use (RM 3.10.2(32))
+
    function Create (On_Next      : Typed.Actions.Proc1   := null;
                     On_Completed : Rx.Actions.Proc0      := null;
-                    On_Error     : Rx.Actions.Proc_Error := null) return Typed.Contracts.Sink'Class;
+                    On_Error     : Proc_Error            := Default_On_Error'Access)
+                    return Typed.Contracts.Sink'Class;
 
-   type Subscribe is new Typed.Contracts.Sink with private;
-   --  As an alternative you can override this convenience class...
-   --  Override these that follow as needed
-   --  But DON'T override the ones provided in Contracts.Observer if you want to retain default
-   --  checked behavior
+   function Create (Using : Typed.Observer) return Typed.Sink;
+   --  Wraps an observer into a Sink, providing subscription management
 
-   not overriding
-   procedure Do_On_Next      (This : in out Subscribe; V : Typed.T) is null;
+   type Empty_Observer is new Typed.Contracts.Observer with null record;
+   --  This default observer can be used as base for Create.
+   --  It provides a sane default for On_Error and does nothing otherwise
 
-   not overriding
-   procedure Do_On_Completed (This : in out Subscribe) is null;
+   overriding procedure On_Next (This : in out Empty_Observer; V : Typed.T) is null;
 
-   not overriding
-   procedure Do_On_Error     (This : in out Subscribe; Error : in out Errors.Occurrence);
-   --  By default logs info and raises exception
+   overriding procedure On_Completed (This : in out Empty_Observer) is null;
+
+   overriding procedure On_Error (This : in out Empty_Observer;
+                                  E    : Errors.Occurrence);
 
 private
 
    --  Either the access to procedures are used (hence the class was created by Create)
-   --  or the overriden members are called (that might be null as well anyway...)
+   --  or the held observer is valid
 
    type Subscribe is new Typed.Contracts.Sink with record
       Func_On_Next      : Typed.Actions.Proc1;
       Func_On_Completed : Rx.Actions.Proc0;
-      Func_On_Error     : Rx.Actions.Proc_Error;
+      Func_On_Error     : Proc_Error;
 
-      Subscription : Subscriptions.Subscription := Subscriptions.Subscribe;
-      --  These defaults are necessary in case this type is used directly instead of Create'd
+      Observer : Typed.Holders.Observer;
 
       Completed    : Boolean := False;
       Errored      : Boolean := False;
@@ -49,12 +52,6 @@ private
 
    overriding procedure On_Next      (This : in out Subscribe; V : Typed.T);
    overriding procedure On_Completed (This : in out Subscribe);
-   overriding procedure On_Error     (This : in out Subscribe; Error : in out Errors.Occurrence);
-
-   overriding function Is_Subscribed (This : Subscribe) return Boolean is (This.Subscription.Is_Subscribed);
-
-   overriding procedure Unsubscribe (This : in out Subscribe);
-
-   overriding function Get_Subscription (This : Subscribe) return Subscriptions.Subscription is (This.Subscription);
+   overriding procedure On_Error     (This : in out Subscribe; Error : Errors.Occurrence);
 
 end Rx.Subscribe;

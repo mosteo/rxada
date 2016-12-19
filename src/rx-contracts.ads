@@ -18,7 +18,7 @@ package Rx.Contracts is
 
    procedure On_Next      (This : in out Observer; V : T) is abstract;
    procedure On_Completed (This : in out Observer) is abstract;
-   procedure On_Error     (This : in out Observer; Error : in out Errors.Occurrence) is abstract;
+   procedure On_Error     (This : in out Observer; Error : Errors.Occurrence) is abstract;
 
    ----------------
    -- Subscriber --
@@ -48,13 +48,17 @@ package Rx.Contracts is
    ----------
 
    -- Final Endpoint for a live chain
-   type Sink is interface and Subscriber;
+   type Sink is abstract new Subscriber with private;
    --  A sink is someone who requested a subscription and consumes data,
    --  as opposed to an operator that passed data along.
 
-   function Get_Subscription (S : Sink) return Subscriptions.Subscription is abstract;
-   --  A sink must asynchronously allow a way of stopping incoming data
+   overriding function Is_Subscribed (This : Sink) return Boolean;
 
+   not overriding
+   procedure Set_Subscription (This : in out Sink; S : Subscriptions.Subscription);
+   --  A sink receives a subscription at the moment of being subscribed
+
+   overriding procedure Unsubscribe (This : in out Sink);
 
    ---------------
    -- Subscribe --
@@ -62,5 +66,14 @@ package Rx.Contracts is
 
    function Subscribe (Producer : Observable'Class; Consumer : Sink'Class) return Subscriptions.Subscription;
    --  Execute the subscription
+
+private
+
+   type Sink is abstract new Subscriber with record
+      Subscription : Subscriptions.Subscription;
+   end record;
+
+   overriding function Is_Subscribed (This : Sink) return Boolean is
+      (This.Subscription.Is_Subscribed);
 
 end Rx.Contracts;

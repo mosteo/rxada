@@ -28,24 +28,6 @@ package body Rx.Errors is
       Ada.Exceptions.Save_Occurrence (Error.Instance.all, From);
    end Fill;
 
-   -----------------
-   -- Set_Handled --
-   -----------------
-
-   procedure Set_Handled
-     (Error : in out Occurrence;
-      Dealt_With : Boolean := True)
-   is
-   begin
-      Error.Handled := Dealt_With;
-   end Set_Handled;
-
-   ----------------
-   -- Is_Handled --
-   ----------------
-
-   function Is_Handled (Error : Occurrence) return Boolean is (Error.Handled);
-
    -------------
    -- Reraise --
    -------------

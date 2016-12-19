@@ -51,7 +51,7 @@ package body Rx.Impl.Shared_Subscriber is
 
    overriding procedure On_Error
      (This  : in out Subscriber;
-      Error : in out  Errors.Occurrence)
+      Error :        Errors.Occurrence)
    is
    begin
       This.Actual.On_Error (Error);

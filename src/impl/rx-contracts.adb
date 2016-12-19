@@ -1,5 +1,14 @@
 package body Rx.Contracts is
 
+   ----------------------
+   -- Set_Subscription --
+   ----------------------
+
+   procedure Set_Subscription (This : in out Sink; S : Subscriptions.Subscription) is
+   begin
+      This.Subscription := S;
+   end Set_Subscription;
+
    ---------------
    -- Subscribe --
    ---------------
@@ -12,9 +21,20 @@ package body Rx.Contracts is
       Actual_L : Observable'Class := Producer;
       Actual_R : Sink'Class       := Consumer;
       --  We create copies to start chain instantiation with fresh links
+      Sub      : constant Subscriptions.Subscription := Subscriptions.Subscribe;
    begin
+      Actual_R.Set_Subscription (Sub);
       Actual_L.Subscribe (Actual_R);
-      return Actual_R.Get_Subscription;
+      return Sub;
    end Subscribe;
+
+   -----------------
+   -- Unsubscribe --
+   -----------------
+
+   overriding procedure Unsubscribe (This : in out Sink) is
+   begin
+      This.Subscription.Unsubscribe;
+   end Unsubscribe;
 
 end Rx.Contracts;

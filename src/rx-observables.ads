@@ -234,9 +234,7 @@ package Rx.Observables is
                        On_Completed : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Sink;
 
-   package RxSubscribe is new Rx.Subscribe (Typed);
-   type Subscriptor is abstract new RxSubscribe.Subscribe with null record;
-   --  You can alternatively override methods of this type to more easily provide context
+   function Subscribe (Observer : Typed.Observer) return Sink;
 
    function Subscribe (On_Next      : Collections.Typed_Lists.Actions.Proc1 := null;
                        On_Completed : Rx.Actions.Proc0                      := null;
@@ -408,15 +406,20 @@ private
    package RxSplit is new Rx.Op.Split (From_List_Transformers, Iterate);
    function Split return From_List_Transformer renames RxSplit.Create;
 
+   package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
                        On_Completed : Rx.Actions.Proc0      := null;
-                       On_Error     : Rx.Actions.Proc_Error := null) return Sink renames RxSubscribe.Create;
+                       On_Error     : Rx.Actions.Proc_Error := null) return Sink
+   is (RxSubscribe.Create (On_Next, On_Completed, RxSubscribe.Proc_Error (On_Error)));
+
+   function Subscribe (Observer : Typed.Observer) return Sink renames RxSubscribe.Create;
 
    package RxSubscribeLists is new Rx.Subscribe (Collections.Typed_Lists);
    function Subscribe (On_Next      : Collections.Typed_Lists.Actions.Proc1 := null;
                        On_Completed : Rx.Actions.Proc0                      := null;
                        On_Error     : Rx.Actions.Proc_Error                 := null)
-                       return Collections.Typed_Lists.Sink renames RxSubscribeLists.Create;
+                       return Collections.Typed_Lists.Sink is
+      (RxSubscribeLists.Create (On_Next, On_Completed, RxSubscribeLists.Proc_Error (On_Error)));
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;

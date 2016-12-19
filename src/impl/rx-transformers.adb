@@ -66,11 +66,13 @@ package body Rx.Transformers is
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Transformer; Error : in out Errors.Occurrence) is
+   overriding procedure On_Error (This : in out Transformer; Error : Errors.Occurrence) is
    begin
       if This.Has_Child then
+         declare
+            Err : Errors.Occurrence := Error; -- Writable copy, until I fix this mess
          begin
-            Transformer'Class (This).On_Error (Error, This.Get_Child); -- Pass it down
+            Transformer'Class (This).On_Error (Err, This.Get_Child); -- Pass it down
          exception
             when Subscriptions.No_Longer_Subscribed =>
                Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Note);
