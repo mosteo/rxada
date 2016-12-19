@@ -172,7 +172,6 @@ package body Rx.Op.Debounce is
    procedure Subscribe (Producer : in out Operator;
                         Consumer : in out Into.Subscriber)
    is
-      --procedure Free_When_Terminated is new Impl.Task_Deallocation (Debouncer, Debouncer_Ptr);
       procedure Free_When_Terminated is new Ada.Unchecked_Deallocation (Debouncer, Debouncer_Ptr);
    begin
       Producer.Live  := new Debouncer;
