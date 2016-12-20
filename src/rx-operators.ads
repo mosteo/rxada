@@ -46,13 +46,13 @@ package Rx.Operators is
 
    generic
       with function Length (V : From.Typed_Lists.T) return Into.T;
-   function Length return Typed_Lists.Operator;
+   function Length return Typed_Lists.Operator'Class;
 
    ---------
    -- Map --
    ---------
 
-   function Map (F : Typed.Actions.Func1) return Operator;
+   function Map (F : Typed.Actions.Func1) return Operator'Class;
 
    ----------
    -- Scan --
@@ -60,7 +60,7 @@ package Rx.Operators is
 
    function Scan (F         : Typed.Actions.Func2;
                   Seed      : Into.T;
-                  Emit_Seed : Boolean) return Operator;
+                  Emit_Seed : Boolean) return Operator'Class;
 
    ----------
    -- Size --
@@ -68,7 +68,7 @@ package Rx.Operators is
 
    generic
       with function Size (V : From.T) return Into.T;
-   function Size return Operator;
+   function Size return Operator'Class;
 
 private
 

@@ -6,7 +6,7 @@ package body Rx.Operators is
    -- Length --
    ------------
 
-   function Length return Typed_Lists.Operator is
+   function Length return Typed_Lists.Operator'Class is
       package RxLength is new Op.Length (Typed_Lists, Length);
    begin
       return RxLength.Create;
@@ -16,7 +16,7 @@ package body Rx.Operators is
    -- Size --
    ----------
 
-   function Size return Operator is
+   function Size return Operator'Class is
       package RxLength is new Op.Length (Typed, Size);
    begin
       return RxLength.Create;

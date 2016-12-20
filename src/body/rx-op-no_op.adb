@@ -16,7 +16,7 @@ package body Rx.Op.No_Op is
 
    function Create return Operate.Operator'Class is
    begin
-      return Operate.Create (Operator'(null record));
+      return Operate.Create (Operator'(Operate.Implementation.Operator with null record));
    end Create;
 
 

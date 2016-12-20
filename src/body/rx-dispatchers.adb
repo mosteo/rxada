@@ -33,7 +33,7 @@ package body Rx.Dispatchers is
 
       type Runner (Kind : Base.Kinds) is new Runnable with record
          Event : Base.Event (Kind);
-         Downstream : Shared.Subscriber;
+         Downstream : Subscriber;
       end record;
 
       overriding procedure Run (R : Runner) is
@@ -70,7 +70,7 @@ package body Rx.Dispatchers is
 
       procedure On_Next
         (Sched : in out Dispatcher'Class;
-         Observer : Shared.Subscriber;
+         Observer : Subscriber;
          V : Typed.Type_Traits.T)
       is
       begin

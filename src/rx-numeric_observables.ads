@@ -15,8 +15,8 @@ package Rx.Numeric_Observables is
 
    --  Shortcuts
 
-   subtype Observable is Observables.Observable;
-   subtype Operator   is Observables.Operator;
+   subtype Observable is Observables.Observable'Class;
+   subtype Operator   is Observables.Operator'Class;
    subtype T          is Observables.T;
 
    package From_List_Transformers renames Observables.From_List_Transformers;
@@ -30,7 +30,7 @@ package Rx.Numeric_Observables is
    function Count (First : T := To_Numeric (0)) return Operator;
 
    function Count (First : T := To_Numeric (0))
-                   return From_List_Transformers.Operator;
+                   return From_List_Transformers.Operator'Class;
 
    --------------
    -- Interval --
@@ -46,7 +46,7 @@ package Rx.Numeric_Observables is
    -- Length --
    ------------
 
-   function Length return From_List_Transformers.Operator;
+   function Length return From_List_Transformers.Operator'Class;
 
    ------------
    -- Ranges --
@@ -71,7 +71,7 @@ private
    function Count (First : T := To_Numeric (0)) return Operator renames RxCount.Count;
 
    function Count (First : T := To_Numeric (0))
-                   return From_List_Transformers.Operator renames RxCountLists.Count;
+                   return From_List_Transformers.Operator'Class renames RxCountLists.Count;
 
    function Interval (First       : T;
                       Pause       : Duration := 1.0;
@@ -79,7 +79,7 @@ private
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Observable renames RxInterval.Create;
 
-   function Length return From_List_Transformers.Operator renames RxLength.Create;
+   function Length return From_List_Transformers.Operator'Class renames RxLength.Create;
 
    function Range_Count (First : T;
                          Count : Rx_Natural) return Observable renames RxRange.From_Count;
