@@ -21,7 +21,7 @@ package body Rx.Transformers is
 
    overriding procedure Subscribe
      (Producer : in out Transformer;
-      Consumer : in out Into.Subscriber)
+      Consumer : in out Into.Subscriber'Class)
    is
    begin
       if Producer.Has_Parent then
@@ -118,7 +118,7 @@ package body Rx.Transformers is
    -- Unsubscribe --
    -----------------
 
-   overriding procedure Unsubscribe (This : in out New_Operator) is
+   overriding procedure Unsubscribe (This : in out Operator) is
    begin
       if This.Is_Subscribed then
          This.Get_Subscriber.Unsubscribe;
@@ -140,11 +140,13 @@ package body Rx.Transformers is
       end return;
    end Will_Observe;
 
+   --  Finally, the Operator defaults
+
    ------------------
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This : in out New_Operator) is
+   overriding procedure On_Completed (This : in out Operator) is
    begin
       This.Get_Subscriber.On_Completed;
    end On_Completed;
@@ -153,7 +155,7 @@ package body Rx.Transformers is
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out New_Operator; Error : Errors.Occurrence) is
+   overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence) is
    begin
       This.Get_Subscriber.On_Error (Error);
    end On_Error;
@@ -162,7 +164,7 @@ package body Rx.Transformers is
    -- Set_Observer --
    ------------------
 
-   not overriding procedure Set_Subscriber (This : in out New_Operator; Observer : Into.Subscriber'Class) is
+   not overriding procedure Set_Subscriber (This : in out Operator; Observer : Into.Subscriber'Class) is
    begin
       This.Subscriber.Hold (Observer);
    end Set_Subscriber;
