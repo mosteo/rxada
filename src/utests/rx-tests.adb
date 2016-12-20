@@ -359,8 +359,7 @@ package body Rx.Tests is
          end Debounced;
       begin
          For_Each (Integers.RxCreate.Parameterless (Debounced'Access)
-                   & Debounce (0.1)
-                   & Print (Debug.Image'Access),
+                   & Debounce (0.1),
                    Subscribe_Checker (Do_First => True,  Ok_First => 1,
                                       Do_Last  => True,  Ok_Last  => 4,
                                       Do_Count => True,  Ok_Count => 3));

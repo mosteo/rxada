@@ -8,7 +8,7 @@ package body Rx.Src.Create is
 
       type Source is new Typed.Contracts.Observable with record
          Initial : State;
-      end record         ;
+      end record;
 
       ---------------
       -- Subscribe --
@@ -19,15 +19,25 @@ package body Rx.Src.Create is
          Consumer : in out Typed.Subscriber)
       is
       begin
-         On_Subscribe (Producer.Initial, Consumer);
+         begin
+            On_Subscribe (Producer.Initial, Consumer);
+         exception
+            when Subscriptions.No_Longer_Subscribed =>
+               Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Note);
+            when E : others =>
+               if Autocompletes then -- Because the error was within On_Next somewhere
+                  Typed.Default_Error_Handler (Consumer, E);
+               else
+                  raise; -- Otherwise either client properly treated or wrong client implementation
+               end if;
+         end;
+
          if Autocompletes and then Consumer.Is_Subscribed then
             Consumer.On_Completed;
          end if;
       exception
          when Subscriptions.No_Longer_Subscribed =>
             Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Note);
-         when E : others =>
-            Typed.Default_Error_Handler (Consumer, E);
       end Subscribe;
 
       ------------
@@ -70,11 +80,9 @@ package body Rx.Src.Create is
       Actual : Observable'Class := Initial.Get; -- Local RW copy
    begin
       Actual.On_Subscribe (Observer);
-      exception
+   exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("At Create.On_Subscribe: caught No_Longer_Subscribed", Debug.Note);
-      when E : others =>
-         Typed.Default_Error_Handler (Observer, E);
    end On_Subscribe;
 
    package Create_Tagged is new With_State (Holder, On_Subscribe, Autocompletes => False);

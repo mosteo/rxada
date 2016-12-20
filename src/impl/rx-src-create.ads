@@ -2,11 +2,9 @@ with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
-package Rx.Src.Create is
+package Rx.Src.Create with Preelaborate is
 
    --  Three ways of easily creating a new observable for custom emision
-
-   pragma Preelaborate;
 
    function Parameterless (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
                            return Typed.Observable;
