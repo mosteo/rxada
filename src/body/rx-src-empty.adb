@@ -38,9 +38,8 @@ package body Rx.Src.Empty is
    procedure On_Subscribe_Error (Error    : Errors.Occurrence;
                                  Observer : in out Typed.Subscriber)
    is
-      E : Errors.Occurrence := Error;
    begin
-      Observer.On_Error (E);
+      Observer.On_Error (Error);
    end On_Subscribe_Error;
 
    package Error_Sources is new Create.With_State (Errors.Occurrence, On_Subscribe_Error, Autocompletes => False);

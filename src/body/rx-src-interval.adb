@@ -30,7 +30,7 @@ package body Rx.Src.Interval is
       RW : Runner := R;
    begin
       if RW.Child.Is_Subscribed then
-         RW.This.Get_Subscriber.On_Next (+R.Value);
+         RW.Child.On_Next (+R.Value);
          RW.Value := +Succ (+R.Value);
          RW.Next  := R.Next + R.Pause;
          RW.Sched.Schedule (RW, RW.Next);

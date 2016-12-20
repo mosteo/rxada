@@ -15,7 +15,7 @@ begin
    Sub :=
      Std.Interval
      & Print
-     & Subscribe_On (Schedulers.IO)
+--     & Subscribe_On (Schedulers.IO)
      & Observe_On (Schedulers.Idle_Thread)
      & Print
      & Observe_On (Schedulers.New_Thread)

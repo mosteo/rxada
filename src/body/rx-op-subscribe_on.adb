@@ -9,7 +9,7 @@ package body Rx.Op.Subscribe_On is
 
    --  This special in that, since it interrupts the subscription chain, can't be implemented with
    --  the usual Implementation.Operator
-   type Op is new Operate.Operator with record
+   type Op is new Operate.Transform.Operator with record
       Sched : Schedulers.Scheduler;
    end record;
 
