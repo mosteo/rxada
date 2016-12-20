@@ -19,7 +19,7 @@ package body Rx.Op.Split is
 
    function Create return Transform.Operator'Class is
    begin
-      return Transform.Create (Operator'(null record));
+      return Transform.Create (Operator'(Transform.Implementation.Operator with null record));
    end Create;
 
 end Rx.Op.Split;
