@@ -11,7 +11,7 @@ package Rx.Impl.Definite_Observables is
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : in out Contracts.Subscriber'Class);
+                        Consumer :        Contracts.Subscriber'Class);
 
    function From (Indef : Contracts.Observable'Class) return Observable;
    function "+"  (Indef : Contracts.Observable'Class) return Observable renames From;

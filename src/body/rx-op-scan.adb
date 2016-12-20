@@ -2,21 +2,19 @@ package body Rx.Op.Scan is
 
    use Typed.Into.Conversions;
 
-   type Operator is new Typed.Transformer with record
+   type Operator is new Typed.Implementation.Operator with record
       Func : Typed.Actions.Func2;
       Acum : Typed.Into.D;
       Emit : Boolean;
-
    end record;
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Typed.Into.Subscriber);
+                        Consumer :        Typed.Into.Subscriber'Class);
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     : Typed.From.T;
-                      Child : in out Typed.Into.Observer'Class);
+                      V     : Typed.From.T);
 
    ---------------
    -- Subscribe --
@@ -24,12 +22,12 @@ package body Rx.Op.Scan is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Typed.Into.Subscriber)
+                        Consumer :        Typed.Into.Subscriber'Class)
    is
    begin
-      Typed.Transformer (Producer).Subscribe (Consumer);
+      Typed.Implementation.Operator (Producer).Subscribe (Consumer);
       if Producer.Emit then
-         Consumer.On_Next (+ Producer.Acum);
+         Producer.Get_Subscriber.On_Next (+ Producer.Acum);
       end if;
    end Subscribe;
 
@@ -39,12 +37,11 @@ package body Rx.Op.Scan is
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     : Typed.From.T;
-                      Child : in out Typed.Into.Observer'Class)
+                      V     : Typed.From.T)
    is
    begin
       This.Acum := + This.Func (V, + This.Acum);
-      Child.On_Next (+ This.Acum);
+      This.Get_Subscriber.On_Next (+ This.Acum);
    end On_Next;
 
    ------------
@@ -58,10 +55,10 @@ package body Rx.Op.Scan is
       return Typed.Operator'Class
    is
    begin
-      return Operator'(Typed.Transformer with
+      return Typed.Create (Operator'(Typed.Implementation.Operator with
                        Func => Func,
                        Acum => + Seed,
-                       Emit => Emit);
+                       Emit => Emit));
    end Create;
 
 end Rx.Op.Scan;

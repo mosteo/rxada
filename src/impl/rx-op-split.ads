@@ -1,11 +1,11 @@
 with Rx.Transformers;
 
 generic
-   with package Transformer is new Rx.Transformers (<>);
-   with procedure Iterate (V : Transformer.From.T;
-                           For_Each : access procedure (V : Transformer.Into.T)) is <>;
+   with package Transform is new Rx.Transformers (<>);
+   with procedure Iterate (V : Transform.From.T;
+                           For_Each : access procedure (V : Transform.Into.T)) is <>;
 package Rx.Op.Split is
 
-   function Create return Transformer.Operator'Class;
+   function Create return Transform.Operator'Class;
 
 end Rx.Op.Split;

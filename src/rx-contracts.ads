@@ -41,7 +41,7 @@ package Rx.Contracts is
    --  Someone capable of producing data to which an observer can subscribe
 
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : in out Subscriber'Class) is abstract;
+                        Consumer :        Subscriber'Class) is abstract;
 
    ----------
    -- Sink --

@@ -10,7 +10,7 @@ package body Rx.Op.Repeat is
 
    type Kinds is (Counter, While_Do, Repeat_Until);
 
-   type Operator (Kind : Kinds) is new Operate.Preserver with record
+   type Operator (Kind : Kinds) is new Operate.Implementation.Operator with record
       Sequence : T_Lists.List;
 
       First_Seen : Boolean := False;
@@ -23,31 +23,27 @@ package body Rx.Op.Repeat is
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     :        Operate.T;
-                      Child : in out Operate.Observer);
+                      V     :        Operate.T);
 
    overriding
-   procedure On_Completed (This : in out Operator;
-                           Child : in out Operate.Observer);
+   procedure On_Completed (This : in out Operator);
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     :        Operate.T;
-                      Child : in out Operate.Observer) is
+                      V     :        Operate.T) is
    begin
       if This.Kind = While_Do and then not This.First_Seen and then not This.Filter.Ref.Check then
-         Child.On_Completed;
+         This.Get_Subscriber.On_Completed;
          This.Unsubscribe;
       else
          This.First_Seen := True;
          This.Sequence.Append (V);
-         Child.On_Next (V);
+         This.Get_Subscriber.On_Next (V);
       end if;
    end On_Next;
 
    overriding
-   procedure On_Completed (This : in out Operator;
-                           Child : in out Operate.Observer)
+   procedure On_Completed (This : in out Operator)
    is
       Check : Boolean;
    begin
@@ -60,7 +56,7 @@ package body Rx.Op.Repeat is
             when Counter =>
                for I in 1 .. This.Repeats loop
                   for V of This.Sequence loop
-                     Child.On_Next (V);
+                     This.Get_Subscriber.On_Next (V);
                   end loop;
                end loop;
 
@@ -71,13 +67,13 @@ package body Rx.Op.Repeat is
                             (This.Kind = While_Do     and then not Check);
 
                   for V of This.Sequence loop
-                     Child.On_Next (V);
+                     This.Get_Subscriber.On_Next (V);
                   end loop;
                end loop;
          end case;
       end if;
 
-      Child.On_Completed;
+      This.Get_Subscriber.On_Completed;
    end On_Completed;
 
    --------------------
@@ -86,10 +82,10 @@ package body Rx.Op.Repeat is
 
    function Repeat_Forever return Operate.Operator'Class is
    begin
-      return Operator'(Operate.Preserver with
+      return Operate.Create (Operator'(Operate.Implementation.Operator with
                        Kind   => While_Do,
                        Filter => + Actions.Wrap (Always'Access),
-                       others => <>);
+                       others => <>));
    end Repeat_Forever;
 
    ------------
@@ -98,10 +94,10 @@ package body Rx.Op.Repeat is
 
    function Repeat (Times : Positive) return Operate.Operator'Class is
    begin
-            return Operator'(Operate.Preserver with
+      return Operate.Create (Operator'(Operate.Implementation.Operator with
                        Kind    => Counter,
                        Repeats => Times,
-                       others  => <>);
+                       others  => <>));
    end Repeat;
 
    --------------
@@ -113,10 +109,10 @@ package body Rx.Op.Repeat is
       return Operate.Operator'Class
    is
    begin
-      return Operator'(Operate.Preserver with
+      return Operate.Create (Operator'(Operate.Implementation.Operator with
                        Kind   => While_Do,
                        Filter => + Check,
-                       others => <>);
+                       others => <>));
    end While_Do;
 
    ------------------
@@ -128,10 +124,10 @@ package body Rx.Op.Repeat is
       return Operate.Operator'Class
    is
    begin
-      return Operator'(Operate.Preserver with
+      return Operate.Create (Operator'(Operate.Implementation.Operator with
                        Kind   => Repeat_Until,
                        Filter => + Check,
-                       others => <>);
+                       others => <>));
    end Repeat_Until;
 
 end Rx.Op.Repeat;

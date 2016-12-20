@@ -1,17 +1,16 @@
 package body Rx.Op.Filter is
 
-   type Operator is new Operate.Preserver with record
+   type Operator is new Operate.Implementation.Operator with record
       Func : Operate.Typed.Actions.Filter1;
    end record;
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     :        Operate.T;
-                      Child : in out Operate.Observer'Class)
+                      V     :        Operate.T)
    is
    begin
       if This.Func (V) then
-         Child.On_Next (V);
+         This.Get_Subscriber.On_Next (V);
       end if;
    end On_Next;
 
@@ -21,8 +20,7 @@ package body Rx.Op.Filter is
 
    function Create (Filter : not null Operate.Typed.Actions.Filter1) return Operate.Operator'Class is
    begin
-      return Operator'(Operate.Preserver with Filter);
+      return Operate.Create (Operator'(Operate.Implementation.Operator with Filter));
    end Create;
-
 
 end Rx.Op.Filter;

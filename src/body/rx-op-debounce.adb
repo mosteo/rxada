@@ -26,7 +26,7 @@ package body Rx.Op.Debounce is
 
    procedure Free_When_Terminated is new Ada.Unchecked_Deallocation (Debouncer, Debouncer_Ptr);
 
-   type Operator is new Operate.Subscriber with record
+   type Operator is new Operate.Implementation.Operator with record
       Window : Duration;
       Live   : Debouncer_Ptr;
    end record;
@@ -45,8 +45,8 @@ package body Rx.Op.Debounce is
                        Error :        Errors.Occurrence);
 
    overriding
-   procedure Set_subscriber (Producer : in out Operator;
-                             Consumer :        Into.Subscriber);
+   procedure Subscribe (Producer : in out Operator;
+                        Consumer :        Into.Subscriber);
 
    overriding
    procedure Unsubscribe (This : in out Operator);
@@ -183,15 +183,15 @@ package body Rx.Op.Debounce is
    ---------------
 
    overriding
-   procedure Set_Subscriber (Producer : in out Operator;
-                             Consumer :        Into.Subscriber)
+   procedure Subscribe (Producer : in out Operator;
+                        Consumer :        Into.Subscriber)
    is
    begin
       Producer.Live  := new Debouncer;
       Producer.Live.Init (Producer.Window, Consumer);
-      Operate.Subscriber (Producer).Set_Subscriber (Consumer);
+      Operate.Implementation.Operator (Producer).Subscribe (Consumer);
       -- Consumer never to be used, so ideally we should use some always-failing consumer as child
-   end Set_Subscriber;
+   end Subscribe;
 
    -----------------
    -- Unsubscribe --
@@ -205,11 +205,9 @@ package body Rx.Op.Debounce is
    -- Create --
    ------------
 
-   function Create (Window : Duration) return Operate.Operator is
+   function Create (Window : Duration) return Operate.Operator'Class is
    begin
-      return Op : Operator do
-         Op.Window := Window;
-      end return;
+      return Operate.Create (Operator'(Operate.Implementation.Operator with Window => Window, Live => null));
    end Create;
 
 end Rx.Op.Debounce;

@@ -10,6 +10,6 @@ package Rx.Op.Flatmap with Preelaborate is
       Switch);  -- Drop previous observable once a new one arrives
 
    function Flatten (Func   : Typed.Actions.Flattener1;
-                     Policy : Policies) return Typed.Transformer;
+                     Policy : Policies) return Typed.Implementation.Operator;
 
 end Rx.Op.Flatmap;

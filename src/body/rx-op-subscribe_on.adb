@@ -7,33 +7,22 @@ package body Rx.Op.Subscribe_On is
 
    package Remote is new Dispatchers.Subscribe (Operate);
 
-   type Op is new Operate.Preserver with record
+   --  This special in that, since it interrupts the subscription chain, can't be implemented with
+   --  the usual Implementation.Operator
+   type Op is new Operate.Operator with record
       Sched : Schedulers.Scheduler;
    end record;
 
-   overriding procedure On_Next      (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class);
-
-   overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Subscriber);
-
-   -------------
-   -- On_Next --
-   -------------
-
-   overriding procedure On_Next (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class) is
-      pragma Unreferenced (This);
-   begin
-      Child.On_Next (V);
-   end On_Next;
+   overriding procedure Subscribe    (This : in out Op; Observer : Operate.Into.Subscriber);
 
    ---------------
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe (This : in out Op; Child : in out Operate.Subscriber) is
+   overriding procedure Subscribe (This : in out Op; Observer : Operate.Into.Subscriber) is
    begin
-      This.Set_Child (Child);
       -- Relay subscription to the actual thread:
-      Remote.On_Subscribe (This.Sched.all, This);
+      Remote.On_Subscribe (This.Sched.all, This.Get_Parent, Observer);
    end Subscribe;
 
    ------------
@@ -42,7 +31,7 @@ package body Rx.Op.Subscribe_On is
 
    function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
    begin
-      return Op'(Operate.Preserver with Sched => Scheduler);
+      return Op'(Operate.Operator with Sched => Scheduler);
    end Create;
 
 end Rx.Op.Subscribe_On;

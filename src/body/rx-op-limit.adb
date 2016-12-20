@@ -3,28 +3,25 @@ with Rx.Subscriptions;
 
 package body Rx.Op.Limit is
 
-   type Operator is new Operate.Preserver with record
+   type Operator is new Operate.Implementation.Operator with record
       Remaining : Natural;
       Completed : Boolean := False;
    end record;
 
    overriding procedure On_Next (This  : in out Operator;
-                                 V     :        Operate.T;
-                                 Child : in out Operate.Observer'Class);
+                                 V     :        Operate.T);
 
-   overriding procedure On_Completed (This  : in out Operator;
-                                      Child : in out Operate.Observer'Class);
+   overriding procedure On_Completed (This  : in out Operator);
 
    ------------------
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This  : in out Operator;
-                                      Child : in out Operate.Observer'Class) is
+   overriding procedure On_Completed (This  : in out Operator) is
    begin
       if not This.Completed then
          This.Completed := True;
-         Child.On_Completed;
+         This.Get_Subscriber.On_Completed;
       end if;
    end On_Completed;
 
@@ -33,14 +30,13 @@ package body Rx.Op.Limit is
    -------------
 
    overriding procedure On_Next (This  : in out Operator;
-                                 V     :        Operate.T;
-                                 Child : in out Operate.Observer'Class)
+                                 V     :        Operate.T)
    is
    begin
 --        Debug.Log ("Limit.On_Next", Debug.Warning);
 
       if This.Remaining > 0 then
-         Child.On_Next (V);
+         This.Get_Subscriber.On_Next (V);
          This.Remaining := This.Remaining - 1;
       end if;
 
@@ -58,9 +54,9 @@ package body Rx.Op.Limit is
 
    function Create (Limit : Natural) return Operate.Operator'Class is
    begin
-      return Operator'(Operate.Preserver with
-                         Remaining => Limit,
-                         Completed => False);
+      return Operate.Create (Operator'(Operate.Implementation.Operator with
+                             Remaining => Limit,
+                             Completed => False));
    end Create;
 
 

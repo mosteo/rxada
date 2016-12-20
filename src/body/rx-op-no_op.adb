@@ -1,6 +1,6 @@
 package body Rx.Op.No_Op is
 
-   type Operator is new Operate.Subscriber with null record;
+   type Operator is new Operate.Implementation.Operator with null record;
 
    overriding
    procedure On_Next (This  : in out Operator;

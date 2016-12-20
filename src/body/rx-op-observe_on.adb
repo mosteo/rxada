@@ -8,56 +8,54 @@ package body Rx.Op.Observe_On is
    package Remote is new Dispatchers.Events (Operate.Typed);
    package Shared renames Remote.Shared;
 
-   type Op is new Operate.Preserver with record
-      Shubs : Shared.Subscriber;
-      Sched : Schedulers.Scheduler;
+   type Op is new Operate.Implementation.Operator with record
+      Downstream : Shared.Subscriber;
+      Scheduler  : Schedulers.Scheduler;
    end record;
 
-   overriding procedure On_Next      (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class);
-   overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer'Class);
-   overriding procedure On_Error     (This : in out Op; Error : in out Rx.Errors.Occurrence; Child : in out Operate.Observer'Class);
+   overriding procedure On_Next      (This : in out Op; V : Operate.T);
+   overriding procedure On_Completed (This : in out Op);
+   overriding procedure On_Error     (This : in out Op; Error : Errors.Occurrence);
 
-   overriding procedure Subscribe    (This : in out Op; Child : in out Operate.Subscriber);
+   overriding procedure Subscribe    (This : in out Op; Observer : Operate.Into.Subscriber'Class);
    overriding procedure Unsubscribe  (This : in out Op);
 
    -------------
    -- On_Next --
    -------------
 
-   overriding procedure On_Next (This : in out Op; V : Operate.T; Child : in out Operate.Observer'Class) is
+   overriding procedure On_Next (This : in out Op; V : Operate.T) is
    begin
-      Remote.On_Next (This.Sched.all, Shared.Subscriber (Child), V);
+      Remote.On_Next (This.Scheduler.all, This.Downstream, V);
    end On_Next;
 
    ------------------
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This : in out Op; Child : in out Operate.Observer'Class) is
+   overriding procedure On_Completed (This : in out Op) is
    begin
-      Remote.On_Completed (This.Sched.all, Shared.Subscriber (Child));
+      Remote.On_Completed (This.Scheduler.all, This.Downstream);
    end On_Completed;
 
    --------------
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Op; Error : in out Rx.Errors.Occurrence; Child : in out Operate.Observer'Class) is
+   overriding procedure On_Error (This : in out Op; Error : Errors.Occurrence) is
    begin
-      Remote.On_Error (This.Sched.all, Shared.Subscriber (Child), Error);
+      Remote.On_Error (This.Scheduler.all, This.Downstream, Error);
    end On_Error;
 
    ---------------
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe (This : in out Op; Child : in out Operate.Subscriber) is
-      Parent : Operate.Observable := This.Get_Parent;
-      Me     : Op := This; -- Create a copy that will hold the actual shared observable
+   overriding procedure Subscribe (This : in out Op; Observer : Operate.Into.Subscriber'Class) is
    begin
-      Me.Shubs := Shared.Create (Child);
-      Me.Set_Child (Me.Shubs); -- Stored twice to have it here for Unsubscribe
-      Parent.Subscribe (Me);
+      This.Downstream := Shared.Create (Observer);
+      Operate.Implementation.Operator (This).Subscribe (This.Downstream);
+      --  Get_Subscriber not to be used directly, so this subscription could use an always failing observer
    end Subscribe;
 
    -----------------
@@ -66,7 +64,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure Unsubscribe (This : in out Op) is
    begin
-      Remote.Unsubscribe (This.Sched.all, This.Shubs);
+      Remote.Unsubscribe (This.Scheduler.all, This.Downstream);
    end Unsubscribe;
 
    ------------
@@ -75,7 +73,9 @@ package body Rx.Op.Observe_On is
 
    function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
    begin
-      return Op'(Operate.Transform.Operator with Sched => Scheduler, Shubs => <>);
+      return Operate.Create (Op'(Operate.Implementation.Operator with
+                                 Scheduler  => Scheduler,
+                                 Downstream => <>));
    end Create;
 
 end Rx.Op.Observe_On;

@@ -33,7 +33,7 @@ package body Rx.Dispatchers is
 
       type Runner (Kind : Base.Kinds) is new Runnable with record
          Event : Base.Event (Kind);
-         Child : Shared.Subscriber;
+         Downstream : Shared.Subscriber;
       end record;
 
       overriding procedure Run (R : Runner) is
@@ -43,24 +43,24 @@ package body Rx.Dispatchers is
          case R.Kind is
             when On_Next =>
                begin
-                  if RW.Child.Is_Subscribed then
-                     RW.Child.On_Next (Base.Value (R.Event));
+                  if RW.Downstream.Is_Subscribed then
+                     RW.Downstream.On_Next (Base.Value (R.Event));
                   end if;
                exception
                   when E : others =>
-                     Typed.Default_Error_Handler (RW.Child, E);
+                     Typed.Default_Error_Handler (RW.Downstream, E);
                end;
             when On_Error =>
-               if RW.Child.Is_Subscribed then
-                  RW.Child.On_Error (Base.Error (R.Event));
+               if RW.Downstream.Is_Subscribed then
+                  RW.Downstream.On_Error (Base.Error (R.Event));
                else
                   Debug.Report (Base.Error (R.Event).Get_Exception.all, "Error after unsubscription:",
                                 Debug.Warn, Reraise => False);
                end if;
             when On_Completed =>
-               RW.Child.On_Completed;
+               RW.Downstream.On_Completed;
             when Unsubscribe =>
-               Rw.Child.Unsubscribe;
+               Rw.Downstream.Unsubscribe;
          end case;
       end Run;
 
@@ -116,19 +116,23 @@ package body Rx.Dispatchers is
    package body Subscribe is
 
       type Runner is new Runnable with record
-         Op : Operate.Holders.Definite;
+         Parent : Operate.Typed.Definite_Observables.Observable;
+         Child  : Operate.Typed.Holders.Subscribers.Definite;
       end record;
 
       overriding procedure Run (R : Runner) is
-         Parent : Operate.Observable     := R.Op.CRef.Get_Parent;
-         Child  : Operate.Operator'Class := R.Op.CRef;
+         Parent : Operate.Typed.Observable'Class := R.Parent.To_Indef;
       begin
-         Parent.Subscribe (Child);
+         Parent.Subscribe (R.Child.CRef);
       end Run;
 
-      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Operator'Class) is
+      procedure On_Subscribe (Sched  : in out Dispatcher'Class;
+                              Parent :        Operate.Observable'Class;
+                              Child  :        Operate.Typed.Subscriber'Class) is
       begin
-         Sched.Schedule (Runner'(Runnable with Operate.Holders.Hold (Operator)));
+         Sched.Schedule (Runner'(Runnable with
+                           Parent => Operate.Typed.Definite_Observables.From (Parent),
+                           Child  => Operate.Typed.Holders.Subscribers.Hold (Child)));
       end On_Subscribe;
 
    end Subscribe;
