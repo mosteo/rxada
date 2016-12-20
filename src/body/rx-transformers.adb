@@ -148,4 +148,40 @@ package body Rx.Transformers is
       end return;
    end Will_Observe;
 
+   ------------------
+   -- On_Completed --
+   ------------------
+
+   overriding procedure On_Completed (This : in out New_Operator) is
+   begin
+      This.Get_Observer.On_Completed;
+   end On_Completed;
+
+   --------------
+   -- On_Error --
+   --------------
+
+   overriding procedure On_Error (This : in out New_Operator; Error : Errors.Occurrence) is
+   begin
+      This.Get_Observer.On_Error (Error);
+   end On_Error;
+
+   ------------------
+   -- Set_Observer --
+   ------------------
+
+   not overriding procedure Set_Observer (This : in out New_Operator; Observer : Into.Subscriber'Class) is
+   begin
+      This.Observer.Hold (Observer);
+   end Set_Observer;
+
+   ------------------
+   -- Get_Observer --
+   ------------------
+
+   function Get_Observer (This : in out New_Operator'Class) return Into.Holders.Subscribers.Reference is
+   begin
+      return This.Observer.Ref;
+   end Get_Observer;
+
 end Rx.Transformers;

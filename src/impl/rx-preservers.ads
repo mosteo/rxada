@@ -19,6 +19,9 @@ package Rx.Preservers with Preelaborate is
    package Transform is new Rx.Transformers (Typed, Typed);
    --  Specialization with type preservation here
 
+   function Create (Using : Transform.New_Operator'Class) return Transform.Transformer'Class
+     renames Transform.Create;
+
    subtype Preserver is Transform.Transformer;
    -- Not needed but makes extensions more meaningful in actual operator packages
 
