@@ -15,13 +15,13 @@ package Rx.Numeric_Operators is
    package Transformers           renames Operators.Typed;
    package From_List_Transformers renames Operators.Typed_Lists;
 
-   subtype Operator is Transformers.Operator;
+   subtype Operator is Transformers.Operator'Class;
 
    function Count (First : Into.T := To_Numeric (0)) return Operator;
 
-   function Count (First : Into.T := To_Numeric (0)) return From_List_Transformers.Operator;
+   function Count (First : Into.T := To_Numeric (0)) return From_List_Transformers.Operator'Class;
 
-   function Length return From_List_Transformers.Operator;
+   function Length return From_List_Transformers.Operator'Class;
 
 private
 
@@ -34,8 +34,8 @@ private
    function Count (First : Into.T := To_Numeric (0)) return Operator renames RxCount.Count;
 
    function Count (First : Into.T := To_Numeric (0))
-                   return From_List_Transformers.Operator renames RxCountLists.Count;
+                   return From_List_Transformers.Operator'Class renames RxCountLists.Count;
 
-   function Length return From_List_Transformers.Operator renames RxLength.Create;
+   function Length return From_List_Transformers.Operator'Class renames RxLength.Create;
 
 end Rx.Numeric_Operators;

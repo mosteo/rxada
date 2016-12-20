@@ -12,7 +12,7 @@ package body Rx.Src.Defer is
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer : in out Typed.Subscriber'Class)
+                        Consumer :        Typed.Subscriber'Class)
    is
       Actual : Typed.Observable'Class := Producer.Factory.CRef.On_Subscribe;
    begin

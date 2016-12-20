@@ -16,24 +16,25 @@ package body Rx.Src.Create is
 
       overriding procedure Subscribe
         (Producer : in out Source;
-         Consumer : in out Typed.Subscriber)
+         Consumer :        Typed.Subscriber)
       is
+         Actual : Typed.Subscriber := Consumer;
       begin
          begin
-            On_Subscribe (Producer.Initial, Consumer);
+            On_Subscribe (Producer.Initial, Actual);
          exception
             when Subscriptions.No_Longer_Subscribed =>
                Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Note);
             when E : others =>
                if Autocompletes then -- Because the error was within On_Next somewhere
-                  Typed.Default_Error_Handler (Consumer, E);
+                  Typed.Default_Error_Handler (Actual, E);
                else
                   raise; -- Otherwise either client properly treated or wrong client implementation
                end if;
          end;
 
          if Autocompletes and then Consumer.Is_Subscribed then
-            Consumer.On_Completed;
+            Actual.On_Completed;
          end if;
       exception
          when Subscriptions.No_Longer_Subscribed =>
