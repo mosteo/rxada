@@ -10,7 +10,7 @@ package Rx.Op.Buffer with Preelaborate is
 --  be the same type as the indefinite
 
 
-   function Create (Every : Positive; Skip : Natural := 0) return Transform.Transformer'Class;
+   function Create (Every : Positive; Skip : Natural := 0) return Transform.Operator'Class;
    --  Builds lists of size Every, discarding Skip between each one
 
 end Rx.Op.Buffer;

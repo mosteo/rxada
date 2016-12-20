@@ -19,7 +19,7 @@ package body Rx.Op.Filter is
    -- Create --
    ------------
 
-   function Create (Filter : not null Operate.Typed.Actions.Filter1) return Operate.Preserver'Class is
+   function Create (Filter : not null Operate.Typed.Actions.Filter1) return Operate.Operator'Class is
    begin
       return Operator'(Operate.Preserver with Filter);
    end Create;

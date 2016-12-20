@@ -11,10 +11,8 @@ package body Rx.Typed is
      (This   : in out Observer'Class;
       Except : Ada.Exceptions.Exception_Occurrence)
    is
-      Error : Errors.Occurrence;
    begin
-      Error.Fill (Except);
-      This.On_Error (Error);
+      This.On_Error (Errors.Create (Except));
    exception
       when E : others =>
          Debug.Report (E, "Exception during error handling:", Debug.Warn, Reraise => True);

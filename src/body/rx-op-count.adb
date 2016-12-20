@@ -2,18 +2,16 @@ package body Rx.Op.Count is
 
    use Transform.Into.Conversions;
 
-   type Counter is new Transform.Transformer with record
+   type Counter is new Transform.Subscriber with record
       Count : Transform.Into.Type_Traits.D;
    end record;
 
    overriding
    procedure On_Next (This  : in out Counter;
-                      V     :        Transform.From.T;
-                      Child : in out Transform.Into.Observer'Class);
+                      V     :        Transform.From.T);
 
    overriding
-   procedure On_Completed (This : in out Counter;
-                          Child : in out Transform.Into.Observer'Class);
+   procedure On_Completed (This : in out Counter);
 
    -------------
    -- On_Next --
@@ -21,10 +19,9 @@ package body Rx.Op.Count is
 
    overriding
    procedure On_Next (This  : in out Counter;
-                      V     :        Transform.From.T;
-                      Child : in out Transform.Into.Observer'Class)
+                      V     :        Transform.From.T)
    is
-      pragma Unreferenced (V, Child);
+      pragma Unreferenced (V);
    begin
       This.Count := +Succ (+This.Count);
    end On_Next;
@@ -35,21 +32,20 @@ package body Rx.Op.Count is
    ------------------
 
    overriding
-   procedure On_Completed (This : in out Counter;
-                          Child : in out Transform.Into.Observer'Class) is
+   procedure On_Completed (This : in out Counter) is
    begin
-      Child.On_Next (Transform.Into.Type_Traits.To_Indefinite (This.Count));
-      Child.On_Completed;
+      This.Get_Subscriber.On_Next (Transform.Into.Type_Traits.To_Indefinite (This.Count));
+      This.Get_Subscriber.On_Completed;
    end On_Completed;
 
    -----------
    -- Count --
    -----------
 
-   function Count (First : Transform.Into.T := Default_Initial_Count) return Transform.Transformer'Class
+   function Count (First : Transform.Into.T := Default_Initial_Count) return Transform.Operator'Class
    is
    begin
-      return Counter'(Transform.Transformer with Count => +First);
+      return Transform.Create (Counter'(Transform.Subscriber with Count => +First));
    end Count;
 
 end Rx.Op.Count;

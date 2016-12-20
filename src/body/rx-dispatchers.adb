@@ -120,13 +120,13 @@ package body Rx.Dispatchers is
       end record;
 
       overriding procedure Run (R : Runner) is
-         Parent : Operate.Observable := R.Op.CRef.Get_Parent;
-         Child  : Operate.Subscriber := R.Op.CRef;
+         Parent : Operate.Observable     := R.Op.CRef.Get_Parent;
+         Child  : Operate.Operator'Class := R.Op.CRef;
       begin
          Parent.Subscribe (Child);
       end Run;
 
-      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Preserver'Class) is
+      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Operator'Class) is
       begin
          Sched.Schedule (Runner'(Runnable with Operate.Holders.Hold (Operator)));
       end On_Subscribe;

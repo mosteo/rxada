@@ -4,7 +4,7 @@ package body Rx.Op.Buffer is
 
    use Transform.Into.Conversions;
 
-   type Counter is new Transform.Transformer with record
+   type Counter is new Transform.Subscriber with record
       Container : Transform.Into.D := Empty;
 
       Need      : Positive;
@@ -17,15 +17,12 @@ package body Rx.Op.Buffer is
    end record;
 
    overriding procedure On_Next (This  : in out Counter;
-                                 V     :        Transform.From.T;
-                                 Child : in out Transform.Into.Observer'Class);
+                                 V     :        Transform.From.T);
 
-   overriding procedure On_Completed (This  : in out Counter;
-                                      Child : in out Transform.Into.Observer'Class);
+   overriding procedure On_Completed (This  : in out Counter);
 
    overriding procedure On_Error (This  : in out Counter;
-                                  Error : in out Errors.Occurrence;
-                                  Child : in out Transform.Into.Observer'Class);
+                                  Error :        Errors.Occurrence);
 
    procedure Emit (This : in out Counter; Child : in out Transform.Into.Observer'Class) is
    begin
@@ -39,8 +36,7 @@ package body Rx.Op.Buffer is
    -------------
 
    overriding procedure On_Next (This  : in out Counter;
-                                 V     :        Transform.From.T;
-                                 Child : in out Transform.Into.Observer'Class) is
+                                 V     :        Transform.From.T) is
    begin
       if This.Skipping then
          This.Skipped := This.Skipped + 1;
@@ -53,7 +49,7 @@ package body Rx.Op.Buffer is
          This.Have := This.Have + 1;
 
          if This.Have = This.Need then
-            Emit (This, Child);
+            Emit (This, This.Get_Subscriber);
 
             if This.Skip > 0 then
                This.Skipping := True;
@@ -67,13 +63,12 @@ package body Rx.Op.Buffer is
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This  : in out Counter;
-                                      Child : in out Transform.Into.Observer'Class) is
+   overriding procedure On_Completed (This  : in out Counter) is
    begin
       if This.Have > 0 then
-         Emit (This, Child);
+         Emit (This, This.Get_Subscriber);
       end if;
-      Child.On_Completed;
+      This.Get_Subscriber.On_Completed;
    end On_Completed;
 
    --------------
@@ -81,12 +76,11 @@ package body Rx.Op.Buffer is
    --------------
 
    overriding procedure On_Error (This  : in out Counter;
-                                  Error : in out Errors.Occurrence;
-                                  Child : in out Transform.Into.Observer'Class) is
+                                  Error :        Errors.Occurrence) is
    begin
       if This.Have > 0 then
-         Emit (This, Child);
-         Child.On_Error (Error);
+         Emit (This, This.Get_Subscriber);
+         This.Get_Subscriber.On_Error (Error);
       end if;
    end On_Error;
 
@@ -97,13 +91,13 @@ package body Rx.Op.Buffer is
    function Create
      (Every : Positive;
       Skip : Natural := 0)
-      return Transform.Transformer'Class
+      return Transform.Operator'Class
    is
    begin
-      return Counter'(Transform.Transformer with
-                      Need   => Every,
-                      Skip   => Skip,
-                      others => <>);
+      return Transform.Create (Counter'(Transform.Subscriber with
+                               Need   => Every,
+                               Skip   => Skip,
+                               others => <>));
    end Create;
 
 end Rx.Op.Buffer;

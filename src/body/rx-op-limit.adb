@@ -56,7 +56,7 @@ package body Rx.Op.Limit is
    -- Create --
    ------------
 
-   function Create (Limit : Natural) return Operate.Preserver'Class is
+   function Create (Limit : Natural) return Operate.Operator'Class is
    begin
       return Operator'(Operate.Preserver with
                          Remaining => Limit,

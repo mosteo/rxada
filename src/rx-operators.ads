@@ -17,7 +17,7 @@ package Rx.Operators is
    package Typed is new Rx.Transformers (From.Typed, Into.Typed);
    package Typed_Lists is new Rx.Transformers (From.Typed_Lists, Into.Typed);
 
-   subtype Operator Is Typed.Transformer'Class;
+   subtype Operator Is Typed.Operator'Class;
 
    ---------
    -- "&" --

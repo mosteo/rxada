@@ -38,7 +38,7 @@ package body Rx.Op.Flatmap is
    --  Demiurge  --
    ----------------
 
-   type Demiurge is new Operate.Operator with record
+   type Demiurge is new Operate.Subscriber with record
       Child            : Shared.Subscriber;
       Parent_Completed : Boolean with Atomic;
    end record;
@@ -93,7 +93,7 @@ package body Rx.Op.Flatmap is
                                       Child : in out Typed.Into.Observer'Class);
 
    overriding procedure On_Error (This  : in out Wrapper;
-                                  Error : in out Errors.Occurrence;
+                                  Error :        Errors.Occurrence;
                                   Child : in out Typed.Into.Observer'Class);
 
    overriding procedure Subscribe (Producer : in out Wrapper;
@@ -130,7 +130,7 @@ package body Rx.Op.Flatmap is
    --------------
 
    overriding procedure On_Error (This  : in out Wrapper;
-                                  Error : in out Errors.Occurrence;
+                                  Error :        Errors.Occurrence;
                                   Child : in out Typed.Into.Observer'Class)
    is
       pragma Unreferenced (Child); -- Note that this is not the proper child, besides

@@ -14,7 +14,7 @@ package body Rx.Op.Map is
    -- Create --
    ------------
 
-   function Create (F : Typed.Actions.Func1) return Typed.Transformer'Class is
+   function Create (F : Typed.Actions.Func1) return Typed.Operator'Class is
    begin
       return Op'(Typed.Transformer with F => F);
    end Create;

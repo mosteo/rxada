@@ -40,7 +40,7 @@ package body Rx.Op.Subscribe_On is
    -- Create --
    ------------
 
-   function Create (Scheduler : Schedulers.Scheduler) return Operate.Preserver'Class is
+   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
    begin
       return Op'(Operate.Preserver with Sched => Scheduler);
    end Create;

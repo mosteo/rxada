@@ -73,9 +73,9 @@ package body Rx.Op.Observe_On is
    -- Create --
    ------------
 
-   function Create (Scheduler : Schedulers.Scheduler) return Operate.Preserver'Class is
+   function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
    begin
-      return Op'(Operate.Transform.Transformer with Sched => Scheduler, Shubs => <>);
+      return Op'(Operate.Transform.Operator with Sched => Scheduler, Shubs => <>);
    end Create;
 
 end Rx.Op.Observe_On;

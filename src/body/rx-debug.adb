@@ -1,5 +1,3 @@
-with Ada.Exceptions;
-
 package body Rx.Debug is
 
    ---------

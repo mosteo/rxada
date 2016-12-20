@@ -4,6 +4,7 @@ with Rx.Debug;
 with Rx.Errors;
 with Rx.Holders;
 with Rx.Impl.Events;
+with Rx.Subscriptions;
 
 package body Rx.Op.Debounce is
 
@@ -25,30 +26,27 @@ package body Rx.Op.Debounce is
 
    procedure Free_When_Terminated is new Ada.Unchecked_Deallocation (Debouncer, Debouncer_Ptr);
 
-   type Operator is new Operate.Preserver with record
+   type Operator is new Operate.Subscriber with record
       Window : Duration;
       Live   : Debouncer_Ptr;
    end record;
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     :        From.T;
-                      Child : in out Into.Observer);
+                      V     :        From.T);
    --  Must always be provided
 
    overriding
-   procedure On_Completed (This  : in out Operator;
-                           Child : in out Into.Observer);
+   procedure On_Completed (This  : in out Operator);
    --  By default calls Child.On_Complete
 
    overriding
    procedure On_Error (This  : in out Operator;
-                       Error : in out Errors.Occurrence;
-                       Child : in out Into.Observer);
+                       Error :        Errors.Occurrence);
 
    overriding
-   procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Into.Subscriber);
+   procedure Set_subscriber (Producer : in out Operator;
+                             Consumer :        Into.Subscriber);
 
    overriding
    procedure Unsubscribe (This : in out Operator);
@@ -61,7 +59,7 @@ package body Rx.Op.Debounce is
 
       Self : Debouncer_Ptr := Debouncer'Unchecked_Access;
 
-      Child     : Operate.Transform.Child_Holder;
+      Child     : Operate.Typed.Holders.Subscriber;
       Window    : Duration;
 
       package Event_Holders is new Rx.Holders (Events.Event, "debounce_events");
@@ -81,7 +79,16 @@ package body Rx.Op.Debounce is
       begin
 
          if (Elapsed or else Other.Is_Valid) and then Next.Is_Valid then
-            Child.Ref.On_Next (Events.Value (Next.CRef));
+            if Child.Ref.Is_Subscribed then
+               begin
+                  Child.Ref.On_Next (Events.Value (Next.CRef));
+               exception
+                  when Subscriptions.No_Longer_Subscribed =>
+                     Debug.Log ("Debounce.Flush: Seen No_Longer_Subscribed", Debug.Note);
+                  when E : others =>
+                     Operate.Typed.Default_Error_Handler (Child.Ref, E);
+               end;
+            end if;
             Next.Clear;
          end if;
 
@@ -90,11 +97,7 @@ package body Rx.Op.Debounce is
                when On_Completed =>
                   Child.Ref.On_Completed;
                when On_Error =>
-                  declare
-                     Error : Errors.Occurrence := Events.Error (Other.CRef);
-                  begin
-                     Child.Ref.On_Error (Error);
-                  end;
+                  Child.Ref.On_Error (Events.Error (Other.CRef));
                when Unsubscribe =>
                   Child.Ref.Unsubscribe;
                when On_Next =>
@@ -148,43 +151,29 @@ package body Rx.Op.Debounce is
       Free_When_Terminated (Self);
    exception
       when E : others =>
-         begin
-            if Child.Ref.Is_Subscribed then
-               Operate.Typed.Default_Error_Handler (Child.Ref, E);
-            end if;
-         exception
-            when E : others =>
-               Debug.Print (E);
-         end;
-
+         Debug.Report (E, "At Debouncer final handler:", Debug.Warn, Reraise => False);
          Free_When_Terminated (Self);
    end Debouncer;
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     :        From.T;
-                      Child : in out Into.Observer)
+                      V     :        From.T)
    is
-      pragma Unreferenced (Child);
    begin
       This.Live.On_Event (Events.On_Next (V));
    end On_Next;
 
    overriding
-   procedure On_Completed (This  : in out Operator;
-                           Child : in out Into.Observer)
+   procedure On_Completed (This  : in out Operator)
    is
-      pragma Unreferenced (Child);
    begin
       This.Live.On_Event (Events.On_Completed);
    end On_Completed;
 
    overriding
    procedure On_Error (This  : in out Operator;
-                       Error : in out Errors.Occurrence;
-                       Child : in out Into.Observer)
+                       Error :        Errors.Occurrence)
    is
-      pragma Unreferenced (Child);
    begin
       This.Live.On_Event (Events.On_Error (Error));
    end On_Error;
@@ -194,15 +183,15 @@ package body Rx.Op.Debounce is
    ---------------
 
    overriding
-   procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Into.Subscriber)
+   procedure Set_Subscriber (Producer : in out Operator;
+                             Consumer :        Into.Subscriber)
    is
    begin
       Producer.Live  := new Debouncer;
       Producer.Live.Init (Producer.Window, Consumer);
-      Operate.Preserver (Producer).Subscribe (Consumer);
+      Operate.Subscriber (Producer).Set_Subscriber (Consumer);
       -- Consumer never to be used, so ideally we should use some always-failing consumer as child
-   end Subscribe;
+   end Set_Subscriber;
 
    -----------------
    -- Unsubscribe --

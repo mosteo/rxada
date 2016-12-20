@@ -57,7 +57,7 @@ package body Rx.Op.Last is
 
    function Create
      (Check : Operate.Typed.Actions.TFilter1'Class := Operate.Typed.Actions.Always_Pass)
-      return Operate.Preserver'Class
+      return Operate.Operator'Class
    is
       use Operate.Typed.Actions;
    begin
@@ -74,7 +74,7 @@ package body Rx.Op.Last is
    function Or_Default
      (Default : Operate.T;
       Check   : Operate.Typed.Actions.TFilter1'Class := Operate.Typed.Actions.Always_Pass)
-      return Operate.Preserver'Class
+      return Operate.Operator'Class
    is
       use Operate.Typed.Actions;
    begin

@@ -1,6 +1,6 @@
 package body Rx.Op.Length is
 
-   type Transformer is new Transform.Transformer with null record;
+   type Transformer is new Transform.Subscriber with null record;
 
    overriding procedure On_Next (This  : in out Transformer;
                                  V     :        Transform.From.T;

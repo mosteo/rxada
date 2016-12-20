@@ -55,7 +55,7 @@ package body Rx.Op.Scan is
      (Func : Typed.Actions.Func2;
       Seed : Typed.Into.T;
       Emit : Boolean      := False)
-      return Typed.Transformer'Class
+      return Typed.Operator'Class
    is
    begin
       return Operator'(Typed.Transformer with
