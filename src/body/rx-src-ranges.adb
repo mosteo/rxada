@@ -1,3 +1,4 @@
+with Rx.Errors;
 with Rx.Src.Create;
 
 package body Rx.Src.Ranges is
@@ -18,20 +19,25 @@ package body Rx.Src.Ranges is
 
    overriding procedure On_Subscribe (This : in out Observable; Observer : in out Typed.Subscriber) is
    begin
-      case This.Mode is
-         when Counter =>
-            for I in 1 .. This.Remaining loop
-               exit when not Observer.Is_Subscribed;
-               Observer.On_Next (+This.Next);
-               This.Next := +Succ (+This.Next);
-            end loop;
-         when Interval =>
-            while +This.Next < +This.Last or else +This.Next = +This.Last loop
-               exit when not Observer.Is_Subscribed;
-               Observer.On_Next (+This.Next);
-               This.Next := +Succ (+This.Next);
-            end loop;
-      end case;
+      begin
+         case This.Mode is
+            when Counter =>
+               for I in 1 .. This.Remaining loop
+                  exit when not Observer.Is_Subscribed;
+                  Observer.On_Next (+This.Next);
+                  This.Next := +Succ (+This.Next);
+               end loop;
+            when Interval =>
+               while +This.Next < +This.Last or else +This.Next = +This.Last loop
+                  exit when not Observer.Is_Subscribed;
+                  Observer.On_Next (+This.Next);
+                  This.Next := +Succ (+This.Next);
+               end loop;
+         end case;
+      exception
+         when E : others =>
+            Observer.On_Error (Errors.Create (E));
+      end;
 
       if Observer.Is_Subscribed then
          Observer.On_Completed;

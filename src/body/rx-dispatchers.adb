@@ -41,20 +41,22 @@ package body Rx.Dispatchers is
          RW : Runner := R; -- Local writable copy
       begin
          case R.Kind is
-            when On_Next      =>
+            when On_Next =>
                begin
-                  RW.Child.On_Next (Base.Value (R.Event));
+                  if RW.Child.Is_Subscribed then
+                     RW.Child.On_Next (Base.Value (R.Event));
+                  end if;
                exception
                   when E : others =>
                      Typed.Default_Error_Handler (RW.Child, E);
                end;
-            when On_Error     =>
-               begin
+            when On_Error =>
+               if RW.Child.Is_Subscribed then
                   RW.Child.On_Error (Base.Error (R.Event));
-               exception
-                  when E : others =>
-                     Debug.Report (E, "Unhandled exception in error handler:", Debug.Error, Reraise => True);
-               end;
+               else
+                  Debug.Report (Base.Error (R.Event).Get_Exception.all, "Error after unsubscription:",
+                                Debug.Warn, Reraise => False);
+               end if;
             when On_Completed =>
                RW.Child.On_Completed;
             when Unsubscribe =>
