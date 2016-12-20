@@ -1,15 +1,13 @@
 package body Rx.Op.No_Op is
 
-   type Operator is new Operate.Preserver with null record;
+   type Operator is new Operate.Transform.New_Operator with null record;
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     :        Operate.T;
-                      Child : in out Operate.Observer'Class)
+                      V     :        Operate.T)
    is
-      pragma Unreferenced (This);
    begin
-      Child.On_Next (V);
+      This.Get_Observer.On_Next (V);
    end On_Next;
 
    ------------
@@ -18,7 +16,7 @@ package body Rx.Op.No_Op is
 
    function Create return Operate.Preserver'Class is
    begin
-      return Operator'(Operate.Preserver with null record);
+      return Operate.Create (Operator'(null record));
    end Create;
 
 
