@@ -23,10 +23,12 @@ procedure Rx.Devel is
    end Blah123;
 
 begin
+   for I in 1 .. 99 loop
    For_Each (Integers.RxCreate.Parameterless (Blah123'Access)
              & Debounce (0.1)
              & Print (Debug.Image'Access),
              Subscribe_Checker (Do_First => True,  Ok_First => 1,
                                 Do_Last  => True,  Ok_Last  => 5,
                                 Do_Count => True,  Ok_Count => 3));
+   end loop;
 end Rx.Devel;
