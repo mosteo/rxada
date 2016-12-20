@@ -17,12 +17,11 @@ package Rx.Preservers with Preelaborate is
    --  Specialization with type preservation here
 
    subtype Operator is Transform.Operator;
-   --  Spezialization of the Transformer type
+   --  Specialization of the Transformer type
 
-   subtype Subscriber is Transform.Subscriber;
-   --  The type to override to build new operators
+   package Implementation renames Transform.Implementation;
 
-   function Create (Using : Transform.Subscriber'Class) return Transform.Operator'Class
+   function Create (Using : Implementation.Operator'Class) return Transform.Operator'Class
      renames Transform.Create;
 
    package From renames Transform.From;

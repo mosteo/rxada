@@ -2,7 +2,7 @@ package body Rx.Op.Last is
 
    use Operate.Typed.Conversions;
 
-   type Operator is new Operate.Preserver with record
+   type Operator is new Operate.Implementation.Operator with record
       Filter : Operate.Typed.Actions.HTFilter1;
 
       Has_Last : Boolean := False;
@@ -11,12 +11,10 @@ package body Rx.Op.Last is
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     :        Operate.Typed.T;
-                      Child : in out Operate.Observer);
+                      V     :        Operate.T);
 
    overriding
-   procedure On_Completed (This  : in out Operator;
-                           Child : in out Operate.Observer);
+   procedure On_Completed (This  : in out Operator);
 
    -------------
    -- On_Next --
@@ -24,10 +22,8 @@ package body Rx.Op.Last is
 
    overriding
    procedure On_Next (This  : in out Operator;
-                      V     :        Operate.Typed.T;
-                      Child : in out Operate.Observer)
+                      V     :        Operate.Typed.T)
    is
-      pragma Unreferenced (Child);
    begin
       if This.Filter.Ref.Check (V) then
          This.Last     := + V;
@@ -40,12 +36,11 @@ package body Rx.Op.Last is
    ------------------
 
    overriding
-   procedure On_Completed (This  : in out Operator;
-                           Child : in out Operate.Observer) is
+   procedure On_Completed (This  : in out Operator) is
    begin
       if This.Has_Last then
-         Child.On_Next (+ This.Last);
-         Child.On_Completed;
+         This.Get_Subscriber.On_Next (+ This.Last);
+         This.Get_Subscriber.On_Completed;
       else
          raise Constraint_Error with "Last completed without element";
       end if;
@@ -61,10 +56,11 @@ package body Rx.Op.Last is
    is
       use Operate.Typed.Actions;
    begin
-      return Operator'(Operate.Preserver with
-                       Has_Last     => False,
-                       Filter       => + Check,
-                       others       => <>);
+      return Operate.Create
+        (Operator'(Operate.Implementation.Operator with
+                   Has_Last     => False,
+                   Filter       => + Check,
+                   others       => <>));
    end Create;
 
    ----------------
@@ -78,10 +74,11 @@ package body Rx.Op.Last is
    is
       use Operate.Typed.Actions;
    begin
-      return Operator'(Operate.Preserver with
-                       Has_Last     => True,
-                       Last         => + Default,
-                       Filter       => + Check);
+      return Operate.Create
+        (Operator'(Operate.Implementation.Operator with
+                   Has_Last     => True,
+                   Last         => + Default,
+                   Filter       => + Check));
    end Or_Default;
 
 end Rx.Op.Last;

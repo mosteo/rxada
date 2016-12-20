@@ -51,7 +51,7 @@ package Rx.Transformers with Preelaborate is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Into.Subscriber);
+                        Consumer :        Into.Subscriber);
 
    overriding
    procedure Unsubscribe (This : in out Operator);

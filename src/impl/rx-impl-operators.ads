@@ -22,7 +22,7 @@ package Rx.Impl.Operators with Preelaborate is
    overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence);
    --  Just passes it along
 
-   overriding procedure Subscribe (This : in out Operator; Observer : in out Into.Subscriber'Class);
+   overriding procedure Subscribe (This : in out Operator; Observer : Into.Subscriber'Class);
    --  Override only if you need a modified observer (for example a Shared one)
    --  In that case, call this base class statically with the new observer
 

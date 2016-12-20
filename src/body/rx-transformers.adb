@@ -21,7 +21,7 @@ package body Rx.Transformers is
 
    overriding procedure Subscribe
      (Producer : in out Operator;
-      Consumer : in out Into.Subscriber'Class)
+      Consumer : Into.Subscriber'Class)
    is
    begin
       if Producer.Has_Parent then

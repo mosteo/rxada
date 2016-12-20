@@ -1,15 +1,13 @@
 package body Rx.Op.Split is
 
-   type Operator is new Transformer.Transformer with null record;
+   type Operator is new Transform.Implementation.Operator with null record;
 
    overriding procedure On_Next (This  : in out Operator;
-                                 V     :        Transformer.From.T;
-                                 Child : in out Transformer.Observer)
+                                 V     :        Transform.From.T)
    is
-      pragma Unreferenced (This);
-      procedure For_Each (V : Transformer.Into.T) is
+      procedure For_Each (V : Transform.Into.T) is
       begin
-         Child.On_Next (V);
+         This.Get_Subscriber.On_Next (V);
       end For_Each;
    begin
       Iterate (V, For_Each'Access);
@@ -19,9 +17,9 @@ package body Rx.Op.Split is
    -- Create --
    ------------
 
-   function Create return Transformer.Operator is
+   function Create return Transform.Operator'Class is
    begin
-      return O : Operator;
+      return Transform.Create (Operator'(null record));
    end Create;
 
 end Rx.Op.Split;

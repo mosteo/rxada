@@ -37,7 +37,9 @@ package Rx.Dispatchers is
       with package Operate is new Rx.Preservers (<>);
    package Subscribe is
 
-      procedure On_Subscribe (Sched : in out Dispatcher'Class; Operator : Operate.Operator'Class);
+      procedure On_Subscribe (Sched  : in out Dispatcher'Class;
+                              Parent :        Operate.Observable'Class;
+                              Child  :        Operate.Into.Subscriber'Class);
 
    end Subscribe;
 

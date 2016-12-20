@@ -31,7 +31,7 @@ package body Rx.Impl.Operators is
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe (This : in out Operator; Observer : in out Into.Subscriber'Class) is
+   overriding procedure Subscribe (This : in out Operator; Observer : Into.Subscriber'Class) is
    begin
       This.Downstream.Hold (Observer);
    end Subscribe;
