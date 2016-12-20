@@ -45,9 +45,6 @@ package body Rx.Op.Observe_On is
    overriding procedure On_Error (This : in out Op; Error : in out Rx.Errors.Occurrence; Child : in out Operate.Observer'Class) is
    begin
       Remote.On_Error (This.Sched.all, Shared.Subscriber (Child), Error);
-      --  Since the error is now in another thread, and we won't know if it has been handled,
-      --  we are done here:
-      Error.Set_Handled;
    end On_Error;
 
    ---------------

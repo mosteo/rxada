@@ -348,6 +348,24 @@ package body Rx.Tests is
                              Do_First => True, Ok_First => 3,
                              Do_Last  => True, Ok_Last  => 3);
 
+      declare -- More precise debounce
+         procedure Debounced (Observer : in out Std.Integers.Typed.Subscriber) is
+         begin
+            Observer.On_Next (1); delay 0.2;
+            Observer.On_Next (2); delay 0.2;
+            Observer.On_Next (3);
+            Observer.On_Next (4);
+            Observer.On_Completed;
+         end Debounced;
+      begin
+         For_Each (Integers.RxCreate.Parameterless (Debounced'Access)
+                   & Debounce (0.1)
+                   & Print (Debug.Image'Access),
+                   Subscribe_Checker (Do_First => True,  Ok_First => 1,
+                                      Do_Last  => True,  Ok_Last  => 4,
+                                      Do_Count => True,  Ok_Count => 3));
+      end;
+
       return True;
    exception
       when E : others =>

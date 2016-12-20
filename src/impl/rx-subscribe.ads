@@ -13,7 +13,7 @@ package Rx.Subscribe is
    procedure Default_On_Error (E : Errors.Occurrence);
 
    type Proc_Error is access procedure (E : Errors.Occurrence);
-   --  Needed to circumbent a forbidden 'Access use (RM 3.10.2(32))
+   --  Needed to circumvent a forbidden 'Access use (RM 3.10.2(32))
 
    function Create (On_Next      : Typed.Actions.Proc1   := null;
                     On_Completed : Rx.Actions.Proc0      := null;
@@ -23,16 +23,16 @@ package Rx.Subscribe is
    function Create (Using : Typed.Observer) return Typed.Sink;
    --  Wraps an observer into a Sink, providing subscription management
 
-   type Empty_Observer is new Typed.Contracts.Observer with null record;
+   type Observer is new Typed.Contracts.Observer with null record;
    --  This default observer can be used as base for Create.
    --  It provides a sane default for On_Error and does nothing otherwise
 
-   overriding procedure On_Next (This : in out Empty_Observer; V : Typed.T) is null;
+   overriding procedure On_Next (This : in out Observer; V : Typed.T) is null;
 
-   overriding procedure On_Completed (This : in out Empty_Observer) is null;
+   overriding procedure On_Completed (This : in out Observer) is null;
 
-   overriding procedure On_Error (This : in out Empty_Observer;
-                                  E    : Errors.Occurrence);
+   overriding procedure On_Error (This : in out Observer;
+                                  E    :        Errors.Occurrence);
 
 private
 

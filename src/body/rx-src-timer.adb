@@ -26,8 +26,8 @@ package body Rx.Src.Timer is
         RxInterval.Create (First       => V,
                            Pause       => 0.0,
                            First_Pause => After,
-                           Scheduler   => Scheduler) &
-        RxLimit.Create (1);
+                           Scheduler   => Scheduler)
+        & RxLimit.Create (1);
    end Create;
 
 end Rx.Src.Timer;

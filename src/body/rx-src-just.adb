@@ -7,7 +7,9 @@ package body Rx.Src.Just is
                            Observer : in out Typed.Subscriber)
    is
    begin
-      Observer.On_Next (Typed.Type_Traits.To_Indefinite (State));
+      if Observer.Is_Subscribed then
+         Observer.On_Next (Typed.Type_Traits.To_Indefinite (State));
+      end if;
    end On_Subscribe;
 
    package SrcCreate is new Src.Create (Typed);
