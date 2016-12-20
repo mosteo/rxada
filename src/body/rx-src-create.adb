@@ -20,7 +20,7 @@ package body Rx.Src.Create is
       is
       begin
          On_Subscribe (Producer.Initial, Consumer);
-         if Autocompletes then
+         if Autocompletes and then Consumer.Is_Subscribed then
             Consumer.On_Completed;
          end if;
       exception

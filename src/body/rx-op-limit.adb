@@ -47,9 +47,7 @@ package body Rx.Op.Limit is
       if This.Remaining = 0 and not This.Completed then
          Operator'Class (This).On_Completed; -- This will release the child in Transform
          This.Completed := True;
-         --  This.Unsubscribe;
       else
---           Debug.Log ("Raising on LIMIT", Debug.Warning);
          raise Subscriptions.No_Longer_Subscribed; -- This will make predecessors desist
       end if;
    end On_Next;

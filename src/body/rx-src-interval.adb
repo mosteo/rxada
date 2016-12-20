@@ -29,10 +29,12 @@ package body Rx.Src.Interval is
       use Ada.Calendar;
       RW : Runner := R;
    begin
-      RW.Child.On_Next (+R.Value);
-      RW.Value := +Succ (+R.Value);
-      RW.Next  := R.Next + R.Pause;
-      RW.Sched.Schedule (RW, RW.Next);
+      if RW.Child.Is_Subscribed then
+         RW.Child.On_Next (+R.Value);
+         RW.Value := +Succ (+R.Value);
+         RW.Next  := R.Next + R.Pause;
+         RW.Sched.Schedule (RW, RW.Next);
+      end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("Interval runner: caught No_Longer_Subscribed", Debug.Info);

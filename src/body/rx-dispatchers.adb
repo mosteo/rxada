@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Impl.Events;
 
 package body Rx.Dispatchers is
@@ -48,13 +49,11 @@ package body Rx.Dispatchers is
                      Typed.Default_Error_Handler (RW.Child, E);
                end;
             when On_Error     =>
-               declare
-                  E : Errors.Occurrence := Base.Error (R.Event);
                begin
-                  RW.Child.On_Error (E);
-                  if not E.Is_Handled then
-                     E.Reraise; -- Because we are in a new thread, the Error won't go any further
-                  end if;
+                  RW.Child.On_Error (Base.Error (R.Event));
+               exception
+                  when E : others =>
+                     Debug.Report (E, "Unhandled exception in error handler:", Debug.Error, Reraise => True);
                end;
             when On_Completed =>
                RW.Child.On_Completed;

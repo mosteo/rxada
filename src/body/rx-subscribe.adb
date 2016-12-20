@@ -15,9 +15,7 @@ package body Rx.Subscribe is
 
    procedure Default_On_Error (E : Errors.Occurrence) is
    begin
-      Debug.Log ("Unhandled error", Debug.Info);
-      Debug.Print (E.Get_Exception.all);
-      E.Reraise;
+      Debug.Report (E.Get_Exception.all, "Unhandled error", Debug.Warn, Reraise => True);
    end Default_On_Error;
 
    ------------------
@@ -76,7 +74,7 @@ package body Rx.Subscribe is
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Empty_Observer;
+   overriding procedure On_Error (This : in out Observer;
                                   E    : Errors.Occurrence)
    is
       pragma Unreferenced (This);

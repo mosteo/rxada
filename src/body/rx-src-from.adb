@@ -1,5 +1,7 @@
+with Rx.Debug;
 with Rx.Holders;
 with Rx.Src.Create;
+with Rx.Subscriptions;
 
 package body Rx.Src.From is
 
@@ -17,7 +19,11 @@ package body Rx.Src.From is
                               Consumer : in out Arrays.Typed.Subscriber) is
       begin
          for E of S.CRef loop
-            Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
+            if Consumer.Is_Subscribed then
+               Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
+            else
+               exit;
+            end if;
          end loop;
       end On_Subscribe;
 
@@ -45,10 +51,17 @@ package body Rx.Src.From is
          use Iterable;
          procedure For_Each (V : Iterable.Typed.T) is
          begin
-            Consumer.On_Next (V);
+            if Consumer.Is_Subscribed then
+               Consumer.On_Next (V);
+            else
+               raise Subscriptions.No_Longer_Subscribed;
+            end if;
          end For_Each;
       begin
          Iterable.Iterate (State, For_Each'Access);
+      exception
+         when Subscriptions.No_Longer_Subscribed =>
+            Debug.Log ("From_Iterable: caught No_Longer_Subscribed", Debug.Note);
       end On_Subscribe;
 
       package Iterables is new Create.With_State (Iterable.Container, On_Subscribe);

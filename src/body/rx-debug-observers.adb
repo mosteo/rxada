@@ -7,7 +7,7 @@ package body Rx.Debug.Observers is
 
    package RxSubscribe is new Rx.Subscribe (Typed);
 
-   type Checker is new RxSubscribe.Subscribe with record
+   type Checker is new RxSubscribe.Observer with record
       Counter   : Natural := 0;
       Last_Seen : Typed.D;
 
@@ -19,16 +19,16 @@ package body Rx.Debug.Observers is
       Ok_Last  : Typed.D := + Default_T;
    end record;
 
-   overriding procedure Do_On_Next      (This : in out Checker; V : Typed.T);
-   overriding procedure Do_On_Completed (This : in out Checker);
+   overriding procedure On_Next      (This : in out Checker; V : Typed.T);
+   overriding procedure On_Completed (This : in out Checker);
 
    ----------------
    -- Do_On_Next --
    ----------------
 
-   overriding procedure Do_On_Next      (This : in out Checker; V : Typed.T) is
+   overriding procedure On_Next      (This : in out Checker; V : Typed.T) is
    begin
-      Log ("AAA", Warn);
+      Log ("debug.observer on_next enter", Note);
       if This.Do_First and then This.Counter = 0 and then V /= + This.Ok_First then
          Debug.Log ("Failed first, got [" & Image (V) & "] instead of [" & Image (+This.Ok_First) & "]", Debug.Warn);
          raise Constraint_Error with
@@ -37,16 +37,20 @@ package body Rx.Debug.Observers is
 
       This.Last_Seen := +V;
       This.Counter   := This.Counter + 1;
-      Log ("BBB", Warn);
-   end Do_On_Next;
+      Log ("debug.observer on_next exit", Note);
+   exception
+      when others =>
+         Log ("debug.observer on_next exit with exception", Note);
+         raise;
+   end On_Next;
 
    ---------------------
    -- Do_On_Completed --
    ---------------------
 
-   overriding procedure Do_On_Completed (This : in out Checker) is
+   overriding procedure On_Completed (This : in out Checker) is
    begin
-      Log ("XXX", Warn);
+      Log ("debug.observer on_completed enter", Note);
       if This.Do_Count and then This.Counter /= This.Ok_Count then
          Debug.Log ("Failed count, got [" & This.Counter'Img & "] instead of [" & This.Ok_Count'Img & "]", Debug.Warn);
          raise Constraint_Error with
@@ -60,11 +64,16 @@ package body Rx.Debug.Observers is
       end if;
 
       Log ("OK " &
-           (if This.Do_Count then This.Counter'Img else "-") &
-           (if This.Do_First then Image (+This.Ok_First) else " -") &
-           (if This.Do_Last then Image (+This.Ok_Last) else " -"), Note);
-      Log ("YYY", Warn);
-   end Do_On_Completed;
+           (if This.Do_First then Trim (Image (+This.Ok_First)) & " " else "_ ")
+           & (if This.Do_Last then Trim (Image (+This.Ok_Last)) & " " else "_ ")
+           & (if This.Do_Count then Trim (This.Counter'Img) else "_"),
+           Info);
+      Log ("debug.observer on_completed exit", Note);
+   exception
+      when others =>
+         Log ("debug.observer on_completed exit with exception", Note);
+         raise;
+   end On_Completed;
 
    -----------------
    -- Checker --
@@ -80,14 +89,14 @@ package body Rx.Debug.Observers is
       return Typed.Contracts.Sink'Class
    is
    begin
-      return Checker'(RxSubscribe.Subscribe with
-                          Do_Count => Do_Count,
-                          Ok_Count => Ok_Count,
-                          Do_First => Do_First,
-                          Ok_First => +Ok_First,
-                          Do_Last  => Do_Last,
-                          Ok_Last  => +Ok_Last,
-                          others   => <>);
+      return RxSubscribe.Create (Checker'(RxSubscribe.Observer with
+                                   Do_Count => Do_Count,
+                                 Ok_Count => Ok_Count,
+                                 Do_First => Do_First,
+                                 Ok_First => +Ok_First,
+                                 Do_Last  => Do_Last,
+                                 Ok_Last  => +Ok_Last,
+                                 others   => <>));
    end Subscribe_Checker;
 
    ---------------
@@ -98,19 +107,19 @@ package body Rx.Debug.Observers is
 
    package Safe_Natural is new Rx.Impl.Shared_Data (Natural, Nat_Ptr);
 
-   type Counter is new RxSubscribe.Subscribe with record
+   type Counter is new RxSubscribe.Observer with record
       Count      : Natural := 0;
       Safe_Count : Safe_Natural.Proxy := Safe_Natural.Wrap (new Natural'(0));
    end record;
 
-   overriding procedure Do_On_Next      (This : in out Counter; V : Typed.T);
-   overriding procedure Do_On_Completed (This : in out Counter);
+   overriding procedure On_Next      (This : in out Counter; V : Typed.T);
+   overriding procedure On_Completed (This : in out Counter);
 
    ----------------
    -- Do_On_Next --
    ----------------
 
-   overriding procedure Do_On_Next      (This : in out Counter; V : Typed.T) is
+   overriding procedure On_Next      (This : in out Counter; V : Typed.T) is
       pragma Unreferenced (V);
       procedure Inc (I : in out Natural) is
       begin
@@ -119,13 +128,13 @@ package body Rx.Debug.Observers is
    begin
       This.Count := This.Count + 1;
       This.Safe_Count.Apply (Inc'Access);
-   end Do_On_Next;
+   end On_Next;
 
    ---------------------
    -- Do_On_Completed --
    ---------------------
 
-   overriding procedure Do_On_Completed (This : in out Counter) is
+   overriding procedure On_Completed (This : in out Counter) is
    begin
       if This.Count /= This.Safe_Count.Get then
          Put_Line ("Safe count:  " & Natural'Image (This.Safe_Count.Get));
@@ -133,12 +142,13 @@ package body Rx.Debug.Observers is
          raise Constraint_Error
            with "Count was mismatched:" & This.Count'Img & " /=" & Natural'Image (This.Safe_Count.Get);
       end if;
-   end Do_On_Completed;
+   end On_Completed;
 
    -----------------------------
    -- Subscribe_Count_Printer --
    -----------------------------
 
-   function Subscribe_Count_Printer return Typed.Sink is (Counter'(RxSubscribe.Subscribe with others => <>));
+   function Subscribe_Count_Printer return Typed.Sink is
+     (RxSubscribe.Create (Counter'(RxSubscribe.Observer with others => <>)));
 
 end Rx.Debug.Observers;

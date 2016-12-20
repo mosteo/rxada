@@ -1,3 +1,5 @@
+with Ada.Exceptions;
+
 package body Rx.Debug is
 
    ---------
@@ -26,10 +28,26 @@ package body Rx.Debug is
 
    procedure Print (E : Ada.Exceptions.Exception_Occurrence) is
    begin
-      Put_Line ("RxAda saw an exception:");
       Put_Line (Ada.Exceptions.Exception_Name (E));
       Put_Line (Ada.Exceptions.Exception_Message (E));
       Put_Line (Ada.Exceptions.Exception_Information (E));
    end Print;
+
+   ------------
+   -- Report --
+   ------------
+
+   procedure Report (E       : Ada.Exceptions.Exception_Occurrence;
+                     Msg     : String;
+                     Level   : Levels := Error;
+                     Reraise : Boolean := False)
+   is
+   begin
+      Log (Msg, Level);
+      Print (E);
+      if Reraise then
+         Ada.Exceptions.Reraise_Occurrence (E);
+      end if;
+   end Report;
 
 end Rx.Debug;

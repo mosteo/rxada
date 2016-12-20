@@ -88,9 +88,7 @@ package body Rx.Op.Debounce is
          if Other.Is_Valid then
             case Other.CRef.Kind is
                when On_Completed =>
-                  Debug.Log ("Pre On_Completed", Debug.Warn);
                   Child.Ref.On_Completed;
-                  Debug.Log ("Post On_Completed", Debug.Warn);
                when On_Error =>
                   declare
                      Error : Errors.Occurrence := Events.Error (Other.CRef);
@@ -147,9 +145,7 @@ package body Rx.Op.Debounce is
 
       end loop;
 
-      Debug.Log ("FREEIN", Debug.Warn);
       Free_When_Terminated (Self);
-      Debug.Log ("FREED", Debug.Warn);
    exception
       when E : others =>
          begin

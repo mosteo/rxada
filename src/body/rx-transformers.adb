@@ -51,13 +51,13 @@ package body Rx.Transformers is
    begin
       if This.Has_Child then
          Transformer'Class (This).On_Completed (This.Get_Child);
-         This.Unsubscribe;
+         This.Child.Clear; -- This implies unsubscription, but does not propagate it down
       else
          raise Subscriptions.No_Longer_Subscribed;
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Warn);
+         Debug.Log ("Transform.On_Completed: caught No_Longer_Subscribed", Debug.Note);
          This.Child.Clear;
          raise;
    end On_Completed;
@@ -73,12 +73,13 @@ package body Rx.Transformers is
             Err : Errors.Occurrence := Error; -- Writable copy, until I fix this mess
          begin
             Transformer'Class (This).On_Error (Err, This.Get_Child); -- Pass it down
+            This.Child.Clear;
          exception
             when Subscriptions.No_Longer_Subscribed =>
                Debug.Log ("Transform.On_Error: caught No_Longer_Subscribed", Debug.Note);
+               This.Child.Clear;
                raise;
          end;
-         This.Child.Clear;
       else
          Error.Reraise;
       end if;
