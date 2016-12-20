@@ -1,20 +1,20 @@
 package body Rx.Op.No_Op is
 
-   type Operator is new Operate.Transform.New_Operator with null record;
+   type Operator is new Operate.Subscriber with null record;
 
    overriding
    procedure On_Next (This  : in out Operator;
                       V     :        Operate.T)
    is
    begin
-      This.Get_Observer.On_Next (V);
+      This.Get_Subscriber.On_Next (V);
    end On_Next;
 
    ------------
    -- Create --
    ------------
 
-   function Create return Operate.Preserver'Class is
+   function Create return Operate.Operator'Class is
    begin
       return Operate.Create (Operator'(null record));
    end Create;

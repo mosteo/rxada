@@ -5,7 +5,7 @@ package body Rx.Op.Serialize is
 
    subtype Critical_Section is Impl.Semaphores.Critical_Section;
 
-   type Serializer is new Operate.Operator with record
+   type Serializer is new Operate.Subscriber with record
       Mutex : aliased Impl.Semaphores.Shared_Binary;
    end record;
 
@@ -24,7 +24,7 @@ package body Rx.Op.Serialize is
 
    overriding procedure On_Completed (This : in out Serializer);
 
-   overriding procedure On_Error (This : in out Serializer; Error : in out Errors.Occurrence);
+   overriding procedure On_Error (This : in out Serializer; Error :        Errors.Occurrence);
 
    -------------
    -- On_Next --
@@ -59,7 +59,7 @@ package body Rx.Op.Serialize is
    -- On_Error --
    --------------
 
-   overriding procedure On_Error (This : in out Serializer; Error : in out Errors.Occurrence) is
+   overriding procedure On_Error (This : in out Serializer; Error :        Errors.Occurrence) is
       CS : Critical_Section (This.Mutex'Access);
    begin
       Operate.Operator (This).On_Error (Error);

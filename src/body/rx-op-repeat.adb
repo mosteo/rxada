@@ -84,7 +84,7 @@ package body Rx.Op.Repeat is
    -- Repeat_Forever --
    --------------------
 
-   function Repeat_Forever return Operate.Preserver'Class is
+   function Repeat_Forever return Operate.Operator'Class is
    begin
       return Operator'(Operate.Preserver with
                        Kind   => While_Do,
@@ -96,7 +96,7 @@ package body Rx.Op.Repeat is
    -- Repeat --
    ------------
 
-   function Repeat (Times : Positive) return Operate.Preserver'Class is
+   function Repeat (Times : Positive) return Operate.Operator'Class is
    begin
             return Operator'(Operate.Preserver with
                        Kind    => Counter,
@@ -110,7 +110,7 @@ package body Rx.Op.Repeat is
 
    function While_Do
      (Check : Actions.TFilter0'Class)
-      return Operate.Preserver'Class
+      return Operate.Operator'Class
    is
    begin
       return Operator'(Operate.Preserver with
@@ -125,7 +125,7 @@ package body Rx.Op.Repeat is
 
    function Repeat_Until
      (Check : Actions.TFilter0'Class)
-      return Operate.Preserver'Class
+      return Operate.Operator'Class
    is
    begin
       return Operator'(Operate.Preserver with
