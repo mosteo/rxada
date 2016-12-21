@@ -26,7 +26,6 @@ package Rx.Impl.Operators with Preelaborate is
    --  Override only if you need a modified observer (for example a Shared one)
    --  In that case, call this base class statically with the new observer
 
-
    --  From this point on there should be no need to override the rest of methods unless for specific
    --  operators that tinker with these events
 
@@ -34,13 +33,12 @@ package Rx.Impl.Operators with Preelaborate is
    --  Use this in order to get the downstream observer
 
    overriding function Is_Subscribed (This : Operator) return Boolean;
-   --  Proper default, no need to override
+   --  By default True if there is a downstream subscriber
 
    overriding procedure Unsubscribe (This : in out Operator);
-   --  Proper default, no need to override
-
-   not overriding procedure Clear (This : in out Operator);
-   --  Clear any resources being held
+   --  By default gets rid of the downstream subscriber
+   --  Shouldn't be called unless the operator has Errored or Completed
+   --  (so downstream has had the opportunity to dispose of resources allocated during Subscribe)
 
 private
 

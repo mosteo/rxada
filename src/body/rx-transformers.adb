@@ -3,18 +3,6 @@ with Rx.Subscriptions;
 
 package body Rx.Transformers is
 
-   -----------
-   -- Clear --
-   -----------
-
-   procedure Clear (This : in out Operator'Class) is
-   begin
-      if This.Actual.Is_Valid then
-         This.Get_Operator.Clear;
-         This.Actual.Clear;
-      end if;
-   end Clear;
-
    ---------------
    -- Subscribe --
    ---------------
@@ -50,7 +38,7 @@ package body Rx.Transformers is
    exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed", Debug.Note);
-         This.Clear;
+         This.Unsubscribe;
          raise;
    end On_Next;
 
@@ -60,13 +48,14 @@ package body Rx.Transformers is
 
    overriding procedure On_Completed (This : in out Operator) is
    begin
+      This.Completed := True;
       if This.Actual.Is_Valid then
          begin
             This.Get_Operator.On_Completed;
-            This.Clear;
+            This.Unsubscribe;
          exception
             when others =>
-               This.Clear;
+               This.Unsubscribe;
                raise;
          end;
       else
@@ -80,13 +69,14 @@ package body Rx.Transformers is
 
    overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence) is
    begin
+      This.Errored := True;
       if This.Actual.Is_Valid then
          begin
             This.Get_Operator.On_Error (Error);
-            This.Clear;
+            This.Unsubscribe;
          exception
             when others =>
-               This.Clear;
+               This.Unsubscribe;
                raise;
          end;
       else
@@ -103,14 +93,14 @@ package body Rx.Transformers is
    begin
       if This.Actual.Is_Valid then
          This.Get_Operator.Unsubscribe;
-         This.Clear;
+         This.Actual.Clear;
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
          Debug.Log ("Transform.Unsubscribe: caught No_Longer_Subscribed", Debug.Note);
-         This.Clear;
+         This.Actual.Clear;
       when others =>
-         This.Clear;
+         This.Actual.Clear;
          raise;
    end Unsubscribe;
 

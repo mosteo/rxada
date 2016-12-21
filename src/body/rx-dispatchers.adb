@@ -59,8 +59,6 @@ package body Rx.Dispatchers is
                end if;
             when On_Completed =>
                RW.Downstream.On_Completed;
-            when Unsubscribe =>
-               Rw.Downstream.Unsubscribe;
          end case;
       end Run;
 
@@ -101,15 +99,6 @@ package body Rx.Dispatchers is
       begin
          Sched.Schedule (Runner'(Base.On_Error, Base.On_Error (E), Observer));
       end On_Error;
-
-      -----------------
-      -- Unsubscribe --
-      -----------------
-
-      procedure Unsubscribe  (Sched : in out Dispatcher'Class; Observer : Shared.Subscriber) is
-      begin
-         Sched.Schedule (Runner'(Base.Unsubscribe, Base.Unsubscribe, Observer));
-      end Unsubscribe;
 
    end Events;
 

@@ -19,11 +19,8 @@ package body Rx.Src.From is
                               Consumer : in out Arrays.Typed.Subscriber) is
       begin
          for E of S.CRef loop
-            if Consumer.Is_Subscribed then
-               Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
-            else
-               exit;
-            end if;
+            exit when not Consumer.Is_Subscribed;
+            Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
          end loop;
       end On_Subscribe;
 

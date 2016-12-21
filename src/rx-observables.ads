@@ -23,7 +23,7 @@ private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
 private with Rx.Op.Split;
---  private with Rx.Op.Subscribe_On;
+private with Rx.Op.Subscribe_On;
 private with Rx.Src.Empty;
 private with Rx.Src.Just;
 private with Rx.Src.Start;
@@ -245,7 +245,7 @@ package Rx.Observables is
    -- Subscribe_On --
    ------------------
 
---     function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator;
+   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator;
 
    ----------
    -- Take --
@@ -422,8 +422,8 @@ private
                        return Collections.Typed_Lists.Sink is
       (RxSubscribeLists.Create (On_Next, On_Completed, RxSubscribeLists.Proc_Error (On_Error)));
 
---     package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
---     function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;
+   package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
+   function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;
 
    package RxTimer is new Rx.Src.Timer (Typed);
    function Timer (V         : T;
