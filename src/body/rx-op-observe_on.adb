@@ -65,7 +65,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure Unsubscribe (This : in out Op) is
    begin
-      Remote.Unsubscribe (This.Scheduler.all, Get_Downstream (This));
+      pragma Unimplemented;
    end Unsubscribe;
 
    ------------

@@ -1,5 +1,6 @@
 with Rx.Debug;
 with Rx.Impl.Events;
+with Rx.Subscriptions;
 
 package body Rx.Dispatchers is
 
@@ -43,23 +44,19 @@ package body Rx.Dispatchers is
          case R.Kind is
             when On_Next =>
                begin
-                  if RW.Downstream.Is_Subscribed then
-                     RW.Downstream.On_Next (Base.Value (R.Event));
-                  end if;
+                  RW.Downstream.On_Next (Base.Value (R.Event));
                exception
                   when E : others =>
                      Typed.Default_Error_Handler (RW.Downstream, E);
                end;
             when On_Error =>
-               if RW.Downstream.Is_Subscribed then
-                  RW.Downstream.On_Error (Base.Error (R.Event));
-               else
-                  Debug.Report (Base.Error (R.Event).Get_Exception.all, "Error after unsubscription:",
-                                Debug.Warn, Reraise => False);
-               end if;
+               RW.Downstream.On_Error (Base.Error (R.Event));
             when On_Completed =>
                RW.Downstream.On_Completed;
          end case;
+      exception
+         when Subscriptions.No_Longer_Subscribed =>
+            Debug.Log ("Dispatchers.Runner caught Not_Longer_Subscribed", Debug.Note);
       end Run;
 
       -------------

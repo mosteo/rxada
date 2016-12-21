@@ -48,7 +48,6 @@ package body Rx.Transformers is
 
    overriding procedure On_Completed (This : in out Operator) is
    begin
-      This.Completed := True;
       if This.Actual.Is_Valid then
          begin
             This.Get_Operator.On_Completed;
@@ -69,7 +68,6 @@ package body Rx.Transformers is
 
    overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence) is
    begin
-      This.Errored := True;
       if This.Actual.Is_Valid then
          begin
             This.Get_Operator.On_Error (Error);

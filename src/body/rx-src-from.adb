@@ -19,7 +19,6 @@ package body Rx.Src.From is
                               Consumer : in out Arrays.Typed.Subscriber) is
       begin
          for E of S.CRef loop
-            exit when not Consumer.Is_Subscribed;
             Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
          end loop;
       end On_Subscribe;
@@ -48,11 +47,7 @@ package body Rx.Src.From is
          use Iterable;
          procedure For_Each (V : Iterable.Typed.T) is
          begin
-            if Consumer.Is_Subscribed then
-               Consumer.On_Next (V);
-            else
-               raise Subscriptions.No_Longer_Subscribed;
-            end if;
+            Consumer.On_Next (V);
          end For_Each;
       begin
          Iterable.Iterate (State, For_Each'Access);
