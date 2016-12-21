@@ -1,3 +1,4 @@
+with Rx.Errors;
 with Rx.Impl.Shared_Data;
 with Rx.Subscribe;
 
@@ -6,6 +7,20 @@ package body Rx.Debug.Observers is
    use Typed.Conversions;
 
    package RxSubscribe is new Rx.Subscribe (Typed);
+
+   task type Watchdog (Period_Millis : Integer) is
+      entry Finished;
+   end Watchdog;
+
+   task body Watchdog is
+   begin
+      select
+         accept Finished;
+      or
+         delay Duration (Period_Millis) / 1000.0;
+         Log ("Watchdog triggered after" & Period_Millis'Img & " ms", Error);
+      end select;
+   end Watchdog;
 
    type Checker is new RxSubscribe.Observer with record
       Counter   : Natural := 0;
@@ -17,14 +32,18 @@ package body Rx.Debug.Observers is
       Ok_First : Typed.D := + Default_T;
       Do_Last  : Boolean := False;
       Ok_Last  : Typed.D := + Default_T;
+
+      Do_Watch : Boolean := True;
+      Watcher  : access Watchdog;
    end record;
 
    overriding procedure On_Next      (This : in out Checker; V : Typed.T);
    overriding procedure On_Completed (This : in out Checker);
+   overriding procedure On_Error     (This : in out Checker; Error : Errors.Occurrence);
 
-   ----------------
-   -- Do_On_Next --
-   ----------------
+   -------------
+   -- On_Next --
+   -------------
 
    overriding procedure On_Next      (This : in out Checker; V : Typed.T) is
    begin
@@ -44,13 +63,17 @@ package body Rx.Debug.Observers is
          raise;
    end On_Next;
 
-   ---------------------
-   -- Do_On_Completed --
-   ---------------------
+   ------------------
+   -- On_Completed --
+   ------------------
 
    overriding procedure On_Completed (This : in out Checker) is
    begin
       Log ("debug.observer on_completed enter", Note);
+      if This.Watcher /= null then
+         This.Watcher.Finished;
+      end if;
+
       if This.Do_Count and then This.Counter /= This.Ok_Count then
          Debug.Log ("Failed count, got [" & This.Counter'Img & "] instead of [" & This.Ok_Count'Img & "]", Debug.Warn);
          raise Constraint_Error with
@@ -75,6 +98,18 @@ package body Rx.Debug.Observers is
          raise;
    end On_Completed;
 
+   --------------
+   -- On_Error --
+   --------------
+
+   overriding procedure On_Error     (This : in out Checker; Error : Errors.Occurrence) is
+   begin
+      if This.Watcher /= null then
+         This.Watcher.Finished;
+      end if;
+      RxSubscribe.Observer (This).On_Error (Error);
+   end On_Error;
+
    -----------------
    -- Checker --
    -----------------
@@ -85,17 +120,21 @@ package body Rx.Debug.Observers is
       Do_First : Boolean := False;
       Ok_First : Typed.T := Default_T;
       Do_Last  : Boolean := False;
-      Ok_Last  : Typed.T := Default_T)
+      Ok_Last  : Typed.T := Default_T;
+      Do_Watch : Boolean := True;
+      Period   : Duration:= 1.0)
       return Typed.Contracts.Sink'Class
    is
    begin
       return RxSubscribe.Create (Checker'(RxSubscribe.Observer with
-                                   Do_Count => Do_Count,
+                                 Do_Count => Do_Count,
                                  Ok_Count => Ok_Count,
                                  Do_First => Do_First,
                                  Ok_First => +Ok_First,
                                  Do_Last  => Do_Last,
                                  Ok_Last  => +Ok_Last,
+                                 Do_Watch => Do_Watch,
+                                 Watcher  => (if Do_Watch then new Watchdog (Integer (Period * 1000)) else null),
                                  others   => <>));
    end Subscribe_Checker;
 

@@ -10,4 +10,6 @@ begin
    pragma Assert (Rx.Tests.Subscriptions);
    pragma Assert (Rx.Tests.Sources);
    pragma Assert (Rx.Tests.Operators);
+
+   delay 2.0; -- Wait for watchdogs
 end Rx.Examples.Tests;

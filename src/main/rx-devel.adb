@@ -11,8 +11,9 @@ procedure Rx.Devel is
    use Rx.Std;
    use Rx.Std.Integers;
 
-   package S is new Rx.Op.Subscribe_On (Std.Integers.Operate);
-
 begin
-   null;
+   For_Each (Interval,
+             Subscribe_Checker (Do_Count => True, Ok_Count => 1));
+
+   delay 5.0;
 end Rx.Devel;
