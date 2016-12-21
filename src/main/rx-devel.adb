@@ -2,7 +2,6 @@
 
 with Rx.Debug;
 with Rx.Devsupport;
-with Rx.Op.Subscribe_On;
 with Rx.Std;
 
 procedure Rx.Devel is
