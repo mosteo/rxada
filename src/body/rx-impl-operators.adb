@@ -1,14 +1,5 @@
 package body Rx.Impl.Operators is
 
-   -----------
-   -- Clear --
-   -----------
-
-   not overriding procedure Clear (This : in out Operator) is
-   begin
-      This.Downstream.Clear;
-   end Clear;
-
    ------------------
    -- On_Completed --
    ------------------
@@ -42,9 +33,6 @@ package body Rx.Impl.Operators is
 
    overriding procedure Unsubscribe (This : in out Operator) is
    begin
-      if This.Is_Subscribed then
-         This.Get_Subscriber.Unsubscribe;
-      end if;
       This.Downstream.Clear;
    end Unsubscribe;
 

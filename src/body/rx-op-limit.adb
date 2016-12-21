@@ -22,6 +22,7 @@ package body Rx.Op.Limit is
       if not This.Completed then
          This.Completed := True;
          This.Get_Subscriber.On_Completed;
+         This.Clear;
       end if;
    end On_Completed;
 
@@ -33,7 +34,9 @@ package body Rx.Op.Limit is
                                  V     :        Operate.T)
    is
    begin
---        Debug.Log ("Limit.On_Next", Debug.Warning);
+      if This.Completed then
+         raise Subscriptions.No_Longer_Subscribed;
+      end if;
 
       if This.Remaining > 0 then
          This.Get_Subscriber.On_Next (V);
@@ -41,10 +44,9 @@ package body Rx.Op.Limit is
       end if;
 
       if This.Remaining = 0 and not This.Completed then
-         Operator'Class (This).On_Completed; -- This will release the child in Transform
          This.Completed := True;
-      else
-         raise Subscriptions.No_Longer_Subscribed; -- This will make predecessors desist
+         This.Get_Subscriber.On_Completed;
+         This.Clear;
       end if;
    end On_Next;
 

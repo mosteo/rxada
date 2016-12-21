@@ -19,7 +19,7 @@ package Rx.Transformers with Preelaborate is
    --  Transformative operator scaffolding:
    package Links is new Rx.Impl.Links (From);
 
-   type Operator (<>) is new
+   type Operator is new
      Links.Downstream and
      Into.Contracts.Observable and
      From.Contracts.Subscriber
@@ -35,6 +35,10 @@ package Rx.Transformers with Preelaborate is
    ------------
 
    function Create (Using : Implementation.Operator'Class) return Operator'Class;
+
+   function Has_Completed (This : Operator'Class) return Boolean;
+
+   function Has_Errored (This : Operator'Class) return Boolean;
 
    --  There should be no need to override the following methods
 
@@ -54,18 +58,23 @@ package Rx.Transformers with Preelaborate is
                         Consumer :        Into.Subscriber);
 
    overriding
-   procedure Unsubscribe (This : in out Operator);
+   procedure Unsubscribe (This : in out Operator)
+     with Pre => This.Has_Completed or else This.Has_Errored or else raise Program_Error;
+   --  Clear subscriber
 
    overriding
-   procedure On_Next (This : in out Operator; V : From.T);
+   procedure On_Next (This : in out Operator; V : From.T)
+     with Pre => (not This.Has_Completed) and then (not This.Has_Errored);
    --  By default calls the explicit On_Next above
 
    overriding
-   procedure On_Completed (This : in out Operator);
+   procedure On_Completed (This : in out Operator)
+     with Post => This.Has_Completed;
    --  By default calls downstream On_Completed
 
    overriding
-   procedure On_Error (This : in out Operator; Error : Errors.Occurrence);
+   procedure On_Error (This : in out Operator; Error : Errors.Occurrence)
+     with Post => This.Has_Errored;
    --  By default calls downstream On_Error
 
    overriding
@@ -81,18 +90,24 @@ private
      From.Contracts.Subscriber
    with record
       Actual : Holders.Definite;
+
+      Completed : Boolean := False;
+      Errored   : Boolean := False;
    end record;
 
    overriding function Is_Subscribed (This : Operator) return Boolean is
      (This.Actual.Is_Valid and then This.Actual.CRef.Is_Subscribed);
 
    function Create (Using : Implementation.Operator'Class) return Operator'Class is
-     (Operator'(Links.Downstream with Actual => Holders.Hold (Using)));
+     (Operator'(Links.Downstream with
+                Actual => Holders.Hold (Using),
+                others => <>));
 
    function Get_Operator (This : in out Operator'Class) return Holders.Reference is
-      (This.Actual.Ref);
+     (This.Actual.Ref);
 
-   procedure Clear (This : in out Operator'Class);
-   --  Dispose of as much as possible
+   function Has_Completed (This : Operator'Class) return Boolean is (This.Completed);
+
+   function Has_Errored (This : Operator'Class) return Boolean is (This.Errored);
 
 end Rx.Transformers;

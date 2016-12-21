@@ -7,7 +7,7 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Impl.Events is
 
-   type Kinds is (On_Next, On_Completed, On_Error, Unsubscribe);
+   type Kinds is (On_Next, On_Completed, On_Error);
 
    type Event (Kind : Kinds) is private;
 
@@ -18,8 +18,6 @@ package Rx.Impl.Events is
    function On_Error (E : Errors.Occurrence) return Event;
 
    function On_Error (E : Ada.Exceptions.Exception_Occurrence) return Event;
-
-   function Unsubscribe return Event;
 
    function Value (E : Event) return Typed.T
      with Pre => E.Kind = On_Next;
@@ -34,7 +32,6 @@ private
          when On_Next      => V : Typed.D;
          when On_Error     => E : Errors.Occurrence;
          when On_Completed => null;
-         when Unsubscribe  => null;
       end case;
    end record;
 
@@ -47,8 +44,6 @@ private
    function On_Error (E : Errors.Occurrence) return Event is (On_Error, E);
 
    function On_Error (E : Ada.Exceptions.Exception_Occurrence) return Event is (On_Error, Errors.Create (E));
-
-   function Unsubscribe return Event is (Kind => Unsubscribe);
 
    function Value (E : Event) return Typed.T is (+E.V);
 

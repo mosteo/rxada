@@ -37,7 +37,7 @@ package body Rx.Src.Interval is
       end if;
    exception
       when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Interval runner: caught No_Longer_Subscribed", Debug.Info);
+         Debug.Log ("Interval runner: caught No_Longer_Subscribed", Debug.Note);
       when E : others =>
          Typed.Default_Error_Handler (RW.Child, E);
    end Run;
