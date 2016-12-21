@@ -33,7 +33,7 @@ package body Rx.Src.Create is
                end if;
          end;
 
-         if Autocompletes and then Consumer.Is_Subscribed then
+         if Autocompletes then
             Actual.On_Completed;
          end if;
       exception

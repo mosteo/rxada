@@ -23,13 +23,11 @@ package body Rx.Src.Ranges is
          case This.Mode is
             when Counter =>
                for I in 1 .. This.Remaining loop
-                  exit when not Observer.Is_Subscribed;
                   Observer.On_Next (+This.Next);
                   This.Next := +Succ (+This.Next);
                end loop;
             when Interval =>
                while +This.Next < +This.Last or else +This.Next = +This.Last loop
-                  exit when not Observer.Is_Subscribed;
                   Observer.On_Next (+This.Next);
                   This.Next := +Succ (+This.Next);
                end loop;
@@ -39,9 +37,7 @@ package body Rx.Src.Ranges is
             Observer.On_Error (Errors.Create (E));
       end;
 
-      if Observer.Is_Subscribed then
-         Observer.On_Completed;
-      end if;
+      Observer.On_Completed;
    end On_Subscribe;
 
    -------------------

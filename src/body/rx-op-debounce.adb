@@ -20,6 +20,8 @@ package body Rx.Op.Debounce is
 
       entry On_Event (Event : Events.Event);
 
+      entry Unsubscribe;
+
    end Debouncer;
 
    type Debouncer_Ptr is access all Debouncer;
@@ -29,6 +31,7 @@ package body Rx.Op.Debounce is
    type Operator is new Operate.Implementation.Operator with record
       Window : Duration;
       Live   : Debouncer_Ptr;
+      Done   : Boolean := False;
    end record;
 
    overriding
@@ -68,6 +71,8 @@ package body Rx.Op.Debounce is
       Next	 : Event_Holder;
       Other      : Event_Holder;
 
+      Subscribed : Boolean := True;
+
       use all type Events.Kinds;
 
       -----------
@@ -79,16 +84,14 @@ package body Rx.Op.Debounce is
       begin
 
          if (Elapsed or else Other.Is_Valid) and then Next.Is_Valid then
-            if Child.Ref.Is_Subscribed then
-               begin
-                  Child.Ref.On_Next (Events.Value (Next.CRef));
-               exception
-                  when Subscriptions.No_Longer_Subscribed =>
-                     Debug.Log ("Debounce.Flush: Seen No_Longer_Subscribed", Debug.Note);
-                  when E : others =>
-                     Operate.Typed.Default_Error_Handler (Child.Ref, E);
-               end;
-            end if;
+            begin
+               Child.Ref.On_Next (Events.Value (Next.CRef));
+            exception
+               when Subscriptions.No_Longer_Subscribed =>
+                  Debug.Log ("Debounce.Flush: Seen No_Longer_Subscribed", Debug.Note);
+               when E : others =>
+                  Operate.Typed.Default_Error_Handler (Child.Ref, E);
+            end;
             Next.Clear;
          end if;
 
@@ -98,8 +101,6 @@ package body Rx.Op.Debounce is
                   Child.Ref.On_Completed;
                when On_Error =>
                   Child.Ref.On_Error (Events.Error (Other.CRef));
-               when Unsubscribe =>
-                  Child.Ref.Unsubscribe;
                when On_Next =>
                   raise Program_Error with "Should never happen";
             end case;
@@ -126,6 +127,9 @@ package body Rx.Op.Debounce is
                   end if;
                end;
             or
+               accept Unsubscribe;
+               Subscribed := False;
+            or
                terminate;
             end select;
          else
@@ -139,12 +143,15 @@ package body Rx.Op.Debounce is
                end;
                Flush (Elapsed => False);
             or
+               accept Unsubscribe;
+               Subscribed := False;
+            or
                delay Window;
                Flush (Elapsed => True);
             end select;
          end if;
 
-         exit when Other.Is_Valid; -- Some other event
+         exit when Other.Is_Valid or else not Subscribed; -- Some other event
 
       end loop;
 
@@ -167,6 +174,7 @@ package body Rx.Op.Debounce is
    procedure On_Completed (This  : in out Operator)
    is
    begin
+      This.Done := True;
       This.Live.On_Event (Events.On_Completed);
    end On_Completed;
 
@@ -175,6 +183,7 @@ package body Rx.Op.Debounce is
                        Error :        Errors.Occurrence)
    is
    begin
+      This.Done := True;
       This.Live.On_Event (Events.On_Error (Error));
    end On_Error;
 
@@ -198,7 +207,11 @@ package body Rx.Op.Debounce is
    -----------------
 
    overriding procedure Unsubscribe (This : in out Operator) is begin
-      This.Live.On_Event (Events.Unsubscribe);
+      if not This.Done then
+         This.Done := True;
+         This.Live.Unsubscribe;
+      end if;
+      Operate.Implementation.Operator (This).Unsubscribe;
    end Unsubscribe;
 
    ------------
@@ -207,7 +220,9 @@ package body Rx.Op.Debounce is
 
    function Create (Window : Duration) return Operate.Operator'Class is
    begin
-      return Operate.Create (Operator'(Operate.Implementation.Operator with Window => Window, Live => null));
+      return Operate.Create (Operator'(Operate.Implementation.Operator with
+                            Window => Window,
+                            others => <>));
    end Create;
 
 end Rx.Op.Debounce;

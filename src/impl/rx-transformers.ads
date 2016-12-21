@@ -36,10 +36,6 @@ package Rx.Transformers with Preelaborate is
 
    function Create (Using : Implementation.Operator'Class) return Operator'Class;
 
-   function Has_Completed (This : Operator'Class) return Boolean;
-
-   function Has_Errored (This : Operator'Class) return Boolean;
-
    --  There should be no need to override the following methods
 
    function Will_Observe (Producer : From.Observable;
@@ -58,23 +54,19 @@ package Rx.Transformers with Preelaborate is
                         Consumer :        Into.Subscriber);
 
    overriding
-   procedure Unsubscribe (This : in out Operator)
-     with Pre => This.Has_Completed or else This.Has_Errored or else raise Program_Error;
+   procedure Unsubscribe (This : in out Operator);
    --  Clear subscriber
 
    overriding
-   procedure On_Next (This : in out Operator; V : From.T)
-     with Pre => (not This.Has_Completed) and then (not This.Has_Errored);
+   procedure On_Next (This : in out Operator; V : From.T);
    --  By default calls the explicit On_Next above
 
    overriding
-   procedure On_Completed (This : in out Operator)
-     with Post => This.Has_Completed;
+   procedure On_Completed (This : in out Operator);
    --  By default calls downstream On_Completed
 
    overriding
-   procedure On_Error (This : in out Operator; Error : Errors.Occurrence)
-     with Post => This.Has_Errored;
+   procedure On_Error (This : in out Operator; Error : Errors.Occurrence);
    --  By default calls downstream On_Error
 
    overriding
@@ -90,9 +82,6 @@ private
      From.Contracts.Subscriber
    with record
       Actual : Holders.Definite;
-
-      Completed : Boolean := False;
-      Errored   : Boolean := False;
    end record;
 
    overriding function Is_Subscribed (This : Operator) return Boolean is
@@ -100,14 +89,9 @@ private
 
    function Create (Using : Implementation.Operator'Class) return Operator'Class is
      (Operator'(Links.Downstream with
-                Actual => Holders.Hold (Using),
-                others => <>));
+                Actual => Holders.Hold (Using)));
 
    function Get_Operator (This : in out Operator'Class) return Holders.Reference is
      (This.Actual.Ref);
-
-   function Has_Completed (This : Operator'Class) return Boolean is (This.Completed);
-
-   function Has_Errored (This : Operator'Class) return Boolean is (This.Errored);
 
 end Rx.Transformers;
