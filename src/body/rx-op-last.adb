@@ -2,7 +2,7 @@ package body Rx.Op.Last is
 
    use Operate.Typed.Conversions;
 
-   type Operator is new Operate.Implementation.Operator with record
+   type Operator is new Operate.Operator with record
       Filter : Operate.Typed.Actions.HTFilter1;
 
       Has_Last : Boolean := False;
@@ -56,8 +56,8 @@ package body Rx.Op.Last is
    is
       use Operate.Typed.Actions;
    begin
-      return Operate.Create
-        (Operator'(Operate.Implementation.Operator with
+      return
+        (Operator'(Operate.Operator with
                    Has_Last     => False,
                    Filter       => + Check,
                    others       => <>));
@@ -74,8 +74,8 @@ package body Rx.Op.Last is
    is
       use Operate.Typed.Actions;
    begin
-      return Operate.Create
-        (Operator'(Operate.Implementation.Operator with
+      return
+        (Operator'(Operate.Operator with
                    Has_Last     => True,
                    Last         => + Default,
                    Filter       => + Check));

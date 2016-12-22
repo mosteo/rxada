@@ -4,7 +4,7 @@ package body Rx.Op.Buffer is
 
    use Transform.Into.Conversions;
 
-   type Counter is new Transform.Implementation.Operator with record
+   type Counter is new Transform.Operator with record
       Container : Transform.Into.D := Empty;
 
       Need      : Positive;
@@ -94,10 +94,10 @@ package body Rx.Op.Buffer is
       return Transform.Operator'Class
    is
    begin
-      return Transform.Create (Counter'(Transform.Implementation.Operator with
+      return Counter'(Transform.Operator with
                                Need   => Every,
                                Skip   => Skip,
-                               others => <>));
+                               others => <>);
    end Create;
 
 end Rx.Op.Buffer;

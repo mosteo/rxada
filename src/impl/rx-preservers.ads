@@ -19,11 +19,6 @@ package Rx.Preservers with Preelaborate is
    subtype Operator is Transform.Operator;
    --  Specialization of the Transformer type
 
-   package Implementation renames Transform.Implementation;
-
-   function Create (Using : Implementation.Operator'Class) return Transform.Operator'Class
-     renames Transform.Create;
-
    package From renames Transform.From;
    package Into renames Transform.Into;
 

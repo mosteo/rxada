@@ -11,7 +11,7 @@ package body Rx.Op.Print is
    function Stamp return String is
       (Formatting.Image (Clock, Include_Time_Fraction => True) & ": ");
 
-   type Op (Func : Operate.Typed.Actions.Func1Str) is new Operate.Implementation.Operator with record
+   type Op (Func : Operate.Typed.Actions.Func1Str) is new Operate.Operator with record
       With_Timestamp : Boolean := True;
    end record;
 
@@ -33,8 +33,8 @@ package body Rx.Op.Print is
 
    function Create (Func : Operate.Typed.Actions.Func1Str := null; With_Timestamp : Boolean := True) return Operate.Operator'Class is
    begin
-      return Operate.Create (Op'(Operate.Implementation.Operator
-                             with Func => Func, With_Timestamp => With_Timestamp));
+      return Op'(Operate.Operator
+                             with Func => Func, With_Timestamp => With_Timestamp);
    end Create;
 
 end Rx.Op.Print;

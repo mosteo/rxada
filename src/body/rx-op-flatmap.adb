@@ -38,7 +38,7 @@ package body Rx.Op.Flatmap is
    --  Demiurge  --
    ----------------
 
-   type Demiurge is new Operate.Implementation.Operator with record
+   type Demiurge is new Operate.Operator with record
       Child            : Shared.Subscriber;
       Parent_Completed : Boolean with Atomic;
    end record;
@@ -153,7 +153,7 @@ package body Rx.Op.Flatmap is
    function Flatten
      (Func   : Typed.Actions.Flattener1;
       Policy : Policies)
-      return Typed.Implementation.Operator
+      return Typed.Operator
    is
    begin
       return Wrapper'(Typed.Operator with

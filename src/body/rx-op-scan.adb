@@ -2,7 +2,7 @@ package body Rx.Op.Scan is
 
    use Typed.Into.Conversions;
 
-   type Operator is new Typed.Implementation.Operator with record
+   type Operator is new Typed.Operator with record
       Func : Typed.Actions.Func2;
       Acum : Typed.Into.D;
       Emit : Boolean;
@@ -25,7 +25,7 @@ package body Rx.Op.Scan is
                         Consumer :        Typed.Into.Subscriber'Class)
    is
    begin
-      Typed.Implementation.Operator (Producer).Subscribe (Consumer);
+      Typed.Operator (Producer).Subscribe (Consumer);
       if Producer.Emit then
          Producer.Get_Subscriber.On_Next (+ Producer.Acum);
       end if;
@@ -55,7 +55,7 @@ package body Rx.Op.Scan is
       return Typed.Operator'Class
    is
    begin
-      return Typed.Create (Operator'(Typed.Implementation.Operator with
+      return (Operator'(Typed.Operator with
                        Func => Func,
                        Acum => + Seed,
                        Emit => Emit));
