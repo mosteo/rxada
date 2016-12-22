@@ -1,14 +1,15 @@
 with Rx.Actions.Transform;
 with Rx.Errors;
-with Rx.Holders;
 with Rx.Impl.Links;
-with Rx.Impl.Operators;
+with Rx.Subscriptions;
 with Rx.Typed;
 
 generic
    with package From is new Rx.Typed (<>);
    with package Into is new Rx.Typed (<>);
 package Rx.Transformers with Preelaborate is
+
+   No_Longer_Subscribed : exception renames Subscriptions.No_Longer_Subscribed;
 
    --  Renamings for bug workarounds
    subtype From_Observable is From.Observable'Class;
@@ -25,18 +26,37 @@ package Rx.Transformers with Preelaborate is
      From.Contracts.Subscriber
    with private;
    --  This is the fundamental type that bridges observables y observers doing something along the way
-   --  For simpler operator creation, override a Impl.Operators.Operator, and wrap it here with Create
-   --  A Transformer wraps an operator taking care of checks that are common to most operators
+   --  Override the Observer/Subscriber inherited methods in new operators
 
-   package Implementation is new Rx.Impl.Operators (From, Into);
+   overriding procedure On_Next (This : in out Operator; V : From.T) is null
+     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
 
-   ------------
-   -- Create --
-   ------------
+   overriding procedure On_Completed (This : in out Operator)
+     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
+   --  By default calls downstream On_Completed
 
-   function Create (Using : Implementation.Operator'Class) return Operator'Class;
+   overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence)
+     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
+   --  By default calls downstream On_Error
 
-   --  There should be no need to override the following methods
+   overriding function Is_Subscribed (This : Operator) return Boolean;
+
+   overriding procedure Subscribe (This : in out Operator; Consumer : Into.Subscriber)
+     with Post'Class => This.Is_Subscribed;
+   --  Can be overriden to modify the actual consumer that will be stored.
+   --  In that case, the parent implementation should be called
+
+   --  Typically, there won't be a need to override these:
+
+   overriding procedure Unsubscribe (This : in out Operator)
+     with Post'Class => not This.Is_Subscribed;
+
+   not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Subscribers.Reference
+     with Pre'Class => This.Is_Subscribed or else raise Subscriptions.No_Longer_Subscribed;
+
+   ---------------------
+   --  Chain building --
+   ---------------------
 
    function Will_Observe (Producer : From.Observable;
                           Consumer : Operator'Class)
@@ -47,51 +67,19 @@ package Rx.Transformers with Preelaborate is
                  Consumer : Operator'Class)
                  return Into.Observable renames Will_Observe;
 
-   --  Other overridings that can be left as-is
-
-   overriding
-   procedure Subscribe (Producer : in out Operator;
-                        Consumer :        Into.Subscriber);
-
-   overriding
-   procedure Unsubscribe (This : in out Operator);
-   --  Clear subscriber
-
-   overriding
-   procedure On_Next (This : in out Operator; V : From.T);
-   --  By default calls the explicit On_Next above
-
-   overriding
-   procedure On_Completed (This : in out Operator);
-   --  By default calls downstream On_Completed
-
-   overriding
-   procedure On_Error (This : in out Operator; Error : Errors.Occurrence);
-   --  By default calls downstream On_Error
-
-   overriding
-   function Is_Subscribed (This : Operator) return Boolean;
-
 private
-
-   package Holders is new Rx.Holders (Implementation.Operator'Class);
 
    type Operator is new
      Links.Downstream and
      Into.Contracts.Observable and
      From.Contracts.Subscriber
    with record
-      Actual : Holders.Definite;
+      Downstream : Into.Holders.Subscriber;
    end record;
 
-   overriding function Is_Subscribed (This : Operator) return Boolean is
-     (This.Actual.Is_Valid and then This.Actual.CRef.Is_Subscribed);
+   overriding function Is_Subscribed (This : Operator) return Boolean is (This.Downstream.Is_Valid);
 
-   function Create (Using : Implementation.Operator'Class) return Operator'Class is
-     (Operator'(Links.Downstream with
-                Actual => Holders.Hold (Using)));
-
-   function Get_Operator (This : in out Operator'Class) return Holders.Reference is
-     (This.Actual.Ref);
+   not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Subscribers.Reference is
+      (if This.Is_Subscribed then This.Downstream.Ref else raise No_Longer_Subscribed);
 
 end Rx.Transformers;
