@@ -1,46 +1,23 @@
-with Rx.Debug;
-with Rx.Subscriptions;
-
 package body Rx.Transformers is
 
    ---------------
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe
-     (Producer : in out Operator;
-      Consumer : Into.Subscriber'Class)
+   overriding procedure Subscribe (This : in out Operator; Consumer : Into.Subscriber'Class)
    is
    begin
-      if Producer.Has_Parent then
+      if This.Has_Parent then
          declare
-            Parent : From.Observable := Producer.Get_Parent; -- Our own copy
+            Parent : From.Observable := This.Get_Parent; -- Our own copy
          begin
-            Producer.Get_Operator.Subscribe (Consumer);
-            Parent.Subscribe (Producer);
+            This.Downstream.Hold (Consumer);
+            Parent.Subscribe (This);
          end;
       else
          raise Constraint_Error with "Attempting subscription without producer observable";
       end if;
    end Subscribe;
-
-   -------------
-   -- On_Next --
-   -------------
-
-   overriding procedure On_Next (This : in out Operator; V : From.T) is
-   begin
-      if This.Actual.Is_Valid then
-         This.Get_Operator.On_Next (V);
-      else
-         raise Subscriptions.No_Longer_Subscribed;
-      end if;
-   exception
-      when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Transform.On_Next: caught No_Longer_Subscribed", Debug.Note);
-         This.Unsubscribe;
-         raise;
-   end On_Next;
 
    ------------------
    -- On_Completed --
@@ -48,18 +25,8 @@ package body Rx.Transformers is
 
    overriding procedure On_Completed (This : in out Operator) is
    begin
-      if This.Actual.Is_Valid then
-         begin
-            This.Get_Operator.On_Completed;
-            This.Unsubscribe;
-         exception
-            when others =>
-               This.Unsubscribe;
-               raise;
-         end;
-      else
-         raise Subscriptions.No_Longer_Subscribed;
-      end if;
+      This.Get_Subscriber.On_Completed;
+      This.Unsubscribe;
    end On_Completed;
 
    --------------
@@ -68,38 +35,17 @@ package body Rx.Transformers is
 
    overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence) is
    begin
-      if This.Actual.Is_Valid then
-         begin
-            This.Get_Operator.On_Error (Error);
-            This.Unsubscribe;
-         exception
-            when others =>
-               This.Unsubscribe;
-               raise;
-         end;
-      else
-         Error.Reraise;
-      end if;
+      This.Get_Subscriber.On_Error (Error);
+      This.Unsubscribe;
    end On_Error;
 
    -------------------
    -- Unsubscribe --
    -------------------
 
-   overriding
-   procedure Unsubscribe (This : in out Operator) is
+   overriding procedure Unsubscribe (This : in out Operator) is
    begin
-      if This.Actual.Is_Valid then
-         This.Get_Operator.Unsubscribe;
-         This.Actual.Clear;
-      end if;
-   exception
-      when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("Transform.Unsubscribe: caught No_Longer_Subscribed", Debug.Note);
-         This.Actual.Clear;
-      when others =>
-         This.Actual.Clear;
-         raise;
+      This.Downstream.Clear;
    end Unsubscribe;
 
    ------------------
