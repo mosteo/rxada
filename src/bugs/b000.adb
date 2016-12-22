@@ -8,7 +8,10 @@ procedure B000 is
       with package AP0 is new P0 (<>);
    package P1 is
 
-      type T (<>) is tagged private;
+      type T is tagged private;
+
+      procedure Do_Nothing (X : T) is null
+        with Pre'Class => True;
 
    private
 

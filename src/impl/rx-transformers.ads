@@ -28,8 +28,8 @@ package Rx.Transformers with Preelaborate is
    --  This is the fundamental type that bridges observables y observers doing something along the way
    --  Override the Observer/Subscriber inherited methods in new operators
 
-   overriding procedure On_Next (This : in out Operator; V : From.T) is null
-     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
+   overriding procedure On_Next (This : in out Operator; V : From.T) is null;
+--     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
 
    overriding procedure On_Completed (This : in out Operator);
 --     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
