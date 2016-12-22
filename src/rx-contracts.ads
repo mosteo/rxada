@@ -21,16 +21,6 @@ package Rx.Contracts is
    procedure On_Error     (This : in out Observer; Error : Errors.Occurrence) is abstract;
 
    ----------------
-   -- Observable --
-   ----------------
-
-   type Observable is interface;
-   --  Someone capable of producing data to which an observer can subscribe
-
-   procedure Subscribe (Producer : in out Observable;
-                        Consumer :        Observer'Class) is abstract;
-
-   ----------------
    -- Subscriber --
    ----------------
 
@@ -42,6 +32,16 @@ package Rx.Contracts is
 
    procedure Unsubscribe (This : in out Subscriber) is abstract;
    --  A subscriber can be marked as no longer interested in more data
+
+   ----------------
+   -- Observable --
+   ----------------
+
+   type Observable is interface;
+   --  Someone capable of producing data to which an observer can subscribe
+
+   procedure Subscribe (Producer : in out Observable;
+                        Consumer :        Subscriber'Class) is abstract;
 
    ----------
    -- Sink --

@@ -28,31 +28,31 @@ package Rx.Transformers with Preelaborate is
    --  This is the fundamental type that bridges observables y observers doing something along the way
    --  Override the Observer/Subscriber inherited methods in new operators
 
-   overriding procedure On_Next (This : in out Operator; V : From.T) is null
-     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
+   overriding procedure On_Next (This : in out Operator; V : From.T) is null;
+--     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
 
-   overriding procedure On_Completed (This : in out Operator)
-     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
+   overriding procedure On_Completed (This : in out Operator);
+--     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
    --  By default calls downstream On_Completed
 
-   overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence)
-     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
+   overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence);
+--     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
    --  By default calls downstream On_Error
 
    overriding function Is_Subscribed (This : Operator) return Boolean;
 
-   overriding procedure Subscribe (This : in out Operator; Consumer : Into.Subscriber)
-     with Post'Class => This.Is_Subscribed;
+   overriding procedure Subscribe (This : in out Operator; Consumer : Into.Subscriber'Class);
+--     with Post'Class => This.Is_Subscribed;
    --  Can be overriden to modify the actual consumer that will be stored.
    --  In that case, the parent implementation should be called
 
    --  Typically, there won't be a need to override these:
 
-   overriding procedure Unsubscribe (This : in out Operator)
-     with Post'Class => not This.Is_Subscribed;
+   overriding procedure Unsubscribe (This : in out Operator);
+--     with Post'Class => not This.Is_Subscribed;
 
-   not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Subscribers.Reference
-     with Pre'Class => This.Is_Subscribed or else raise Subscriptions.No_Longer_Subscribed;
+   not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Subscribers.Reference;
+--     with Pre'Class => This.Is_Subscribed or else raise Subscriptions.No_Longer_Subscribed;
 
    ---------------------
    --  Chain building --

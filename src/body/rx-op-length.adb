@@ -1,6 +1,6 @@
 package body Rx.Op.Length is
 
-   type Transformer is new Transform.Implementation.Operator with null record;
+   type Transformer is new Transform.Operator with null record;
 
    overriding procedure On_Next (This  : in out Transformer;
                                  V     :        Transform.From.T)
@@ -15,7 +15,7 @@ package body Rx.Op.Length is
 
    function Create return Transform.Operator'Class is
    begin
-      return Transform.Create (Transformer'(Transform.Implementation.Operator with null record));
+      return Transformer'(Transform.Operator with null record);
    end Create;
 
 end Rx.Op.Length;

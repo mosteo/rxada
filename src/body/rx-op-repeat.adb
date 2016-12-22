@@ -10,7 +10,7 @@ package body Rx.Op.Repeat is
 
    type Kinds is (Counter, While_Do, Repeat_Until);
 
-   type Operator (Kind : Kinds) is new Operate.Implementation.Operator with record
+   type Operator (Kind : Kinds) is new Operate.Operator with record
       Sequence : T_Lists.List;
 
       First_Seen : Boolean := False;
@@ -82,10 +82,10 @@ package body Rx.Op.Repeat is
 
    function Repeat_Forever return Operate.Operator'Class is
    begin
-      return Operate.Create (Operator'(Operate.Implementation.Operator with
+      return Operator'(Operate.Operator with
                        Kind   => While_Do,
                        Filter => + Actions.Wrap (Always'Access),
-                       others => <>));
+                       others => <>);
    end Repeat_Forever;
 
    ------------
@@ -94,10 +94,10 @@ package body Rx.Op.Repeat is
 
    function Repeat (Times : Positive) return Operate.Operator'Class is
    begin
-      return Operate.Create (Operator'(Operate.Implementation.Operator with
+      return Operator'(Operate.Operator with
                        Kind    => Counter,
                        Repeats => Times,
-                       others  => <>));
+                       others  => <>);
    end Repeat;
 
    --------------
@@ -109,10 +109,10 @@ package body Rx.Op.Repeat is
       return Operate.Operator'Class
    is
    begin
-      return Operate.Create (Operator'(Operate.Implementation.Operator with
+      return Operator'(Operate.Operator with
                        Kind   => While_Do,
                        Filter => + Check,
-                       others => <>));
+                       others => <>);
    end While_Do;
 
    ------------------
@@ -124,10 +124,10 @@ package body Rx.Op.Repeat is
       return Operate.Operator'Class
    is
    begin
-      return Operate.Create (Operator'(Operate.Implementation.Operator with
+      return Operator'(Operate.Operator with
                        Kind   => Repeat_Until,
                        Filter => + Check,
-                       others => <>));
+                       others => <>);
    end Repeat_Until;
 
 end Rx.Op.Repeat;

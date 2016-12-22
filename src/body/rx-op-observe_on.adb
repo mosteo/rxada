@@ -8,7 +8,7 @@ package body Rx.Op.Observe_On is
    package Remote is new Dispatchers.Events (Operate.Typed);
    package Shared renames Remote.Shared;
 
-   type Op is new Operate.Implementation.Operator with record
+   type Op is new Operate.Operator with record
       Scheduler  : Schedulers.Scheduler;
    end record;
 
@@ -55,7 +55,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure Subscribe (This : in out Op; Observer : Operate.Into.Subscriber'Class) is
    begin
-      Operate.Implementation.Operator (This).Subscribe (Shared.Create (Observer));
+      Operate.Operator (This).Subscribe (Shared.Create (Observer));
       --  Get_Subscriber not to be used directly, so this subscription could use an always failing observer
    end Subscribe;
 
@@ -74,8 +74,8 @@ package body Rx.Op.Observe_On is
 
    function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
    begin
-      return Operate.Create (Op'(Operate.Implementation.Operator with
-                                 Scheduler  => Scheduler));
+      return Op'(Operate.Operator with
+                                 Scheduler  => Scheduler);
    end Create;
 
 end Rx.Op.Observe_On;

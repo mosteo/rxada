@@ -5,7 +5,7 @@ package body Rx.Op.Serialize is
 
    subtype Critical_Section is Impl.Semaphores.Critical_Section;
 
-   type Serializer is new Operate.Implementation.Operator with record
+   type Serializer is new Operate.Operator with record
       Mutex : aliased Impl.Semaphores.Shared_Binary;
    end record;
 
@@ -53,7 +53,7 @@ package body Rx.Op.Serialize is
    overriding procedure Unsubscribe (This : in out Serializer) is
       CS : Critical_Section (This.Mutex'Access) with Unreferenced;
    begin
-      Operate.Implementation.Operator (This).Unsubscribe;
+      Operate.Operator (This).Unsubscribe;
    end Unsubscribe;
 
    ---------------
@@ -65,7 +65,7 @@ package body Rx.Op.Serialize is
    is
    begin
       Producer.Mutex := Impl.Semaphores.Create;         -- New mutex for this chain
-      Operate.Implementation.Operator (Producer).Subscribe (Consumer); -- Normal subscription
+      Operate.Operator (Producer).Subscribe (Consumer); -- Normal subscription
    end Subscribe;
 
    ------------
@@ -74,7 +74,7 @@ package body Rx.Op.Serialize is
 
    function Create return Operate.Operator'Class is
    begin
-      return Operate.Create (Serializer'(Operate.Implementation.Operator with others => <>));
+      return Serializer'(Operate.Operator with others => <>));
    end Create;
 
 end Rx.Op.Serialize;

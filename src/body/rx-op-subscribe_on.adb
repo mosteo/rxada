@@ -1,5 +1,4 @@
 with Rx.Dispatchers;
-with Rx.Errors;
 
 -- with Gnat.Io; use Gnat.Io;
 
@@ -8,7 +7,7 @@ package body Rx.Op.Subscribe_On is
    package Remote is new Dispatchers.Subscribe (Operate);
 
    --  This special in that, since it interrupts the subscription chain, can't be implemented with
-   --  the usual Implementation.Operator
+   --  the usual Operator
    type Op is new Operate.Operator with record
       Sched : Schedulers.Scheduler;
    end record;
