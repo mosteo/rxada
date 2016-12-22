@@ -19,6 +19,12 @@ package body Rx.Debug.Observers is
       or
          delay Duration (Period_Millis) / 1000.0;
          Log ("Watchdog triggered after" & Period_Millis'Img & " ms", Error);
+
+         select
+            accept Finished;
+         or
+            terminate;
+         end select;
       end select;
    end Watchdog;
 
