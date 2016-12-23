@@ -1,5 +1,4 @@
 with Rx.Debug;
-with Rx.Holders;
 with Rx.Subscriptions;
 
 package body Rx.Src.Create is
@@ -16,7 +15,7 @@ package body Rx.Src.Create is
 
       overriding procedure Subscribe
         (Producer : in out Source;
-         Consumer :        Typed.Subscriber)
+         Consumer : in out Typed.Subscriber)
       is
          Actual : Typed.Subscriber := Consumer;
       begin
@@ -69,28 +68,5 @@ package body Rx.Src.Create is
    begin
       return Create_Parameterless.Create (On_Subscribe);
    end Parameterless;
-
-   ---------------------
-   -- Tagged_Stateful --
-   ---------------------
-
-   package Obs_Holders is new Rx.Holders (Observable'Class);
-   type Holder is new Obs_Holders.Definite with null record;
-
-   procedure On_Subscribe (Initial : Holder; Observer : in out Typed.Subscriber) is
-      Actual : Observable'Class := Initial.Get; -- Local RW copy
-   begin
-      Actual.On_Subscribe (Observer);
-   exception
-      when Subscriptions.No_Longer_Subscribed =>
-         Debug.Log ("At Create.On_Subscribe: caught No_Longer_Subscribed", Debug.Note);
-   end On_Subscribe;
-
-   package Create_Tagged is new With_State (Holder, On_Subscribe, Autocompletes => False);
-
-   function Tagged_Stateful (Producer : Observable'Class) return Typed.Observable is
-   begin
-      return Create_Tagged.Create (Hold (Producer));
-   end Tagged_Stateful;
 
 end Rx.Src.Create;

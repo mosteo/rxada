@@ -41,7 +41,7 @@ package Rx.Transformers with Preelaborate is
 
    overriding function Is_Subscribed (This : Operator) return Boolean;
 
-   overriding procedure Subscribe (This : in out Operator; Consumer : Into.Subscriber'Class);
+   overriding procedure Subscribe (This : in out Operator; Consumer : in out Into.Subscriber'Class);
 --     with Post'Class => This.Is_Subscribed;
    --  Can be overriden to modify the actual consumer that will be stored.
    --  In that case, the parent implementation should be called

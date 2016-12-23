@@ -358,7 +358,7 @@ package body Rx.Tests is
             Observer.On_Completed;
          end Debounced;
       begin
-         For_Each (Integers.RxCreate.Parameterless (Debounced'Access)
+         For_Each (Integers.Create (Debounced'Access)
                    & Debounce (0.1),
                    Subscribe_Checker (Do_First => True,  Ok_First => 1,
                                       Do_Last  => True,  Ok_Last  => 4,

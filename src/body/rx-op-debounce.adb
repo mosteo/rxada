@@ -49,7 +49,7 @@ package body Rx.Op.Debounce is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer :        Into.Subscriber);
+                        Consumer : in out Into.Subscriber);
 
    overriding
    procedure Unsubscribe (This : in out Operator);
@@ -193,7 +193,7 @@ package body Rx.Op.Debounce is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer :        Into.Subscriber)
+                        Consumer : in out Into.Subscriber)
    is
    begin
       Producer.Live  := new Debouncer;

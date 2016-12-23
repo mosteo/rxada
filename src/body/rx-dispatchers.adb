@@ -108,8 +108,9 @@ package body Rx.Dispatchers is
 
       overriding procedure Run (R : Runner) is
          Parent : Operate.Typed.Observable'Class := R.Parent.To_Indef;
+         Child  : Operate.Typed.Subscriber'Class := R.Child.Get;
       begin
-         Parent.Subscribe (R.Child.CRef);
+         Parent.Subscribe (Child);
       end Run;
 
       procedure On_Subscribe (Sched  : in out Dispatcher'Class;

@@ -1,7 +1,9 @@
 with Rx.Actions;
 with Rx.Actions.Typed;
 with Rx.Contracts;
+with Rx.Conversions;
 with Rx.Defaults;
+with Rx.Factories;
 with Rx.Holders;
 with Rx.Impl.Definite_Observables;
 with Rx.Traits.Types;
@@ -25,25 +27,17 @@ package Rx.Typed is
    subtype Sink       is Contracts.Sink'Class;
    subtype Subscriber is Contracts.Subscriber'Class;
 
-   package Defaults is new Rx.Defaults (Contracts);
+   -- Typed packages for use with an Rx type
 
+   package Defaults             is new Rx.Defaults (Contracts);
    package Definite_Observables is new Impl.Definite_Observables (Contracts);
-
-   package Conversions is
-
-   --  This package is purely to work around gnat bugs on visibility and instantiation of tagged with untagged view
-
-      function "=" (L, R : T) return Boolean renames Type_Traits."=";
-
-      function "+" (V : T) return D renames Type_Traits.To_Definite;
-      function "+" (V : D) return T renames Type_Traits.To_Indefinite;
-
-      function Def (V : T) return D renames Type_Traits.To_Definite;
-      function Ind (V : D) return T renames Type_Traits.To_Indefinite;
-
-   end Conversions;
+   package Conversions          is new Rx.Conversions (Type_Traits);
+   package Factories            is new Rx.Factories (Contracts);
 
    package Holders is
+
+      package Observables is new Rx.Holders (Observable'Class);
+      type Observable is new Observables.Definite with null record;
 
       package Observers is new Rx.Holders (Observer'Class);
       type Observer is new Observers.Definite with null record;
