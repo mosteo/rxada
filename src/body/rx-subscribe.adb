@@ -2,21 +2,18 @@ with Rx.Debug;
 
 package body Rx.Subscribe is
 
-   function Create (Using : Typed.Observer) return Typed.Sink is
+   package Defaults renames Typed.Defaults;
+
+   ------------
+   -- Create --
+   ------------
+
+   function Create (Using : Typed.Observer'Class) return Typed.Sink is
    begin
       return S : Subscribe do
          S.Observer.Hold (Using);
       end return;
    end Create;
-
-   ----------------------
-   -- Default_On_Error --
-   ----------------------
-
-   procedure Default_On_Error (E : Errors.Occurrence) is
-   begin
-      Debug.Report (E.Get_Exception.all, "Unhandled error", Debug.Warn, Reraise => True);
-   end Default_On_Error;
 
    ------------------
    -- On_Completed --
@@ -66,20 +63,8 @@ package body Rx.Subscribe is
          end if;
       else
          Debug.Log ("RxAda Subscribe saw an error post-unsubscription:", Debug.Warn);
-         Default_On_Error (Error);
+         Defaults.Default_On_Error (Error);
       end if;
-   end On_Error;
-
-   --------------
-   -- On_Error --
-   --------------
-
-   overriding procedure On_Error (This : in out Observer;
-                                  E    : Errors.Occurrence)
-   is
-      pragma Unreferenced (This);
-   begin
-      Default_On_Error (E);
    end On_Error;
 
    -------------
@@ -106,7 +91,7 @@ package body Rx.Subscribe is
 
    function Create (On_Next      : Typed.Actions.Proc1   := null;
                     On_Completed : Rx.Actions.Proc0      := null;
-                    On_Error     : Proc_Error            := Default_On_Error'Access)
+                    On_Error     : Proc_Error            := Typed.Defaults.Default_On_Error'Access)
                     return Typed.Contracts.Sink'Class is
    begin
       return S : Subscribe do

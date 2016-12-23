@@ -27,7 +27,7 @@ package body Rx.Src.Create is
                Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Note);
             when E : others =>
                if Autocompletes then -- Because the error was within On_Next somewhere
-                  Typed.Default_Error_Handler (Actual, E);
+                  Typed.Defaults.Default_Error_Handler (Actual, E);
                else
                   raise; -- Otherwise either client properly treated or wrong client implementation
                end if;

@@ -28,7 +28,8 @@ package body Rx.Debug.Observers is
       end select;
    end Watchdog;
 
-   type Checker is new RxSubscribe.Observer with record
+   subtype Checker_Parent is Typed.Defaults.Observer;
+   type Checker is new Checker_Parent with record
       Counter   : Natural := 0;
       Last_Seen : Typed.D;
 
@@ -113,7 +114,7 @@ package body Rx.Debug.Observers is
       if This.Watcher /= null then
          This.Watcher.Finished;
       end if;
-      RxSubscribe.Observer (This).On_Error (Error);
+      Checker_Parent (This).On_Error (Error);
    end On_Error;
 
    -----------------
@@ -132,7 +133,7 @@ package body Rx.Debug.Observers is
       return Typed.Contracts.Sink'Class
    is
    begin
-      return RxSubscribe.Create (Checker'(RxSubscribe.Observer with
+      return RxSubscribe.Create (Checker'(Checker_Parent with
                                  Do_Count => Do_Count,
                                  Ok_Count => Ok_Count,
                                  Do_First => Do_First,
@@ -152,7 +153,7 @@ package body Rx.Debug.Observers is
 
    package Safe_Natural is new Rx.Impl.Shared_Data (Natural, Nat_Ptr);
 
-   type Counter is new RxSubscribe.Observer with record
+   type Counter is new Typed.Defaults.Observer with record
       Count      : Natural := 0;
       Safe_Count : Safe_Natural.Proxy := Safe_Natural.Wrap (new Natural'(0));
    end record;
@@ -194,6 +195,6 @@ package body Rx.Debug.Observers is
    -----------------------------
 
    function Subscribe_Count_Printer return Typed.Sink is
-     (RxSubscribe.Create (Counter'(RxSubscribe.Observer with others => <>)));
+     (RxSubscribe.Create (Counter'(Typed.Defaults.Observer with others => <>)));
 
 end Rx.Debug.Observers;

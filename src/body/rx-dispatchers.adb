@@ -47,7 +47,7 @@ package body Rx.Dispatchers is
                   RW.Downstream.On_Next (Base.Value (R.Event));
                exception
                   when E : others =>
-                     Typed.Default_Error_Handler (RW.Downstream, E);
+                     Typed.Defaults.Default_Error_Handler (RW.Downstream, E);
                end;
             when On_Error =>
                RW.Downstream.On_Error (Base.Error (R.Event));
