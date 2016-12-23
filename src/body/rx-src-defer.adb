@@ -2,9 +2,9 @@ with Rx.Holders;
 
 package body Rx.Src.Defer is
 
-   package Factories is new Rx.Holders (Factory'Class);
+   package Holders is new Rx.Holders (Factories.Observable_Factory'Class);
 
-   type Some_Factory is new Factories.Definite with null record;
+   type Some_Factory is new Holders.Definite with null record;
 
    type Observable is new Typed.Contracts.Observable with record
       Factory : Some_Factory;
@@ -12,9 +12,9 @@ package body Rx.Src.Defer is
 
    overriding
    procedure Subscribe (Producer : in out Observable;
-                        Consumer :        Typed.Subscriber'Class)
+                        Consumer : in out Typed.Subscriber'Class)
    is
-      Actual : Typed.Observable'Class := Producer.Factory.CRef.On_Subscribe;
+      Actual : Typed.Observable'Class := Producer.Factory.CRef.Subscribe;
    begin
       Actual.Subscribe (Consumer);
    end Subscribe;
@@ -23,18 +23,18 @@ package body Rx.Src.Defer is
    -- Create --
    ------------
 
-   function Create (F : Factory'Class) return Typed.Observable is
+   function Create (F : Factories.Observable_Factory'Class) return Typed.Observable is
    begin
       return Observable'(Typed.Contracts.Observable with Factory => Hold (F));
    end Create;
 
-   type Func_Factory is new Factory with record
-      Func : Factory_Func;
+   type Func_Factory is new Factories.Observable_Factory with record
+      Func : Factories.Observable_Factory_Func;
    end record;
 
-   overriding function On_Subscribe (F : Func_Factory) return Typed.Observable is (F.Func.all);
+   overriding function Subscribe (F : Func_Factory) return Typed.Observable is (F.Func.all);
 
-   function Create (F : Factory_Func) return Typed.Observable is
+   function Create (F : Factories.Observable_Factory_Func) return Typed.Observable is
    begin
       return Observable'(Typed.Contracts.Observable with Factory => Hold (Func_Factory'(Func => F)));
    end Create;

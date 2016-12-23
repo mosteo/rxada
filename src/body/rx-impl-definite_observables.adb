@@ -6,7 +6,7 @@ package body Rx.Impl.Definite_Observables is
 
    overriding procedure Subscribe
      (Producer : in out Observable;
-      Consumer :        Contracts.Subscriber'Class)
+      Consumer : in out Contracts.Subscriber'Class)
    is
    begin
       Producer.Ref.Subscribe (Consumer);

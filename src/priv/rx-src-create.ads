@@ -4,18 +4,13 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Src.Create with Preelaborate is
 
+   package Contracts renames Typed.Contracts;
+
    --  Three ways of easily creating a new observable for custom emision
 
    function Parameterless (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
                            return Typed.Observable;
    --  Creates an Observable that requires no parameters, from a function
-   --  Does not autocomplete
-
-   type Observable is abstract tagged null record;
-   procedure On_Subscribe (This : in out Observable; Observer : in out Typed.Subscriber) is abstract;
-
-   function Tagged_Stateful (Producer : Observable'Class) return Typed.Observable;
-   --  Creates an Observable from a tagged type that can store some initial state
    --  Does not autocomplete
 
    generic

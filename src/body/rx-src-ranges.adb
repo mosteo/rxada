@@ -5,11 +5,12 @@ package body Rx.Src.Ranges is
 
    use Typed.Conversions;
 
+   package Contracts renames Typed.Contracts;
    package Source is new Rx.Src.Create (Typed);
 
    type Kinds is (Counter, Interval);
 
-   type Observable (Mode : Kinds) is new Source.Observable with record
+   type Observable (Mode : Kinds) is new Contracts.Observable with record
       Next : Typed.D;
       case Mode is
          when Counter  => Remaining : Rx_Natural;
@@ -17,7 +18,7 @@ package body Rx.Src.Ranges is
       end case;
    end record;
 
-   overriding procedure On_Subscribe (This : in out Observable; Observer : in out Typed.Subscriber) is
+   overriding procedure Subscribe (This : in out Observable; Observer : in out Typed.Subscriber) is
    begin
       begin
          case This.Mode is
@@ -38,7 +39,7 @@ package body Rx.Src.Ranges is
       end;
 
       Observer.On_Completed;
-   end On_Subscribe;
+   end Subscribe;
 
    -------------------
    -- From_Count --
@@ -51,7 +52,7 @@ package body Rx.Src.Ranges is
    is
       use Typed.Type_Traits;
    begin
-      return Source.Tagged_Stateful (Observable'(Mode => Counter, Next => +First, Remaining => Count));
+      return Observable'(Mode => Counter, Next => +First, Remaining => Count);
    end From_Count;
 
    --------------------
@@ -60,7 +61,7 @@ package body Rx.Src.Ranges is
 
    function From_Slice (First, Last : Typed.T) return Typed.Observable is
    begin
-      return Source.Tagged_Stateful (Observable'(Mode => Interval, Next => +First, Last => +Last));
+      return Observable'(Mode => Interval, Next => +First, Last => +Last);
    end From_Slice;
 
 end Rx.Src.Ranges;

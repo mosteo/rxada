@@ -3,12 +3,8 @@ with Ada.Exceptions;
 with Rx.Actions;
 with Rx.Collections;
 with Rx.Errors;
-with Rx.Op.Repeat;
 with Rx.Preservers;
 with Rx.Schedulers;
-with Rx.Src.Create;
-with Rx.Src.Defer;
-with Rx.Src.From;
 with Rx.Subscribe;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
@@ -22,9 +18,13 @@ private with Rx.Op.Limit;
 private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
+private with Rx.Op.Repeat;
 private with Rx.Op.Split;
 private with Rx.Op.Subscribe_On;
+private with Rx.Src.Create;
+private with Rx.Src.Defer;
 private with Rx.Src.Empty;
+private with Rx.Src.From;
 private with Rx.Src.Just;
 private with Rx.Src.Start;
 private with Rx.Src.Timer;
@@ -35,7 +35,10 @@ package Rx.Observables is
 
    package Typed renames User_Typed; -- Bug workaround
 
-   -- Shortcuts
+   package Contracts renames Typed.Contracts;
+   package Factories renames Typed.Factories;
+
+   -- Type Shortcuts
    subtype Observable  is Typed.Contracts.Observable'Class;
    subtype Observer    is Typed.Contracts.Observer'Class;
    subtype Sink        is Typed.Contracts.Sink'Class;
@@ -76,13 +79,10 @@ package Rx.Observables is
    -- Create --
    ------------
 
-   package RxCreate is new Rx.Src.Create (Typed);
-
    function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
-                    return Observable renames RxCreate.Parameterless;
+                    return Observable;
 
-   function Create (Source : RxCreate.Observable'Class) return Observable
-                    renames RxCreate.Tagged_Stateful;
+   --  You can always extend a plain Contracts.Observable, of course!
 
    --------------
    -- Debounce --
@@ -94,11 +94,9 @@ package Rx.Observables is
    -- Defer --
    -----------
 
-   package RxDefer is new Rx.Src.Defer (Typed);
+   function Defer (Factory : Factories.Observable_Factory'Class) return Observable;
 
-   function Defer (Factory : RxDefer.Factory'Class) return Observable renames RxDefer.Create;
-
-   function Defer (Factory : RxDefer.Factory_Func) return Observable renames RxDefer.Create;
+   function Defer (Factory : Factories.observable_Factory_Func) return Observable;
 
    -----------
    -- Empty --
@@ -201,16 +199,13 @@ package Rx.Observables is
    -- Repeat --
    ------------
 
-   package RxRepeat is new Rx.Op.Repeat (Operate);
+   function Repeat (Times : Positive) return Operator;
 
-   function Repeat (Times : Positive) return Operator renames RxRepeat.Repeat;
+   function Repeat_Forever return Operator;
 
-   function Repeat_Forever return Operator renames RxRepeat.Repeat_Forever;
+   function Repeat_Until (Check : Actions.TFilter0'Class) return Operator;
 
-   function Repeat_Until (Check : Actions.TFilter0'Class) return Operator renames RxRepeat.Repeat_Until;
-
-   function Repeat_Until (Check : Actions.Filter0) return Operator is
-     (RxRepeat.Repeat_Until (Actions.Wrap (Check)));
+   function Repeat_Until (Check : Actions.Filter0) return Operator;
 
    -----------
    -- Split --
@@ -267,10 +262,9 @@ package Rx.Observables is
    -- While_Do --
    --------------
 
-   function While_Do (Check : Actions.TFilter0'Class) return Operator renames RxRepeat.While_Do;
+   function While_Do (Check : Actions.TFilter0'Class) return Operator;
 
-   function While_Do (Check : Actions.Filter0) return Operator is
-      (RxRepeat.While_Do (Actions.Wrap (Check)));
+   function While_Do (Check : Actions.Filter0) return Operator;
 
    ----------
    -- Wrap --
@@ -349,8 +343,16 @@ private
    function Buffer (Every : Positive; Skip : Natural := 0) return Into_List_Transformer
                     renames RxBuffer.Create;
 
+   package RxCreate is new Rx.Src.Create (Typed);
+   function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
+                    return Observable renames RxCreate.Parameterless;
+
    package RxDebounce is new Op.Debounce (Operate);
    function Debounce (Window : Duration) return Operator renames RxDebounce.Create;
+
+   package RxDefer is new Rx.Src.Defer (Typed);
+   function Defer (Factory : Factories.Observable_Factory'Class) return Observable renames RxDefer.Create;
+   function Defer (Factory : Factories.Observable_Factory_Func) return Observable renames RxDefer.Create;
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Observable renames RxEmpty.Empty;
@@ -397,6 +399,17 @@ private
    function Print (Func           : Typed.Actions.Func1Str := null;
                    With_Timestamp : Boolean                := True) return Operator renames RxPrint.Create;
 
+   package RxRepeat is new Rx.Op.Repeat (Operate);
+
+   function Repeat (Times : Positive) return Operator renames RxRepeat.Repeat;
+
+   function Repeat_Forever return Operator renames RxRepeat.Repeat_Forever;
+
+   function Repeat_Until (Check : Actions.TFilter0'Class) return Operator renames RxRepeat.Repeat_Until;
+
+   function Repeat_Until (Check : Actions.Filter0) return Operator is
+     (RxRepeat.Repeat_Until (Actions.Wrap (Check)));
+
    package RxStart is new Rx.Src.Start (Typed);
    function Start (Func :          Typed.Actions.TFunc0'Class) return Observable renames RxStart.Create;
    function Start (Func : not null Typed.Actions.Func0)        return Observable
@@ -430,5 +443,10 @@ private
                    After     : Duration;
                    Scheduler : Schedulers.Scheduler := Schedulers.Computation)
                    return Observable renames RxTimer.Create;
+
+   function While_Do (Check : Actions.TFilter0'Class) return Operator renames RxRepeat.While_Do;
+
+   function While_Do (Check : Actions.Filter0) return Operator is
+     (RxRepeat.While_Do (Actions.Wrap (Check)));
 
 end Rx.Observables;
