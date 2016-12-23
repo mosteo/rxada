@@ -1,8 +1,9 @@
-procedure B000 is
+procedure B004_Refleak is
 
    package P is
 
       type Str_Holder is tagged private;
+      -- IRL this would be a controlled type with proper allocation/deallocation of the held type
 
       function Create (S : String) return Str_Holder;
 
@@ -36,4 +37,4 @@ procedure B000 is
 
 begin
    Long_Lived;
-end B000;
+end B004_Refleak;
