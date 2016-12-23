@@ -1,8 +1,7 @@
-with Ada.Exceptions;
-
 with Rx.Actions;
 with Rx.Actions.Typed;
 with Rx.Contracts;
+with Rx.Defaults;
 with Rx.Holders;
 with Rx.Impl.Definite_Observables;
 with Rx.Traits.Types;
@@ -26,8 +25,7 @@ package Rx.Typed is
    subtype Sink       is Contracts.Sink'Class;
    subtype Subscriber is Contracts.Subscriber'Class;
 
-   procedure Default_Error_Handler (This   : in out Observer'Class;
-                                    Except : Ada.Exceptions.Exception_Occurrence);
+   package Defaults is new Rx.Defaults (Contracts);
 
    package Definite_Observables is new Impl.Definite_Observables (Contracts);
 
