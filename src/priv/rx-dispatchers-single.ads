@@ -1,5 +1,5 @@
 private with Ada.Containers.Ordered_Multisets;
-private with Rx.Holders;
+private with Rx.Tools.Holders;
 
 package Rx.Dispatchers.Single is
 
@@ -29,7 +29,7 @@ private
 
    type Dispatcher_Access is access all Dispatcher;
 
-   package Runnable_Holders is new Rx.Holders (Runnable'Class);
+   package Runnable_Holders is new Rx.Tools.Holders (Runnable'Class);
 
    type Event_Id is new Long_Long_Integer;
 

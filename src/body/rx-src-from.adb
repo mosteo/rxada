@@ -1,5 +1,5 @@
 with Rx.Debug;
-with Rx.Holders;
+with Rx.Tools.Holders;
 with Rx.Src.Create;
 with Rx.Subscriptions;
 
@@ -13,7 +13,7 @@ package body Rx.Src.From is
 
       package Create is new Src.Create (Arrays.Typed);
 
-      package State is new Holders (Arrays.Typed_Array);
+      package State is new Tools.Holders (Arrays.Typed_Array);
 
       procedure On_Subscribe (S : State.Definite;
                               Consumer : in out Arrays.Typed.Subscriber) is

@@ -1,8 +1,8 @@
-with Rx.Holders;
+with Rx.Tools.Holders;
 
 package body Rx.Src.Defer is
 
-   package Holders is new Rx.Holders (Factories.Observable_Factory'Class);
+   package Holders is new Rx.Tools.Holders (Factories.Observable_Factory'Class);
 
    type Some_Factory is new Holders.Definite with null record;
 

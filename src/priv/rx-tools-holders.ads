@@ -8,9 +8,7 @@ private with Ada.Finalization;
 generic
    type Indef (<>) is private;
    Id : String := ""; -- Debug purposes only
-package Rx.Holders is
-
-   pragma Preelaborate;
+package Rx.Tools.Holders with Preelaborate is
 
    type Definite is tagged private;
 
@@ -64,4 +62,4 @@ private
 
    function Is_Empty (D : Definite) return Boolean is (D.Actual = null);
 
-end Rx.Holders;
+end Rx.Tools.Holders;

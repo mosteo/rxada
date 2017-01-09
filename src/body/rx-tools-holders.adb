@@ -4,7 +4,7 @@ with Gnat.IO; use Gnat.IO;
 
 --  with Rx.Debug;
 
-package body Rx.Holders is
+package body Rx.Tools.Holders is
 
    Debug : constant Boolean := False;
 
@@ -96,4 +96,4 @@ package body Rx.Holders is
          raise;
    end Finalize;
 
-end Rx.Holders;
+end Rx.Tools.Holders;

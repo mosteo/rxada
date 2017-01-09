@@ -1,4 +1,4 @@
-with Rx.Holders;
+with Rx.Tools.Holders;
 with Rx.Typed;
 
 generic
@@ -22,7 +22,7 @@ package Rx.Impl.Links is
 
 private
 
-   package Holders is new Rx.Holders (Typed.Contracts.Observable'Class, "observable'class");
+   package Holders is new Rx.Tools.Holders (Typed.Contracts.Observable'Class, "observable'class");
    type Holder is new Holders.Definite with null record;
 
    type Downstream is abstract tagged record
