@@ -4,8 +4,8 @@ with Rx.Contracts;
 with Rx.Conversions;
 with Rx.Defaults;
 with Rx.Factories;
-with Rx.Holders;
 with Rx.Impl.Definite_Observables;
+with Rx.Impl.Holders;
 with Rx.Traits.Types;
 
 generic
@@ -33,18 +33,6 @@ package Rx.Typed is
    package Definite_Observables is new Impl.Definite_Observables (Contracts);
    package Conversions          is new Rx.Conversions (Type_Traits);
    package Factories            is new Rx.Factories (Contracts);
-
-   package Holders is
-
-      package Observables is new Rx.Holders (Observable'Class);
-      type Observable is new Observables.Definite with null record;
-
-      package Observers is new Rx.Holders (Observer'Class);
-      type Observer is new Observers.Definite with null record;
-
-      package Subscribers is new Rx.Holders (Subscriber'Class);
-      type Subscriber is new Subscribers.Definite with null record;
-
-   end Holders;
+   package Holders              is new Impl.Holders (Contracts);
 
 end Rx.Typed;

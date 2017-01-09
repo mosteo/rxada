@@ -1,5 +1,5 @@
 with Rx.Contracts;
-with Rx.Holders;
+with Rx.Tools.Holders;
 
 generic
    with package Contracts is new Rx.Contracts (<>);
@@ -22,7 +22,7 @@ package Rx.Impl.Definite_Observables is
 
 private
 
-   package Obs_Holders is new Rx.Holders (Contracts.Observable'Class);
+   package Obs_Holders is new Rx.Tools.Holders (Contracts.Observable'Class);
 
    type Observable is new Obs_Holders.Definite and Contracts.Observable with null record;
 

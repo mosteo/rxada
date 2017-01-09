@@ -2,7 +2,7 @@ with Ada.Unchecked_Deallocation;
 
 with Rx.Debug;
 with Rx.Errors;
-with Rx.Holders;
+with Rx.Tools.Holders;
 with Rx.Impl.Events;
 with Rx.Subscriptions;
 
@@ -65,7 +65,7 @@ package body Rx.Op.Debounce is
       Child     : Operate.Typed.Holders.Subscriber;
       Window    : Duration;
 
-      package Event_Holders is new Rx.Holders (Events.Event, "debounce_events");
+      package Event_Holders is new Rx.Tools.Holders (Events.Event, "debounce_events");
       type Event_Holder is new Event_Holders.Definite with null record;
 
       Next	 : Event_Holder;

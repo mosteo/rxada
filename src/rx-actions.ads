@@ -1,5 +1,5 @@
 with Rx.Errors;
-with Rx.Holders;
+with Rx.Tools.Holders;
 
 package Rx.Actions with Preelaborate is
 
@@ -18,10 +18,10 @@ package Rx.Actions with Preelaborate is
 
    --  Holders for the tagged variants follow
 
-   package Proc0_Holders is new Rx.Holders (TProc0'Class);
+   package Proc0_Holders is new Rx.Tools.Holders (TProc0'Class);
    type HTProc0 is new Proc0_Holders.Definite with null record;
 
-   package Filter0_Holders is new Rx.Holders (TFilter0'Class);
+   package Filter0_Holders is new Rx.Tools.Holders (TFilter0'Class);
    type HTFilter0 is new Filter0_Holders.Definite with null record;
 
    --  Predefined actions follow

@@ -1,4 +1,4 @@
-with Rx.Holders;
+with Rx.Tools.Holders;
 with Rx.Transformers;
 with Rx.Typed;
 
@@ -27,6 +27,6 @@ package Rx.Preservers with Preelaborate is
                           return Into.Observable renames Transform.Will_Observe;
    -- Shortcut for simpler use elsewhere (particularly in Rx.Observables)
 
-   package Holders is new Rx.Holders (Operator'Class, "operator");
+   package Holders is new Rx.Tools.Holders (Operator'Class, "operator");
 
 end Rx.Preservers;

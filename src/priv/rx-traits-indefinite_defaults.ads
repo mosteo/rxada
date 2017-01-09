@@ -1,11 +1,11 @@
-with Rx.Holders;
+with Rx.Tools.Holders;
 with Rx.Traits.Types;
 
 generic
    type T (<>) is private; -- User type that is not definite;
 package Rx.Traits.Indefinite_Defaults is
 
-   package Holders is new Rx.Holders (T);
+   package Holders is new Rx.Tools.Holders (T);
 
    type D is new Holders.Definite with null record;
 
