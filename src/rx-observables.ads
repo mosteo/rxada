@@ -23,6 +23,7 @@ private with Rx.Op.Print;
 private with Rx.Op.Repeat;
 private with Rx.Op.Split;
 private with Rx.Op.Subscribe_On;
+private with Rx.Op.Take;
 private with Rx.Src.Create;
 private with Rx.Src.Defer;
 private with Rx.Src.Empty;
@@ -187,7 +188,7 @@ package Rx.Observables is
    -- Limit --
    -----------
 
-   function Limit (Max : Natural) return Operator;
+   function Limit (Max : Rx_Natural) return Operator;
 
    -----------
    -- Never --
@@ -264,7 +265,13 @@ package Rx.Observables is
    -- Take --
    ----------
 
-   function Take  (Max : Natural) return Operator renames Limit;
+   function Take  (Count : Rx_Natural) return Operator;
+
+   function Take_Until (Done : not null Typed.Actions.Filter1)        return Operator;
+   function Take_Until (Done :          Typed.Actions.TFilter1'Class) return Operator;
+
+   function Take_While (Pass : not null Typed.Actions.Filter1)        return Operator;
+   function Take_While (Pass :          Typed.Actions.TFilter1'Class) return Operator;
 
    -----------
    -- Timer --
@@ -415,7 +422,7 @@ private
       (RxLast.Or_Default (V, Check));
 
    package RxLimit is new Rx.Op.Limit (Operate);
-   function Limit (Max : Natural) return Operator renames RxLimit.Create;
+   function Limit (Max : Rx_Natural) return Operator renames RxLimit.Create;
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
@@ -465,6 +472,15 @@ private
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;
+
+   package RxTake is new Rx.Op.Take (Operate);
+   function Take  (Count : Rx_Natural) return Operator renames RxTake.Take_Count;
+   function Take_Until (Done : not null Typed.Actions.Filter1)        return Operator is
+      (RxTake.Take_Until (Typed.Actions.Wrap (Done)));
+   function Take_Until (Done :          Typed.Actions.TFilter1'Class) return Operator renames RxTake.Take_Until;
+   function Take_While (Pass : not null Typed.Actions.Filter1)        return Operator is
+       (RxTake.Take_While (Typed.Actions.Wrap (Pass)));
+   function Take_While (Pass :          Typed.Actions.TFilter1'Class) return Operator renames RxTake.Take_While;
 
    package RxTimer is new Rx.Src.Timer (Typed);
    function Timer (V         : T;
