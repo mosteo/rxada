@@ -25,11 +25,11 @@ package body Rx.Op.Distinct is
    ------------
 
    function Create
-     (Is_Distinct : Operate.Typed.Actions.Comparator := Default_Not_Same'Access)
+     (Are_Distinct : Operate.Typed.Actions.Comparator := Default_Not_Same'Access)
       return Operate.Operator'Class
    is
    begin
-      return Operator'(Operate.Operator with Are_Distinct => Is_Distinct, others => <>);
+      return Operator'(Operate.Operator with Are_Distinct => Are_Distinct, others => <>);
    end Create;
 
 end Rx.Op.Distinct;

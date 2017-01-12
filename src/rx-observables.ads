@@ -13,6 +13,7 @@ with Rx.Typed;
 private with Rx.Op.Buffer;
 private with Rx.Op.Debounce;
 private with Rx.Op.Distinct;
+private with Rx.Op.Element_At;
 private with Rx.Op.Filter;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
@@ -106,6 +107,14 @@ package Rx.Observables is
    Default_Not_Same : constant Typed.Actions.Comparator;
 
    function Distinct (Are_Distinct : Typed.Actions.Comparator := Default_Not_Same) return Operator;
+
+   ----------------
+   -- Element_At --
+   ----------------
+
+   function Element_At (Pos : Rx_Integer; First : Rx_Integer := 1) return Operator;
+
+   function Element_At_Or_Default (Default : T; Pos : Rx_Integer; First : Rx_Integer := 1) return Operator;
 
    -----------
    -- Empty --
@@ -366,7 +375,12 @@ private
    package RxDistinct is new Rx.Op.Distinct (Operate);
    Default_Not_Same : constant Typed.Actions.Comparator := RxDistinct.Default_Not_Same'Access;
    function Distinct (Are_Distinct : Typed.Actions.Comparator := Default_Not_Same) return Operator
-     renames RxDistinct.Create;
+                      renames RxDistinct.Create;
+
+   package RxElementAt is new Rx.Op.Element_At (Operate);
+   function Element_At (Pos : Rx_Integer; First : Rx_Integer := 1) return Operator renames RxElementAt.Create;
+   function Element_At_Or_Default (Default : T; Pos : Rx_Integer; First : Rx_Integer := 1) return Operator
+                                   renames RxElementAt.Or_Default;
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Observable renames RxEmpty.Empty;
