@@ -12,6 +12,7 @@ with Rx.Typed;
 
 private with Rx.Op.Buffer;
 private with Rx.Op.Debounce;
+private with Rx.Op.Distinct;
 private with Rx.Op.Filter;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
@@ -97,6 +98,14 @@ package Rx.Observables is
    function Defer (Factory : Factories.Observable_Factory'Class) return Observable;
 
    function Defer (Factory : Factories.observable_Factory_Func) return Observable;
+
+   --------------
+   -- Distinct --
+   --------------
+
+   Default_Not_Same : constant Typed.Actions.Comparator;
+
+   function Distinct (Are_Distinct : Typed.Actions.Comparator := Default_Not_Same) return Operator;
 
    -----------
    -- Empty --
@@ -353,6 +362,11 @@ private
    package RxDefer is new Rx.Src.Defer (Typed);
    function Defer (Factory : Factories.Observable_Factory'Class) return Observable renames RxDefer.Create;
    function Defer (Factory : Factories.Observable_Factory_Func) return Observable renames RxDefer.Create;
+
+   package RxDistinct is new Rx.Op.Distinct (Operate);
+   Default_Not_Same : constant Typed.Actions.Comparator := RxDistinct.Default_Not_Same'Access;
+   function Distinct (Are_Distinct : Typed.Actions.Comparator := Default_Not_Same) return Operator
+     renames RxDistinct.Create;
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Observable renames RxEmpty.Empty;
