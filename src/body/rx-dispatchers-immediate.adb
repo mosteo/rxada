@@ -11,7 +11,9 @@ package body Rx.Dispatchers.Immediate is
    is
       pragma Unreferenced (Where);
    begin
-      delay until Time;
+      if Time > Ada.Calendar.Clock then
+         raise Constraint_Error with "Future scheduling in immediate scheduler not allowed";
+      end if;
       What.Run;
    end Schedule;
 

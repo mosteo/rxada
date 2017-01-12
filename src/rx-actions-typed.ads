@@ -39,6 +39,14 @@ package Rx.Actions.Typed with Preelaborate is
    Always_Pass : constant TFilter1'Class;
    --  Trivial filter that always returns true
 
+   function Countdown (Times : Rx_Natural) return TFilter1'Class;
+   --  Filter that passes Times times and then fails forever
+
+   function "not" (Filter : TFilter1'Class) return TFilter1'Class;
+   --  Negates the result of some filter
+
+   function Negate (Filter : TFilter1'Class) return TFilter1'Class renames "not";
+
 private
 
    function Always_True (V : T) return Boolean is (True);
