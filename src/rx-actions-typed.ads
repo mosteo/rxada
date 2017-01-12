@@ -21,6 +21,8 @@ package Rx.Actions.Typed with Preelaborate is
    function Check (Filter : in out TFilter1; V : T) return Boolean is abstract;
    function Wrap (Filter : Filter1) return TFilter1'Class;
 
+   type Comparator is access function (L, R : T) return Boolean;
+
    --  Holders
 
    package Func0_Holders is new Rx.Tools.Holders (TFunc0'Class);
