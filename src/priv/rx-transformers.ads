@@ -9,8 +9,6 @@ generic
    with package Into is new Rx.Typed (<>);
 package Rx.Transformers with Preelaborate is
 
-   No_Longer_Subscribed : exception renames Subscriptions.No_Longer_Subscribed;
-
    --  Renamings for bug workarounds
    subtype From_Observable is From.Observable'Class;
    subtype Into_Observable is Into.Observable'Class;
@@ -23,7 +21,8 @@ package Rx.Transformers with Preelaborate is
    type Operator is new
      Links.Downstream and
      Into.Contracts.Observable and
-     From.Contracts.Subscriber
+     From.Contracts.Observer and
+     From.Contracts.subscriber
    with private;
    --  This is the fundamental type that bridges observables y observers doing something along the way
    --  Override the Observer/Subscriber inherited methods in new operators
@@ -41,7 +40,7 @@ package Rx.Transformers with Preelaborate is
 
    overriding function Is_Subscribed (This : Operator) return Boolean;
 
-   overriding procedure Subscribe (This : in out Operator; Consumer : in out Into.Subscriber'Class);
+   overriding procedure Subscribe (This : in out Operator; Consumer : in out Into.Observer'Class);
 --     with Post'Class => This.Is_Subscribed;
    --  Can be overriden to modify the actual consumer that will be stored.
    --  In that case, the parent implementation should be called
@@ -51,7 +50,7 @@ package Rx.Transformers with Preelaborate is
    overriding procedure Unsubscribe (This : in out Operator);
 --     with Post'Class => not This.Is_Subscribed;
 
-   not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Subscribers.Reference;
+   not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Observers.Reference;
 --     with Pre'Class => This.Is_Subscribed or else raise Subscriptions.No_Longer_Subscribed;
 
    ---------------------
@@ -72,14 +71,15 @@ private
    type Operator is new
      Links.Downstream and
      Into.Contracts.Observable and
+     From.Contracts.Observer and
      From.Contracts.Subscriber
    with record
-      Downstream : Into.Holders.Subscriber;
+      Downstream : Into.Holders.Observer;
    end record;
 
    overriding function Is_Subscribed (This : Operator) return Boolean is (This.Downstream.Is_Valid);
 
-   not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Subscribers.Reference is
+   not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Observers.Reference is
       (if This.Is_Subscribed then This.Downstream.Ref else raise No_Longer_Subscribed);
 
 end Rx.Transformers;

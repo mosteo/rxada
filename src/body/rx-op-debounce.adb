@@ -16,7 +16,7 @@ package body Rx.Op.Debounce is
 
    task type Debouncer is
 
-      entry Init (Window : Duration; Child : Into.Subscriber);
+      entry Init (Window : Duration; Child : Into.Observer);
 
       entry On_Event (Event : Events.Event);
 
@@ -49,7 +49,7 @@ package body Rx.Op.Debounce is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Into.Subscriber);
+                        Consumer : in out Into.Observer);
 
    overriding
    procedure Unsubscribe (This : in out Operator);
@@ -62,7 +62,7 @@ package body Rx.Op.Debounce is
 
       Self : Debouncer_Ptr := Debouncer'Unchecked_Access;
 
-      Child     : Operate.Typed.Holders.Subscriber;
+      Child     : Operate.Typed.Holders.Observer;
       Window    : Duration;
 
       package Event_Holders is new Rx.Tools.Holders (Events.Event, "debounce_events");
@@ -110,7 +110,7 @@ package body Rx.Op.Debounce is
 
    begin
 
-      accept Init (Window : Duration; Child : Into.Subscriber) do
+      accept Init (Window : Duration; Child : Into.Observer) do
          Debouncer.Window := Window;
          Debouncer.Child.Hold (Child);
       end;
@@ -193,7 +193,7 @@ package body Rx.Op.Debounce is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Into.Subscriber)
+                        Consumer : in out Into.Observer)
    is
    begin
       Producer.Live  := new Debouncer;

@@ -9,7 +9,7 @@ procedure Rx.Examples.Basic is
    use Numeric.Integers;
 
 
-   procedure Custom_Src_1 (Observer : in out Integers.Typed.Subscriber) is
+   procedure Custom_Src_1 (Observer : in out Integers.Typed.Observer) is
    begin
       Observer.On_Next (7);
       Observer.On_Next (8);
@@ -60,7 +60,7 @@ begin
    --  named access type in Rx.Src.Create.
    --  TODO: keep an eye on it (Issue #18)
    declare
-      procedure Custom_Src_2 (Observer : in out Integers.Typed.Subscriber) is
+      procedure Custom_Src_2 (Observer : in out Integers.Typed.Observer) is
       begin
          Observer.On_Next (4);
          Observer.On_Next (5);

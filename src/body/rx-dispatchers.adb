@@ -103,23 +103,23 @@ package body Rx.Dispatchers is
 
       type Runner is new Runnable with record
          Parent : Operate.Typed.Definite_Observables.Observable;
-         Child  : Operate.Typed.Holders.Subscribers.Definite;
+         Child  : Operate.Typed.Holders.Observers.Definite;
       end record;
 
       overriding procedure Run (R : Runner) is
          Parent : Operate.Typed.Observable'Class := R.Parent.To_Indef;
-         Child  : Operate.Typed.Subscriber'Class := R.Child.Get;
+         Child  : Operate.Typed.Observer'Class := R.Child.Get;
       begin
          Parent.Subscribe (Child);
       end Run;
 
       procedure On_Subscribe (Sched  : in out Dispatcher'Class;
                               Parent :        Operate.Observable'Class;
-                              Child  :        Operate.Typed.Subscriber'Class) is
+                              Child  :        Operate.Typed.Observer'Class) is
       begin
          Sched.Schedule (Runner'(Runnable with
                            Parent => Operate.Typed.Definite_Observables.From (Parent),
-                           Child  => Operate.Typed.Holders.Subscribers.Hold (Child)));
+                           Child  => Operate.Typed.Holders.Observers.Hold (Child)));
       end On_Subscribe;
 
    end Subscribe;

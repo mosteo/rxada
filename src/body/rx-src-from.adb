@@ -16,7 +16,7 @@ package body Rx.Src.From is
       package State is new Tools.Holders (Arrays.Typed_Array);
 
       procedure On_Subscribe (S : State.Definite;
-                              Consumer : in out Arrays.Typed.Subscriber) is
+                              Consumer : in out Arrays.Typed.Observer) is
       begin
          for E of S.CRef loop
             Consumer.On_Next (Arrays.Typed.Type_Traits.To_Indefinite (E));
@@ -42,7 +42,7 @@ package body Rx.Src.From is
       package Create is new Src.Create (Iterable.Typed);
 
       procedure On_Subscribe (State    : Iterable.Container;
-                              Consumer : in out Iterable.Typed.Subscriber)
+                              Consumer : in out Iterable.Typed.Observer)
       is
          use Iterable;
          procedure For_Each (V : Iterable.Typed.T) is

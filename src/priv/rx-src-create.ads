@@ -8,7 +8,7 @@ package Rx.Src.Create with Preelaborate is
 
    --  Three ways of easily creating a new observable for custom emision
 
-   function Parameterless (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
+   function Parameterless (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
                            return Typed.Observable;
    --  Creates an Observable that requires no parameters, from a function
    --  Does not autocomplete
@@ -16,7 +16,7 @@ package Rx.Src.Create with Preelaborate is
    generic
       type State is private;
       with procedure On_Subscribe (Initial  : State;
-                                   Observer : in out Typed.Subscriber) is <>;
+                                   Observer : in out Typed.Observer) is <>;
       Autocompletes : Boolean := True;
       --  Generic observable that can produce all its items from an initial value
       --  and hence doesn't need to retain a state going on.

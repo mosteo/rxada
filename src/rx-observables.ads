@@ -82,7 +82,7 @@ package Rx.Observables is
    -- Create --
    ------------
 
-   function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
+   function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
                     return Observable;
 
    --  You can always extend a plain Contracts.Observable, of course!
@@ -369,7 +369,7 @@ private
                     renames RxBuffer.Create;
 
    package RxCreate is new Rx.Src.Create (Typed);
-   function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
+   function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
                     return Observable renames RxCreate.Parameterless;
 
    package RxDebounce is new Op.Debounce (Operate);
