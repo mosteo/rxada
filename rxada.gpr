@@ -2,7 +2,16 @@ project RxAda is
 
    for Source_Dirs use ("src/**");
    for Object_Dir use "./obj";
-   for Main use ("rx-examples-basic.adb", "rx-examples-threading.adb", "rx-test.adb");
+   for Main use ("rx-devel.adb",
+                 "rx-examples-tests.adb",
+                 "rx-examples-minimal.adb",
+                 "rx-examples-basic.adb",
+                 "rx-examples-threading.adb",
+                 "rx-bugs-op_leak.adb",
+                 "rx-bugs-testbed.adb");
+
+   type Build_Type is ("debug", "release");
+   Build : Build_Type := external ("build", "debug");
 
    package Ide is
       for Vcs_Kind use "Mercurial";
@@ -14,20 +23,46 @@ project RxAda is
    end Pretty_Printer;
 
    package Builder is
-      for Default_Switches ("ada") use ("-s", "-g", "-m");
+      case Build is
+         when "debug" =>
+            for Default_Switches ("ada") use ("-j0", "-s", "-g");
+         when "release" =>
+            for Default_Switches ("ada") use ("-j0", "-s");
+      end case;
    end Builder;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatwal.fF", "-gnatVa", "-g", "-O2", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
+      case Build is
+         when "debug" =>
+            for Default_Switches ("ada") use ("-gnatwal.f", "-gnatVa", "-g", "-Og", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
+            --for Default_Switches ("ada") use ("-gnatwal", "-gnatVa", "-g", "-Og", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
+         when "release" =>
+            for Default_Switches ("ada") use ("-O3", "-gnatn", "-gnat12");
+      end case;
    end Compiler;
 
    package Binder is
-      for Default_Switches ("ada") use ("-E");
+      case Build is
+         when "debug" =>
+            for Default_Switches ("ada") use ("-E", "-Es");
+         when "release" =>
+            null;
+      end case;
    end Binder;
 
    package Linker is
-      for Default_Switches ("ada") use ("-g");
+      case Build is
+         when "debug" =>
+            for Default_Switches ("ada") use ("-g");
+         when "release" =>
+            null;
+      end case;
    end Linker;
+
+   package Gnattest is
+      for Tests_Dir use "../aunit";
+      for Stubs_Default use "pass";
+   end Gnattest;
 
 end RxAda;
 
