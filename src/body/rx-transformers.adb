@@ -4,7 +4,7 @@ package body Rx.Transformers is
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe (This : in out Operator; Consumer : in out Into.Subscriber'Class)
+   overriding procedure Subscribe (This : in out Operator; Consumer : in out Into.Observer'Class)
    is
    begin
       if This.Has_Parent then

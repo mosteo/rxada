@@ -31,6 +31,12 @@ package Rx.Contracts is
    procedure Subscribe (Producer : in out Observable;
                         Consumer : in out Observer'Class) is abstract;
 
+   ----------------
+   -- Subscriber --
+   ----------------
+
+   subtype Subscriber is Subscribers.Subscriber;
+
    ----------
    -- Sink --
    ----------

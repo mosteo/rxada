@@ -349,7 +349,7 @@ package body Rx.Tests is
                              Do_Last  => True, Ok_Last  => 3);
 
       declare -- More precise debounce
-         procedure Debounced (Observer : in out Std.Integers.Typed.Subscriber) is
+         procedure Debounced (Observer : in out Std.Integers.Typed.Observer) is
          begin
             Observer.On_Next (1); delay 0.2;
             Observer.On_Next (2); delay 0.2;

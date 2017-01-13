@@ -38,7 +38,7 @@ package Rx.Dispatchers is
 
       procedure On_Subscribe (Sched  : in out Dispatcher'Class;
                               Parent :        Operate.Observable'Class;
-                              Child  :        Operate.Into.Subscriber'Class);
+                              Child  :        Operate.Into.Observer'Class);
 
    end Subscribe;
 

@@ -8,9 +8,9 @@ package body Rx.Impl.Shared_Subscriber is
    -- Create --
    ------------
 
-   function Create (Held : Typed.Subscriber) return Subscriber is
+   function Create (Held : Typed.Observer) return Subscriber is
    begin
-      return (Actual => new Typed.Subscriber'(Held));
+      return (Actual => new Typed.Observer'(Held));
    end Create;
 
    -------------
@@ -18,7 +18,7 @@ package body Rx.Impl.Shared_Subscriber is
    -------------
 
    procedure Release (This : in out Subscriber) is
-      procedure Free is new Ada.Unchecked_Deallocation (Typed.Subscriber, Subscriber_Access);
+      procedure Free is new Ada.Unchecked_Deallocation (Typed.Observer, Subscriber_Access);
    begin
       Free (This.Actual);
    end Release;
@@ -57,17 +57,5 @@ package body Rx.Impl.Shared_Subscriber is
       This.Actual.On_Error (Error);
       This.Release;
    end On_Error;
-
-   -----------------
-   -- Unsubscribe --
-   -----------------
-
-   overriding procedure Unsubscribe  (This : in out Subscriber) is
-   begin
-      if This.Actual /= null then
-         This.Actual.Unsubscribe;
-         This.Release;
-      end if;
-   end Unsubscribe;
 
 end Rx.Impl.Shared_Subscriber;

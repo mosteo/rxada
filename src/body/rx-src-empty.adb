@@ -7,7 +7,7 @@ package body Rx.Src.Empty is
    type Void is null record;
 
    procedure On_Subscribe (State    : Void;
-                           Observer : in out Typed.Subscriber) is null;
+                           Observer : in out Typed.Observer) is null;
 
    package Empty_Sources is new Create.With_State (Void);
 
@@ -36,7 +36,7 @@ package body Rx.Src.Empty is
    -----------
 
    procedure On_Subscribe_Error (Error    : Errors.Occurrence;
-                                 Observer : in out Typed.Subscriber)
+                                 Observer : in out Typed.Observer)
    is
    begin
       Observer.On_Error (Error);

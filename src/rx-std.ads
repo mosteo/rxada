@@ -22,10 +22,10 @@ package Rx.Std is
 
    --  Base Std types
 
-   package Any      renames Impl.Std.Any.Instance.Observables;
    package Integers renames Impl.Std.Integers.Observables;
    package Floats   renames Impl.Std.Floats.Observables;
    package Strings  renames Impl.Std.Strings.Observables;
+   package Nothings renames Impl.Std.Nothings.Observables;
 
    --  Numeric self-operations for base types
 
@@ -33,15 +33,12 @@ package Rx.Std is
 
    --  Transforming operators between base types
 
-   package Any_To_Float      renames Impl.Std.Any_To_Float;
    package Integer_To_Float  renames Impl.Std.Int_To_Float;
    package String_To_Float   renames Impl.Std.String_To_Float;
 
-   package Any_To_Integer    renames Impl.Std.Any_To_Integer;
    package Float_To_Integer  renames Impl.Std.Float_To_Integer;
    package String_To_Integer renames Impl.Std.String_To_Integer;
 
-   package Any_To_String     renames Impl.Std.Any_To_String;
    package Float_To_String   renames Impl.Std.Float_To_String;
    package Integer_To_String renames Impl.Std.Integer_To_String;
 
@@ -65,10 +62,10 @@ package Rx.Std is
 
    end Casts;
 
-   function Empty return Any.Observable renames Any.Empty;
+   function Empty return Nothings.Observable renames Nothings.Empty;
 
-   function Error (E : Rx.Errors.Occurrence)                return Any.Observable renames Any.Error;
-   function Error (E : Ada.Exceptions.Exception_Occurrence) return Any.Observable renames Any.Error;
+   function Error (E : Rx.Errors.Occurrence)                return Nothings.Observable renames Nothings.Error;
+   function Error (E : Ada.Exceptions.Exception_Occurrence) return Nothings.Observable renames Nothings.Error;
 
    package Images is
 
@@ -83,7 +80,7 @@ package Rx.Std is
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Integers.Observable renames Numeric.Integers.Interval;
 
-   function Never return Any.Observable renames Any.Never;
+   function Never return Nothings.Observable renames Nothings.Never;
 
    function Timer (After : Duration) return Integers.Observable is (Integers.Timer (0, After));
    --  Std Timer emits a 0 after Pause seconds an completes

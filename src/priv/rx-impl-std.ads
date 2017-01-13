@@ -3,23 +3,21 @@ with Rx.Indefinites;
 with Rx.Numeric_Observables;
 with Rx.Numeric_Operators;
 with Rx.Operators;
+with Rx.Valueless;
 
 package Rx.Impl.Std is
 
-   package Any      is new Rx.Indefinites (Rx_Any'Class);
    package Floats   is new Rx.Definites (Rx_Float);
    package Integers is new Rx.Definites (Rx_Integer);
    package Strings  is new Rx.Indefinites (Rx_String);
+   package Nothings is new Rx.Definites (Valueless.Nothing);
 
-   package Any_To_Float is new Rx.Operators (Any.Observables,      Floats.Observables);
    package Int_To_Float is new Rx.Operators (Integers.Observables, Floats.Observables);
    package String_To_Float is new Rx.Operators (Strings.Observables,  Floats.Observables);
 
-   package Any_To_Integer is new Rx.Operators (Any.Observables,     Integers.Observables);
    package Float_To_Integer is new Rx.Operators (Floats.Observables,  Integers.Observables);
    package String_To_Integer is new Rx.Operators (Strings.Observables, Integers.Observables);
 
-   package Any_To_String is new Rx.Operators (Any.Observables,      Strings.Observables);
    package Float_To_String is new Rx.Operators (Floats.Observables,   Strings.Observables);
    package Integer_To_String is new Rx.Operators (Integers.Observables, Strings.Observables);
 
@@ -38,10 +36,6 @@ package Rx.Impl.Std is
       package Floats is new Numeric_Observables (Floats.Observables,
                                                  To_Float,
                                                  Succ);
-
-      package Any_To_Int is new Rx.Numeric_Operators (Any_To_Integer,
-                                                      To_Integer,
-                                                      Rx_Integer'Succ);
 
       package Str_To_Int is new Rx.Numeric_Operators (String_To_Integer,
                                                       To_Integer,

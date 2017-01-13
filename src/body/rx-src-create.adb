@@ -15,9 +15,9 @@ package body Rx.Src.Create is
 
       overriding procedure Subscribe
         (Producer : in out Source;
-         Consumer : in out Typed.Subscriber)
+         Consumer : in out Typed.Observer)
       is
-         Actual : Typed.Subscriber := Consumer;
+         Actual : Typed.Observer := Consumer;
       begin
          begin
             On_Subscribe (Producer.Initial, Actual);
@@ -55,15 +55,15 @@ package body Rx.Src.Create is
    -- Parameterless --
    -------------------
 
-   type Parameterless_Proc is access procedure (Observer : in out Typed.Subscriber);
-   procedure On_Subscribe (Initial : Parameterless_Proc; Observer : in out Typed.Subscriber) is
+   type Parameterless_Proc is access procedure (Observer : in out Typed.Observer);
+   procedure On_Subscribe (Initial : Parameterless_Proc; Observer : in out Typed.Observer) is
    begin
       Initial (Observer);
    end On_Subscribe;
 
    package Create_Parameterless is new With_State (Parameterless_Proc, On_Subscribe, Autocompletes => False);
 
-   function Parameterless (On_Subscribe : not null access procedure (Observer : in out Typed.Subscriber))
+   function Parameterless (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
                            return Typed.Observable is
    begin
       return Create_Parameterless.Create (On_Subscribe);

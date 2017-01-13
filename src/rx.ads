@@ -21,4 +21,7 @@ package Rx with Pure is
 
    subtype Rx_String  is String;
 
+   type    Rx_Nothing is null record;
+   --  Some observables are used for notification purposes, with values of no importance
+
 end Rx;

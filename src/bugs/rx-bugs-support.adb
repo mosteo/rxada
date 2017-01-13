@@ -1,4 +1,4 @@
-with Rx.Debug; use Rx.Debug;
+--  with Rx.Debug; use Rx.Debug;
 
 package body Rx.Bugs.Support is
 
