@@ -1,18 +1,83 @@
-with Rx.Transform;
-with Rx.Observable;
+with Rx.Observables;
+with Rx.Op.Count;
+with Rx.Transformers;
+
+private with Rx.Op.Map;
+private with Rx.Op.Scan;
 
 generic
-   with package From is new Rx.Observable (<>); -- Naming chosen for same lenght
-   with package Into is new Rx.Observable (<>);
+   --  These could well be trait packages, but using those the user only has to know about "observables" packages
+   with package From is new Rx.Observables (<>); -- Naming chosen for same length
+   with package Into is new Rx.Observables (<>);
 package Rx.Operators is
 
-   package Typed is new Transform (From.Typed, Into.Typed);
+-- This package seems unnecessary but by separating it from Transform we can too separate each operator
+-- implementation classes in its own packages, just like with Typed/Observables hierarchy.
 
-   --  Types transformation magic happens here when chaining things
-   function "&" (L : From.Typed.Producers.Observable'Class;
-                 R : Typed.Operator'Class)
-                 return Into.Typed.Producers.Observable'Class renames Typed."&";
+   package Typed is new Rx.Transformers (From.Typed, Into.Typed);
+   package Typed_Lists is new Rx.Transformers (From.Typed_Lists, Into.Typed);
 
-   function Map (F : Typed.Func1) return Typed.Operator'Class;
+   subtype Operator Is Typed.Operator'Class;
+
+   ---------
+   -- "&" --
+   ---------
+
+   function "&" (L : From.Observable; R : Operator) return Into.Observable
+   renames Typed.Will_Observe;
+
+   --  From here on, instances of operators that transform between two types
+
+   --------------
+   -- Counters --
+   --------------
+
+   generic
+      with function Succ (V : Into.T) return Into.T;
+      Default_Initial_Count : Into.T;
+   package Counters is
+      package Pkg_Count is new Rx.Op.Count (Typed, Succ, Default_Initial_Count);
+      function Count (First : Into.T) return Operator renames Pkg_Count.Count;
+   end Counters;
+
+   ------------
+   -- Length --
+   ------------
+
+   generic
+      with function Length (V : From.Typed_Lists.T) return Into.T;
+   function Length return Typed_Lists.Operator'Class;
+
+   ---------
+   -- Map --
+   ---------
+
+   function Map (F : Typed.Actions.Func1) return Operator'Class;
+
+   ----------
+   -- Scan --
+   ----------
+
+   function Scan (F         : Typed.Actions.Func2;
+                  Seed      : Into.T;
+                  Emit_Seed : Boolean) return Operator'Class;
+
+   ----------
+   -- Size --
+   ----------
+
+   generic
+      with function Size (V : From.T) return Into.T;
+   function Size return Operator'Class;
+
+private
+
+   package RxMap is new Rx.Op.Map (Typed);
+   function Map (F : Typed.Actions.Func1) return Operator renames RxMap.Create;
+
+   package RxScan is new Rx.Op.Scan (Typed);
+   function Scan (F         : Typed.Actions.Func2;
+                  Seed      : Into.T;
+                  Emit_Seed : Boolean) return Operator renames RxScan.Create;
 
 end Rx.Operators;
