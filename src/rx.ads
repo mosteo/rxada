@@ -4,10 +4,13 @@ pragma Detect_Blocking;
 
 package Rx with Pure is
 
-   type    Rx_Any      is interface;
-   --  By deriving user types from Rx_Any, users can benefit from some Operators in Rx.Std by default
+   No_Longer_Subscribed : exception;
+   --  This is the only subscription pervading this design.
+   --  Generators of data must be aware that this can be raised in any observer call.
 
    --  The following are defaults for the default operators.
+   --  Also they are used in operators that take regular numbers as parameters.
+   --  It is a compromise to eliminate yet another generic parameter which will rarely be meaningul.
    --  For specific need the user can create instances for any desired type.
 
    subtype Rx_Integer  is Long_Long_Integer;

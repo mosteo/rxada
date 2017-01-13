@@ -4,7 +4,7 @@ package body Rx.Subscriptions is
    -- Unsubscribe --
    -----------------
 
-   procedure Unsubscribe (S : in out Subscription) is
+   overriding procedure Unsubscribe (S : in out Subscription) is
       procedure Set (B : in out State) is
       begin
          B := Unsubscribed;
