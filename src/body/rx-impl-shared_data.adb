@@ -24,6 +24,21 @@ package body Rx.Impl.Shared_Data is
    end Apply;
 
    ------------
+   -- Forget --
+   ------------
+
+   procedure Forget (P : in out Proxy) is
+      Is_Last : Boolean;
+   begin
+      P.Safe.Forget (Is_Last);
+      if Is_Last then
+         P.Finalize;
+      else
+         P.Safe := null;
+      end if;
+   end Forget;
+
+   ------------
    -- Tamper --
    ------------
 
@@ -52,6 +67,20 @@ package body Rx.Impl.Shared_Data is
       begin
          Elem := I;
       end Set;
+
+      ------------
+      -- Forget --
+      ------------
+
+      procedure Forget (Is_Last : out Boolean) is
+      begin
+         if Count > 0 then
+            Finalize;
+            Is_Last := Get_Count = 0;
+         else
+            raise Constraint_Error;
+         end if;
+      end Forget;
 
       ---------
       -- Get --
