@@ -10,9 +10,7 @@ with Rx.Traits.Types;
 
 generic
    with package Type_Traits is new Rx.Traits.Types (<>);
-package Rx.Typed is
-
-   pragma Preelaborate;
+package Rx.Typed with Preelaborate is
 
    package Contracts is new Rx.Contracts (Type_Traits.T);
    --  The beginning of it all

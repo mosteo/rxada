@@ -36,7 +36,7 @@ package Rx.Actions.Typed with Preelaborate is
 
    --  Predefined actions
 
-   Always_Pass : constant TFilter1'Class;
+   function Always_Pass return TFilter1'Class;
    --  Trivial filter that always returns true
 
    function Countdown (Times : Rx_Natural) return TFilter1'Class;
@@ -51,6 +51,6 @@ private
 
    function Always_True (V : T) return Boolean is (True);
 
-   Always_Pass : constant TFilter1'Class := Wrap (Always_True'Access);
+   function Always_Pass return TFilter1'Class is (Wrap (Always_True'Access));
 
 end Rx.Actions.Typed;
