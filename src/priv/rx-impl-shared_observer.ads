@@ -24,10 +24,10 @@ package Rx.Impl.Shared_Observer with Preelaborate is
 
 private
 
-   type Subscriber_Access is access Typed.Observer;
+   type Observer_Access is access Typed.Observer;
 
    type Observer is new Typed.Contracts.Observer with record
-      Actual : Subscriber_Access;
+      Actual : Observer_Access;
    end record;
 
    Null_Observer : constant Observer := (Typed.Contracts.Observer with Actual => null);
