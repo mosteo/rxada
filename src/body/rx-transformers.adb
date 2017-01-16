@@ -25,7 +25,7 @@ package body Rx.Transformers is
 
    overriding procedure On_Completed (This : in out Operator) is
    begin
-      This.Get_Subscriber.On_Completed;
+      This.Get_Observer.On_Completed;
       This.Unsubscribe;
    end On_Completed;
 
@@ -35,7 +35,7 @@ package body Rx.Transformers is
 
    overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence) is
    begin
-      This.Get_Subscriber.On_Error (Error);
+      This.Get_Observer.On_Error (Error);
       This.Unsubscribe;
    end On_Error;
 

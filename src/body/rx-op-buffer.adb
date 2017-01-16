@@ -27,7 +27,7 @@ package body Rx.Op.Buffer is
    procedure Emit (This : in out Counter) is
    begin
       This.Have := 0;
-      This.Get_Subscriber.On_Next (+ This.Container);
+      This.Get_Observer.On_Next (+ This.Container);
       This.Container := Empty;
    end Emit;
 
@@ -68,7 +68,7 @@ package body Rx.Op.Buffer is
       if This.Have > 0 then
          Emit (This);
       end if;
-      This.Get_Subscriber.On_Completed;
+      This.Get_Observer.On_Completed;
    end On_Completed;
 
    --------------
@@ -80,7 +80,7 @@ package body Rx.Op.Buffer is
    begin
       if This.Have > 0 then
          Emit (This);
-         This.Get_Subscriber.On_Error (Error);
+         This.Get_Observer.On_Error (Error);
       end if;
    end On_Error;
 

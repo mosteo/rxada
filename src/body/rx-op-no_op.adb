@@ -7,7 +7,7 @@ package body Rx.Op.No_Op is
                       V     :        Operate.T)
    is
    begin
-      This.Get_Subscriber.On_Next (V);
+      This.Get_Observer.On_Next (V);
    end On_Next;
 
    ------------

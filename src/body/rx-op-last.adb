@@ -39,8 +39,8 @@ package body Rx.Op.Last is
    procedure On_Completed (This  : in out Operator) is
    begin
       if This.Has_Last then
-         This.Get_Subscriber.On_Next (+ This.Last);
-         This.Get_Subscriber.On_Completed;
+         This.Get_Observer.On_Next (+ This.Last);
+         This.Get_Observer.On_Completed;
       else
          raise Constraint_Error with "Last completed without element";
       end if;

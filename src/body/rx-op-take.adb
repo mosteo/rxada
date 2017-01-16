@@ -17,12 +17,12 @@ package body Rx.Op.Take is
    begin
       if This.Is_Subscribed then
          if This.Pass.Ref.Check (V) then
-            This.Get_Subscriber.On_Next (V);
+            This.Get_Observer.On_Next (V);
          else
             if This.Emit_Last then
-               This.Get_Subscriber.On_Next (V);
+               This.Get_Observer.On_Next (V);
             end if;
-            This.Get_Subscriber.On_Completed;
+            This.Get_Observer.On_Completed;
             This.Unsubscribe;
          end if;
       else

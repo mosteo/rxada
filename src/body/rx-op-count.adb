@@ -34,8 +34,8 @@ package body Rx.Op.Count is
    overriding
    procedure On_Completed (This : in out Counter) is
    begin
-      This.Get_Subscriber.On_Next (Transform.Into.Type_Traits.To_Indefinite (This.Count));
-      This.Get_Subscriber.On_Completed;
+      This.Get_Observer.On_Next (Transform.Into.Type_Traits.To_Indefinite (This.Count));
+      This.Get_Observer.On_Completed;
    end On_Completed;
 
    -----------

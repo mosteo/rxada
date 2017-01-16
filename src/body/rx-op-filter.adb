@@ -10,7 +10,7 @@ package body Rx.Op.Filter is
    is
    begin
       if This.Func (V) then
-         This.Get_Subscriber.On_Next (V);
+         This.Get_Observer.On_Next (V);
       end if;
    end On_Next;
 

@@ -33,12 +33,12 @@ package body Rx.Op.Repeat is
                       V     :        Operate.T) is
    begin
       if This.Kind = While_Do and then not This.First_Seen and then not This.Filter.Ref.Check then
-         This.Get_Subscriber.On_Completed;
+         This.Get_Observer.On_Completed;
          This.Unsubscribe;
       else
          This.First_Seen := True;
          This.Sequence.Append (V);
-         This.Get_Subscriber.On_Next (V);
+         This.Get_Observer.On_Next (V);
       end if;
    end On_Next;
 
@@ -56,7 +56,7 @@ package body Rx.Op.Repeat is
             when Counter =>
                for I in 1 .. This.Repeats loop
                   for V of This.Sequence loop
-                     This.Get_Subscriber.On_Next (V);
+                     This.Get_Observer.On_Next (V);
                   end loop;
                end loop;
 
@@ -67,13 +67,13 @@ package body Rx.Op.Repeat is
                             (This.Kind = While_Do     and then not Check);
 
                   for V of This.Sequence loop
-                     This.Get_Subscriber.On_Next (V);
+                     This.Get_Observer.On_Next (V);
                   end loop;
                end loop;
          end case;
       end if;
 
-      This.Get_Subscriber.On_Completed;
+      This.Get_Observer.On_Completed;
    end On_Completed;
 
    --------------------

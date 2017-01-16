@@ -6,7 +6,7 @@ package body Rx.Op.Length is
                                  V     :        Transform.From.T)
    is
    begin
-      This.Get_Subscriber.On_Next (Length (V));
+      This.Get_Observer.On_Next (Length (V));
    end On_Next;
 
    ------------
