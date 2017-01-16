@@ -12,6 +12,7 @@ package Rx.Preservers with Preelaborate is
    -- Shortcuts & bug workarounds
    subtype T          is Typed.Type_Traits.T;
    subtype Observable is Typed.Observable'Class;
+   subtype Observer   is Typed.Observer'Class;
 
    package Transform is new Rx.Transformers (Typed, Typed);
    --  Specialization with type preservation here

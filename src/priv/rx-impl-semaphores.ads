@@ -11,8 +11,8 @@ package Rx.Impl.Semaphores is
    type Shared_Binary is private;
    --  A ref-counted semaphore which is initially invalid
 
-   function Create return Shared_Binary;
-   --  Allocate a valid semaphore
+   function Create (Fake : Boolean := False) return Shared_Binary;
+   --  Allocate a valid semaphore (or a fake one that does nothing)
 
    type Critical_Section (Mutex : access Shared_Binary) is limited private;
    --  Declare an instance of this type in the scope to be made exclusive
@@ -26,11 +26,19 @@ private
 
    package Shared_Semaphores is new Rx.Impl.Shared_Data (Binary, Binary_Ptr);
 
-   type Shared_Binary is new Shared_Semaphores.Proxy with null record;
+   type Shared_Binary is new Shared_Semaphores.Proxy with record
+      Fake : Boolean := False;
+   end record;
 
-   function Create return Shared_Binary is
-     (Wrap (new Binary (Initially_Available => True,
-                        Ceiling             => System.Default_Priority)));
+   overriding function Wrap (I : not null Binary_Ptr) return Shared_Binary is
+      (Shared_Semaphores.Wrap (I) with Fake => False);
+
+   function Create (Fake : Boolean := False) return Shared_Binary is
+     (if Fake then
+        (Shared_Semaphores.Proxy with Fake => True)
+      else
+        (Wrap (new Binary (Initially_Available => True,
+                           Ceiling             => System.Default_Priority))));
 
    type Critical_Section (Mutex : not null access Shared_Binary) is new Ada.Finalization.Limited_Controlled
      with null record;

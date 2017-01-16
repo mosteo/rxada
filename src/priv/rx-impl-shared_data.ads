@@ -22,7 +22,12 @@ package Rx.Impl.Shared_Data with Preelaborate is
 
    function Wrap (I : not null Item_Access) return Proxy;
 
+   procedure Forget (P : in out Proxy)
+     with Pre => P.Is_Valid or else raise Constraint_Error;
+   --  Invalidate this proxy and decrease refcount
+
    procedure Apply (P : in out Proxy; CB : access procedure (I : in out Item));
+   --  This takes place inside a protected object! So no blocking calls in procedure...
 
    function Get (P : Proxy) return Const_Ref;
    --  Safe because it cannot outlive the Proxy from which it is retrieved
@@ -43,6 +48,7 @@ private
       procedure Set (I : Item_Access);
       function  Get_Count return Natural;
       function  Tamper return Ref; -- Only for synchronized views of Elem.all
+      procedure Forget (Is_Last : out Boolean);
 
       procedure Adjust;
       procedure Finalize;
