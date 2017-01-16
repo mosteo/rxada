@@ -87,7 +87,7 @@ package body Rx.Op.Debounce is
             begin
                Child.Ref.On_Next (Events.Value (Next.CRef));
             exception
-               when Subscriptions.No_Longer_Subscribed =>
+               when No_Longer_Subscribed =>
                   Debug.Log ("Debounce.Flush: Seen No_Longer_Subscribed", Debug.Note);
                when E : others =>
                   Operate.Typed.Defaults.Default_Error_Handler (Child.Ref, E);

@@ -81,7 +81,7 @@ package body Rx.Subscribe is
             This.Observer.Ref.On_Next (V);
          end if;
       else
-         raise Subscriptions.No_Longer_Subscribed;
+         raise No_Longer_Subscribed;
       end if;
    end On_Next;
 

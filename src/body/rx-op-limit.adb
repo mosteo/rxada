@@ -35,7 +35,7 @@ package body Rx.Op.Limit is
    is
    begin
       if This.Completed then
-         raise Subscriptions.No_Longer_Subscribed;
+         raise No_Longer_Subscribed;
       end if;
 
       if This.Remaining > 0 then

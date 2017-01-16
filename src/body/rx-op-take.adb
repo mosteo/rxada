@@ -26,7 +26,7 @@ package body Rx.Op.Take is
             This.Unsubscribe;
          end if;
       else
-         raise Subscriptions.No_Longer_Subscribed;
+         raise No_Longer_Subscribed;
       end if;
    end On_Next;
 

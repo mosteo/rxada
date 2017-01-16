@@ -22,7 +22,7 @@ package body Rx.Src.Create is
          begin
             On_Subscribe (Producer.Initial, Actual);
          exception
-            when Subscriptions.No_Longer_Subscribed =>
+            when No_Longer_Subscribed =>
                Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Note);
             when E : others =>
                if Autocompletes then -- Because the error was within On_Next somewhere
@@ -36,7 +36,7 @@ package body Rx.Src.Create is
             Actual.On_Completed;
          end if;
       exception
-         when Subscriptions.No_Longer_Subscribed =>
+         when No_Longer_Subscribed =>
             Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Note);
       end Subscribe;
 

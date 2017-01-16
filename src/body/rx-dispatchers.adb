@@ -55,7 +55,7 @@ package body Rx.Dispatchers is
                RW.Downstream.On_Completed;
          end case;
       exception
-         when Subscriptions.No_Longer_Subscribed =>
+         when No_Longer_Subscribed =>
             Debug.Log ("Dispatchers.Runner caught Not_Longer_Subscribed", Debug.Note);
       end Run;
 
