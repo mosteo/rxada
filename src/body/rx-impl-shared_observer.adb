@@ -2,7 +2,7 @@ with Ada.Unchecked_Deallocation;
 
 -- with Gnat.IO; use Gnat.IO;
 
-package body Rx.Impl.Shared_Subscriber is
+package body Rx.Impl.Shared_Observer is
 
    ------------
    -- Create --
@@ -58,4 +58,4 @@ package body Rx.Impl.Shared_Subscriber is
       This.Release;
    end On_Error;
 
-end Rx.Impl.Shared_Subscriber;
+end Rx.Impl.Shared_Observer;

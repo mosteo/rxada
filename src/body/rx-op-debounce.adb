@@ -12,7 +12,7 @@ package body Rx.Op.Debounce is
    package Into renames Operate.Into;
 
    package Events is new Rx.Impl.Events (Operate.Typed);
-   --  package Shared is new Rx.Impl.Shared_Subscriber (Operate.Typed);
+   --  package Shared is new Rx.Impl.Shared_Observer (Operate.Typed);
 
    task type Debouncer is
 
