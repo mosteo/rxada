@@ -18,7 +18,7 @@ package body Rx.Src.Interval is
       Value  : Typed.D;	   	 	 -- Next value to emit
       Next   : Ada.Calendar.Time;	 -- Reference for next deadline
 
-      Child  : Shared.Subscriber; -- Reduce copy stress with a shared observer across runnables
+      Child  : Shared.Observer; -- Reduce copy stress with a shared observer across runnables
    end record;
 
    ---------
