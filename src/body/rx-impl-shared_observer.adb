@@ -18,7 +18,7 @@ package body Rx.Impl.Shared_Observer is
    -------------
 
    procedure Release (This : in out Observer) is
-      procedure Free is new Ada.Unchecked_Deallocation (Typed.Observer, Subscriber_Access);
+      procedure Free is new Ada.Unchecked_Deallocation (Typed.Observer, Observer_Access);
    begin
       Free (This.Actual);
    end Release;
