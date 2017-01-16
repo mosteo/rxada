@@ -16,7 +16,7 @@ package body Rx.Op.Observe_On is
    overriding procedure On_Completed (This : in out Op);
    overriding procedure On_Error     (This : in out Op; Error : Errors.Occurrence);
 
-   overriding procedure Subscribe    (This : in out Op; Observer : in out Operate.Into.Subscriber'Class);
+   overriding procedure Subscribe    (This : in out Op; Observer : in out Operate.Into.Observer'Class);
 
    function Get_Downstream (This : in out Op'Class) return Shared.Subscriber is
       (Shared.Subscriber (This.Get_Subscriber.Actual.all));
@@ -52,7 +52,7 @@ package body Rx.Op.Observe_On is
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe (This : in out Op; Observer : in out Operate.Into.Subscriber'Class) is
+   overriding procedure Subscribe (This : in out Op; Observer : in out Operate.Into.Observer'Class) is
       Actual : Shared.Subscriber := Shared.Create (Observer);
    begin
       Operate.Operator (This).Subscribe (Actual);

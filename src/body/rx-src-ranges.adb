@@ -1,12 +1,10 @@
 with Rx.Errors;
-with Rx.Src.Create;
 
 package body Rx.Src.Ranges is
 
    use Typed.Conversions;
 
    package Contracts renames Typed.Contracts;
-   package Source is new Rx.Src.Create (Typed);
 
    type Kinds is (Counter, Interval);
 
@@ -18,7 +16,7 @@ package body Rx.Src.Ranges is
       end case;
    end record;
 
-   overriding procedure Subscribe (This : in out Observable; Observer : in out Typed.Subscriber) is
+   overriding procedure Subscribe (This : in out Observable; Observer : in out Typed.Observer) is
    begin
       begin
          case This.Mode is

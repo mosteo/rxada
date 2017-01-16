@@ -10,7 +10,7 @@ package body Rx.Op.Scan is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Typed.Into.Subscriber'Class);
+                        Consumer : in out Typed.Into.Observer'Class);
 
    overriding
    procedure On_Next (This  : in out Operator;
@@ -22,7 +22,7 @@ package body Rx.Op.Scan is
 
    overriding
    procedure Subscribe (Producer : in out Operator;
-                        Consumer : in out Typed.Into.Subscriber'Class)
+                        Consumer : in out Typed.Into.Observer'Class)
    is
    begin
       Typed.Operator (Producer).Subscribe (Consumer);

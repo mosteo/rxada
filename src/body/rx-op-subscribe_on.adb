@@ -12,13 +12,13 @@ package body Rx.Op.Subscribe_On is
       Sched : Schedulers.Scheduler;
    end record;
 
-   overriding procedure Subscribe    (This : in out Op; Observer : in out Operate.Into.Subscriber);
+   overriding procedure Subscribe    (This : in out Op; Observer : in out Operate.Into.Observer);
 
    ---------------
    -- Subscribe --
    ---------------
 
-   overriding procedure Subscribe (This : in out Op; Observer : in out Operate.Into.Subscriber) is
+   overriding procedure Subscribe (This : in out Op; Observer : in out Operate.Into.Observer) is
    begin
       -- Relay subscription to the actual thread:
       Remote.On_Subscribe (This.Sched.all, This.Get_Parent, Observer);
