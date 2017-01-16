@@ -7,7 +7,7 @@ package body Rx.Op.Split is
    is
       procedure For_Each (V : Transform.Into.T) is
       begin
-         This.Get_Subscriber.On_Next (V);
+         This.Get_Observer.On_Next (V);
       end For_Each;
    begin
       Iterate (V, For_Each'Access);

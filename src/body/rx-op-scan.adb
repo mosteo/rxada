@@ -27,7 +27,7 @@ package body Rx.Op.Scan is
    begin
       Typed.Operator (Producer).Subscribe (Consumer);
       if Producer.Emit then
-         Producer.Get_Subscriber.On_Next (+ Producer.Acum);
+         Producer.Get_Observer.On_Next (+ Producer.Acum);
       end if;
    end Subscribe;
 
@@ -41,7 +41,7 @@ package body Rx.Op.Scan is
    is
    begin
       This.Acum := + This.Func (V, + This.Acum);
-      This.Get_Subscriber.On_Next (+ This.Acum);
+      This.Get_Observer.On_Next (+ This.Acum);
    end On_Next;
 
    ------------

@@ -11,7 +11,7 @@ package body Rx.Op.Distinct is
    begin
       if This.First_Seen then
          if This.Are_Distinct (V, + This.Prev) then
-            This.Get_Subscriber.On_Next (V);
+            This.Get_Observer.On_Next (V);
             This.Prev := + V;
          end if;
       else

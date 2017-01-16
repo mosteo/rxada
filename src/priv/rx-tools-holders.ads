@@ -35,6 +35,9 @@ package Rx.Tools.Holders with Preelaborate is
    procedure Clear (D : in out Definite);
    --  Dispose of the stored definite
 
+   function Get_Access (D : in out Definite) return access Indef;
+   --  TEMPORARY REFERENCE BUG WORKAROUND
+
 private
 
    use Ada.Finalization;
@@ -61,5 +64,7 @@ private
    function CRef (D :        Definite) return Const_Ref is (Actual => D.Actual);
 
    function Is_Empty (D : Definite) return Boolean is (D.Actual = null);
+
+   function Get_Access (D : in out Definite) return access Indef is (D.Actual);
 
 end Rx.Tools.Holders;

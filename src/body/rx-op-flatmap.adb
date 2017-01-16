@@ -59,7 +59,7 @@ package body Rx.Op.Flatmap is
                                  V     :        Typed.Into.T)
    is
    begin
-      This.This.Get_Subscriber.On_Next (V);
+      This.This.Get_Observer.On_Next (V);
    end On_Next;
 
    overriding procedure On_Next (This  : in out Demiurge;

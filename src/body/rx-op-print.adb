@@ -24,7 +24,7 @@ package body Rx.Op.Print is
       else
          Put_Line ((if This.With_Timestamp then Stamp else "") & Rx.Schedulers.Current_Thread_Id); -- Mmm
       end if;
-      This.Get_Subscriber.On_Next (V);
+      This.Get_Observer.On_Next (V);
    end On_Next;
 
    ------------

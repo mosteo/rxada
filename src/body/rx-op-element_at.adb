@@ -16,8 +16,8 @@ package body Rx.Op.Element_At is
    overriding procedure On_Next (This : in out Operator; V : Operate.T) is
    begin
       if This.Current = This.Pos then
-         This.Get_Subscriber.On_Next (V);
-         This.Get_Subscriber.On_Completed;
+         This.Get_Observer.On_Next (V);
+         This.Get_Observer.On_Completed;
       end if;
 
       This.Current := This.Current + 1;
@@ -28,8 +28,8 @@ package body Rx.Op.Element_At is
          if not This.Has_Default then
             raise Constraint_Error with "Pos not reached in Element_At";
          else
-            This.Get_Subscriber.On_Next (+ This.Default);
-            This.Get_Subscriber.On_Completed;
+            This.Get_Observer.On_Next (+ This.Default);
+            This.Get_Observer.On_Completed;
          end if;
       else
          null; -- Otherwise we already completed in On_Next

@@ -21,7 +21,7 @@ package body Rx.Op.Limit is
    begin
       if not This.Completed then
          This.Completed := True;
-         This.Get_Subscriber.On_Completed;
+         This.Get_Observer.On_Completed;
          This.Unsubscribe;
       end if;
    end On_Completed;
@@ -39,13 +39,13 @@ package body Rx.Op.Limit is
       end if;
 
       if This.Remaining > 0 then
-         This.Get_Subscriber.On_Next (V);
+         This.Get_Observer.On_Next (V);
          This.Remaining := This.Remaining - 1;
       end if;
 
       if This.Remaining = 0 and not This.Completed then
          This.Completed := True;
-         This.Get_Subscriber.On_Completed;
+         This.Get_Observer.On_Completed;
          This.Unsubscribe;
       end if;
    end On_Next;

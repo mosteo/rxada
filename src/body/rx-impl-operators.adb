@@ -6,7 +6,7 @@ package body Rx.Impl.Operators is
 
    overriding procedure On_Completed (This : in out Operator) is
    begin
-      This.Get_Subscriber.On_Completed;
+      This.Get_Observer.On_Completed;
    end On_Completed;
 
    --------------
@@ -15,7 +15,7 @@ package body Rx.Impl.Operators is
 
    overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence) is
    begin
-      This.Get_Subscriber.On_Error (Error);
+      This.Get_Observer.On_Error (Error);
    end On_Error;
 
    ---------------

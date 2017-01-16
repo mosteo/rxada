@@ -6,7 +6,7 @@ package body Rx.Op.Map is
    procedure On_Next (This  : in out Op;
                       V     : Typed.From.Type_Traits.T) is
    begin
-      This.Get_Subscriber.On_Next (This.F (V));
+      This.Get_Observer.On_Next (This.F (V));
    end On_Next;
 
    ------------
