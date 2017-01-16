@@ -26,9 +26,9 @@ package Rx.Dispatchers is
 
       package Shared is new Rx.Impl.Shared_Subscriber (Typed);
 
-      procedure On_Next      (Sched : in out Dispatcher'Class; Observer : Shared.Subscriber; V : Typed.Type_Traits.T);
-      procedure On_Completed (Sched : in out Dispatcher'Class; Observer : Shared.Subscriber);
-      procedure On_Error     (Sched : in out Dispatcher'Class; Observer : Shared.Subscriber; E : Rx.Errors.Occurrence);
+      procedure On_Next      (Sched : in out Dispatcher'Class; Observer : Shared.Observer; V : Typed.Type_Traits.T);
+      procedure On_Completed (Sched : in out Dispatcher'Class; Observer : Shared.Observer);
+      procedure On_Error     (Sched : in out Dispatcher'Class; Observer : Shared.Observer; E : Rx.Errors.Occurrence);
 
    end Events;
 
