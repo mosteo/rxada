@@ -1,13 +1,13 @@
 with Rx.Errors;
 --  with Rx.Impl.Definite_Observer; -- Does not exist yet
-with Rx.Impl.Shared_Subscriber;
+with Rx.Impl.Shared_Observer;
 with Rx.Preserve;
 with Rx.Subscriptions;
 
 package body Rx.Op.Flatmap is
 
    package Operate is new Rx.Preserve (Typed.Into);
-   package Shared  is new Rx.Impl.Shared_Subscriber (Typed.Into);
+   package Shared  is new Rx.Impl.Shared_Observer (Typed.Into);
 
    --  The demiurge will be subscribed as shared_observer to all generated observables
    --  Will have a protected member to track count of observables to which is subscribed

@@ -3,7 +3,7 @@ with Rx.Typed;
 
 generic
    with package Typed is new Rx.Typed (<>);
-package Rx.Impl.Shared_Subscriber with Preelaborate is
+package Rx.Impl.Shared_Observer with Preelaborate is
 
    type Observer is new Typed.Contracts.Observer with private;
    --  In essence this is a carcass for a pointed to observer.
@@ -32,4 +32,4 @@ private
 
    Null_Observer : constant Observer := (Typed.Contracts.Observer with Actual => null);
 
-end Rx.Impl.Shared_Subscriber;
+end Rx.Impl.Shared_Observer;
