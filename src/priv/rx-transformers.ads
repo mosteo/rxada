@@ -51,7 +51,7 @@ package Rx.Transformers with Preelaborate is
 --     with Post'Class => not This.Is_Subscribed;
 
 --     not overriding function Get_Observer (This : in out Operator) return Into.Holders.Observers.Reference;
-   --     with Pre'Class => This.Is_Subscribed or else raise Subscriptions.No_Longer_Subscribed;
+   --     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
 
    not overriding function Get_Observer (This : in out Operator) return access Into.Observer'Class
      with Post'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;

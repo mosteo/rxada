@@ -6,9 +6,6 @@ package Rx.Subscriptions is
 
    pragma Preelaborate;
 
-   No_Longer_Subscribed : exception renames Rx.No_Longer_Subscribed;
-   pragma Temporary;
-
    type Subscription is new Subscribers.Subscriber with private;
 
    function Subscribe return Subscription;

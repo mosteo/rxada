@@ -52,7 +52,7 @@ package body Rx.Src.From is
       begin
          Iterable.Iterate (State, For_Each'Access);
       exception
-         when Subscriptions.No_Longer_Subscribed =>
+         when No_Longer_Subscribed =>
             Debug.Log ("From_Iterable: caught No_Longer_Subscribed", Debug.Note);
       end On_Subscribe;
 
