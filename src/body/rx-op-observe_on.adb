@@ -19,7 +19,10 @@ package body Rx.Op.Observe_On is
    overriding procedure Subscribe    (This : in out Op; Observer : in out Operate.Into.Observer'Class);
 
    function Get_Downstream (This : in out Op'Class) return Shared.Observer is
-      (Shared.Observer (This.Get_Subscriber.Actual.all));
+     (if This.Get_Subscriber.Actual /= null then -- Shouldn't be necessary but it's somehow getting through the check in Transformers (???)
+         Shared.Observer (This.Get_Subscriber.Actual.all)
+      else
+         raise No_Longer_Subscribed);
 
    -------------
    -- On_Next --
