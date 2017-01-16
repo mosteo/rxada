@@ -80,6 +80,9 @@ private
    overriding function Is_Subscribed (This : Operator) return Boolean is (This.Downstream.Is_Valid);
 
    not overriding function Get_Subscriber (This : in out Operator) return Into.Holders.Observers.Reference is
-      (if This.Is_Subscribed then This.Downstream.Ref else raise No_Longer_Subscribed);
+     (if This.Is_Subscribed then
+         This.Downstream.Ref
+      else
+         raise No_Longer_Subscribed);
 
 end Rx.Transformers;
