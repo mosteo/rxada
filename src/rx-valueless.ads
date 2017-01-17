@@ -3,7 +3,7 @@ with Rx.Typed;
 
 package Rx.Valueless with Preelaborate is
 
-   type Nothing is null record;
+   Subtype Nothing is Rx_Nothing;
 
    function To_Definite   (V : Nothing) return Nothing is (V) with Inline;
    function To_Indefinite (V : Nothing) return Nothing is (V) with Inline;
@@ -11,5 +11,7 @@ package Rx.Valueless with Preelaborate is
    package Traits is new Rx.Traits.Types (Nothing, Nothing);
 
    package Typed is new Rx.Typed (Traits);
+
+   subtype Observable is Typed.Observable;
 
 end Rx.Valueless;
