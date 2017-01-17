@@ -4,12 +4,19 @@ with Rx.Preservers;
 with Rx.Traits.Types;
 with Rx.Transformers;
 with Rx.Typed;
+with Rx.Valueless;
 
 generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Collections is
 
---   package Typed_Collections is new Rx.Collections (Typed);
+   -- Instances of types and transformations that we get automatically when creating a new Rx type
+
+   -----------------
+   --  Valueless  --
+   -----------------
+
+   package Valueless is new Transformers (Typed, Valueless.Typed);
 
    -------------------------
    --  Emission of Lists  --

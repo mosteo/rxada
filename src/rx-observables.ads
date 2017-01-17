@@ -9,6 +9,7 @@ with Rx.Subscribe;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
 with Rx.Typed;
+with Rx.Valueless;
 
 private with Rx.Op.Buffer;
 private with Rx.Op.Debounce;
@@ -17,6 +18,7 @@ private with Rx.Op.Element_At;
 private with Rx.Op.Filter;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
+private with Rx.Op.Map;
 private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
@@ -61,6 +63,7 @@ package Rx.Observables is
    package Into_List_Transformers renames Collections.Into_List_Transformers;
    package From_List_Transformers renames Collections.From_List_Transformers;
    package Obs_Transformers       renames Collections.Obs_Transformers;
+   package Into_Valueless         renames Collections.Valueless;
 
    subtype List_Preserver         is List_Preservers.Operator'Class;
    subtype Into_List_Transformer  is Into_List_Transformers.Operator'Class;
@@ -227,6 +230,15 @@ package Rx.Observables is
 
    function Repeat_Until (Check : Actions.Filter0) return Operator;
 
+   ------------
+   -- Sample --
+   ------------
+
+   type Policies is (Keep_First, Keep_Last);
+
+   function Sample (Policy  : Policies;
+                    Sampler : Valueless.Observable'Class) return Operator;
+
    -----------
    -- Split --
    -----------
@@ -240,6 +252,12 @@ package Rx.Observables is
    function Start (Func :          Typed.Actions.TFunc0'Class) return Observable;
 
    function Start (Func : not null Typed.Actions.Func0)        return Observable;
+
+   -----------
+   -- Strip --
+   -----------
+
+   function Strip return Into_Valueless.Operator;
 
    ---------------
    -- Subscribe --
@@ -334,6 +352,10 @@ package Rx.Observables is
                  renames List_Preservers.Will_Observe;
    --  Concatenation for preservers between lists
 
+   function "&" (Producer : Observable'Class;
+                 Consumer : Into_Valueless.Operator'Class) return Into_Valueless.Into_Observable'Class
+                 renames Into_Valueless.Will_Observe;
+
    package Linkers is
 
       --  This package can be used instead of using the Rx.Observables one to make the "&" visible
@@ -352,6 +374,10 @@ package Rx.Observables is
       function "&" (Producer : From_List_Transformers.From_Observable;
                     Consumer : From_List_Transformer) return Observable
                     renames From_List_Transformers.Will_Observe;
+
+      function "&" (Producer : Observable'Class;
+                    Consumer : Into_Valueless.Operator'Class) return Into_Valueless.Into_Observable'Class
+                    renames Into_Valueless.Will_Observe;
 
    end Linkers;
 
@@ -446,6 +472,13 @@ private
    function Repeat_Until (Check : Actions.Filter0) return Operator is
      (RxRepeat.Repeat_Until (Actions.Wrap (Check)));
 
+   package RxSample is new Rx.Op.Sample (Operate, Valueless.Typed);
+   use all type RxSample.Policies;
+   function Sample (Policy : Policies; Sampler : Valueless.Observable'Class) return Operator is
+     (case Policy is
+         when Keep_First => RxSample.Create (Keep_First, Sampler),
+         when Keep_Last  => RxSample.Create (Keep_Last, Sampler));
+
    package RxStart is new Rx.Src.Start (Typed);
    function Start (Func :          Typed.Actions.TFunc0'Class) return Observable renames RxStart.Create;
    function Start (Func : not null Typed.Actions.Func0)        return Observable
@@ -455,6 +488,10 @@ private
                       For_Each : access procedure (V : T));
    package RxSplit is new Rx.Op.Split (From_List_Transformers, Iterate);
    function Split return From_List_Transformer renames RxSplit.Create;
+
+   package RxStrip is new Rx.Op.Map (Into_Valueless);
+   function Strip (V : T) return Rx_Nothing is (null record) with Inline;
+   function Strip return Into_Valueless.Operator is (RxStrip.Create (Strip'Access));
 
    package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
