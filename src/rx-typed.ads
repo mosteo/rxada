@@ -5,6 +5,7 @@ with Rx.Conversions;
 with Rx.Defaults;
 with Rx.Factories;
 with Rx.Impl.Definite_Observables;
+with Rx.Impl.Definite_Observers;
 with Rx.Impl.Holders;
 with Rx.Traits.Types;
 
@@ -29,6 +30,7 @@ package Rx.Typed with Preelaborate is
 
    package Defaults             is new Rx.Defaults (Contracts);
    package Definite_Observables is new Impl.Definite_Observables (Contracts);
+   package Definite_Observers   is new Impl.Definite_Observers (Contracts);
    package Conversions          is new Rx.Conversions (Type_Traits);
    package Factories            is new Rx.Factories (Contracts);
    package Holders              is new Impl.Holders (Contracts);

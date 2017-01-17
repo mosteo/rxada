@@ -2,23 +2,17 @@ with Rx.Impl.Multisubscribers;
 
 package body Rx.Op.Sample is
 
-   type Configs is record
-      Policy  : Policies;
-      Sampler : Samplers.Definite_Observables.Observable;
-   end record;
-
-   package Multi is new Impl.Multisubscribers (Operate.Transform, Samplers, Configs, Thread_Safe => True);
+   package Multi is new Impl.Multisubscribers (Operate.Transform, Samplers, Thread_Safe => True);
 
    type Manager is new Multi.Manager with record
       Policy  : Policies;
+      Sampler : Samplers.Definite_Observables.Observable;
       Value   : Operate.Typed.D;
       Valid   : Boolean := False;
-      Ending  : Boolean := False;
    end record;
 
    overriding procedure Subscribe (Man      : in out Manager;
-                                   Op       : in out Multi.Operator'Class;
-                                   Config    :        Configs);
+                                   Op       : in out Multi.Operator'Class);
 
    overriding procedure On_Next (Man      : in out Manager;
                                  Op       : in out Multi.Operator'Class;
@@ -39,13 +33,11 @@ package body Rx.Op.Sample is
    ---------------
 
    overriding procedure Subscribe (Man      : in out Manager;
-                                   Op       : in out Multi.Operator'Class;
-                                   Config   :        Configs)
+                                   Op       : in out Multi.Operator'Class)
    is
-      Producer : Samplers.Observable'Class := Config.Sampler.To_Indef;
+      Producer : Samplers.Observable'Class := Man.Sampler.To_Indef;
       Consumer : Samplers.Observer'Class   := Op.Create_Subscriber;
    begin
-      Man.Policy := Config.Policy;
       Producer.Subscribe (Consumer);
    end Subscribe;
 
@@ -122,8 +114,10 @@ package body Rx.Op.Sample is
       return Operate.Operator'Class
    is
    begin
-      return Multi.Create ((Policy  => Policy,
-                            Sampler => Samplers.Definite_Observables.From (Sampler)));
+      return Multi.Create (new Manager'(Multi.Manager with
+                           Policy  => Policy,
+                           Sampler => Samplers.Definite_Observables.From (Sampler),
+                           others  => <>));
    end Create;
 
 end Rx.Op.Sample;
