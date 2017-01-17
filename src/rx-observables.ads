@@ -21,6 +21,7 @@ private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
 private with Rx.Op.Repeat;
+private with Rx.Op.Sample;
 private with Rx.Op.Split;
 private with Rx.Op.Subscribe_On;
 private with Rx.Op.Take;
