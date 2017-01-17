@@ -4,6 +4,7 @@ with Rx.Typed;
 private with Rx.Errors;
 private with Rx.Impl.Semaphores;
 private with Rx.Impl.Shared_Data;
+private with Rx.Impl.Shared_Observer;
 private with Rx.Subscriptions;
 
 generic
@@ -34,30 +35,33 @@ package Rx.Impl.Multisubscribers is
 
    not overriding procedure Subscribe (Man      : in out Manager;
                                        Op       : in out Operator'Class;
-                                       State    :        States;
-                                       Observer : in out Transformer.Into.Observer'Class) is abstract;
+                                       State    :        States) is abstract;
 
    not overriding procedure On_Next (Man      : in out Manager;
                                      Op       : in out Operator'Class;
-                                     V        : Transformer.From.T;
-                                     Observer : in out Transformer.Into.Observer'Class) is abstract;
+                                     V        : Transformer.From.T) is abstract;
 
    not overriding procedure On_Next (Man      : in out Manager;
                                      Sub      : in out Subscriber'Class;
-                                     V        :        Observable.T;
-                                     Observer : in out Transformer.Into.Observer'Class) is abstract;
+                                     V        :        Observable.T) is abstract;
 
    not overriding procedure On_Completed (Man      : in out Manager;
-                                          Op       : in out Operator'Class;
-                                          Observer : in out Transformer.Into.Observer'Class) is abstract;
+                                          Op       : in out Operator'Class) is abstract;
 
    not overriding procedure On_Completed (Man      : in out Manager;
-                                          Sub      : in out Subscriber'Class;
-                                          Observer : in out Transformer.Into.Observer'Class) is abstract;
+                                          Sub      : in out Subscriber'Class) is abstract;
 
    function Create (State : States) return Operator;
+   --  The proper operator
 
    function Create_Subscriber (From : in out Operator'Class) return Subscriber'Class;
+   --  Aditional subscribers that can watch other observables
+
+   type Reference (Observer : access Transformer.Into.Observer'Class) is limited null record
+     with Implicit_Dereference => Observer;
+
+   function Get_Observer (From : in out Manager) return Reference;
+   --  Returns the subscribed observer
 
    procedure Unsubscribe (This : in out Manager'Class);
 
@@ -70,22 +74,35 @@ package Rx.Impl.Multisubscribers is
 
 private
 
+   package Shared_Observers is new Shared_Observer (Transformer.Into);
+
    type Manager is abstract tagged limited record
-      Mutex      : Impl.Semaphores.Shared_Binary;
+      Mutex      : aliased Impl.Semaphores.Shared_Binary;
       Subscribed : Boolean;
+      Downstream : aliased Shared_Observers.Observer;
+      --  This could have been a holder but this way we
    end record;
+
+   function Get_Observer (From : in out Manager) return Reference is
+     (Reference'(Observer => From.Downstream'Access));
 
    function Is_Subscribed (This : Manager'Class) return Boolean is (This.Subscribed);
 
-   package Shared is new Impl.Shared_Data (Manager'Class, Manager_Access);
+   package Shared_Managers is new Impl.Shared_Data (Manager'Class, Manager_Access);
+
+   type Shared_Manager is new Shared_Managers.Proxy with null record;
+
+   function Tamper is new Shared_Managers.Tamper;
+
+   function Ref (This : Shared_Manager) return Shared_Managers.Ref is (Tamper (Shared_Managers.Proxy (This)));
 
    type Operator is new Transformer.Operator with record
       State   : States;
-      Manager : Shared.Proxy;
+      Manager : Shared_Manager;
    end record;
 
    type Subscriber is new Observable.Contracts.Sink with record
-      Manager : Shared.Proxy;
+      Manager : Shared_Manager;
    end record;
 
 

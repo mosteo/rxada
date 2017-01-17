@@ -30,6 +30,10 @@ private
       Fake : Boolean := False;
    end record;
 
+   not overriding procedure Seize (This : in out Shared_Binary);
+
+   not overriding procedure Release (This : in out Shared_Binary);
+
    overriding function Wrap (I : not null Binary_Ptr) return Shared_Binary is
       (Shared_Semaphores.Wrap (I) with Fake => False);
 
@@ -41,7 +45,9 @@ private
                            Ceiling             => System.Default_Priority))));
 
    type Critical_Section (Mutex : not null access Shared_Binary) is new Ada.Finalization.Limited_Controlled
-     with null record;
+   with record
+      Sem : Shared_Binary;
+   end record;
 
    overriding procedure Initialize (This : in out Critical_Section);
    overriding procedure Finalize   (This : in out Critical_Section);

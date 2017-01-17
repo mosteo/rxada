@@ -18,26 +18,21 @@ package body Rx.Op.Sample is
 
    overriding procedure Subscribe (Man      : in out Manager;
                                    Op       : in out Multi.Operator'Class;
-                                   Config    :        Configs;
-                                   Observer  : in out Operate.Observer'Class);
+                                   Config    :        Configs);
 
    overriding procedure On_Next (Man      : in out Manager;
                                  Op       : in out Multi.Operator'Class;
-                                 V        :        Operate.T;
-                                 Observer : in out Operate.Observer'Class);
+                                 V        :        Operate.T);
 
    overriding procedure On_Next (Man      : in out Manager;
                                  Sub      : in out Multi.Subscriber'Class;
-                                 V        :        Samplers.T;
-                                 Observer : in out Operate.Observer'Class);
+                                 V        :        Samplers.T);
 
    overriding procedure On_Completed (Man      : in out Manager;
-                                      Op       : in out Multi.Operator'Class;
-                                      Observer : in out Operate.Observer'Class);
+                                      Op       : in out Multi.Operator'Class);
 
    overriding procedure On_Completed (Man      : in out Manager;
-                                      Sub      : in out Multi.Subscriber'Class;
-                                      Observer : in out Operate.Observer'Class);
+                                      Sub      : in out Multi.Subscriber'Class);
 
    ---------------
    -- Subscribe --
@@ -45,10 +40,8 @@ package body Rx.Op.Sample is
 
    overriding procedure Subscribe (Man      : in out Manager;
                                    Op       : in out Multi.Operator'Class;
-                                   Config   :        Configs;
-                                   Observer : in out Operate.Observer'Class)
+                                   Config   :        Configs)
    is
-      pragma Unreferenced (Observer);
       Producer : Samplers.Observable'Class := Config.Sampler.To_Indef;
       Consumer : Samplers.Observer'Class   := Op.Create_Subscriber;
    begin
@@ -62,10 +55,9 @@ package body Rx.Op.Sample is
 
    overriding procedure On_Next (Man      : in out Manager;
                                  Op       : in out Multi.Operator'Class;
-                                 V        :        Operate.T;
-                                 Observer : in out Operate.Observer'Class)
+                                 V        :        Operate.T)
    is
-      pragma Unreferenced (Op, Observer);
+      pragma Unreferenced (Op);
       use Operate.Typed.Conversions;
    begin
       if Man.Policy = Keep_First or else not Man.Valid then
@@ -80,14 +72,13 @@ package body Rx.Op.Sample is
 
    overriding procedure On_Next (Man      : in out Manager;
                                  Sub      : in out Multi.Subscriber'Class;
-                                 V        :        Samplers.T;
-                                 Observer : in out Operate.Observer'Class)
+                                 V        :        Samplers.T)
    is
       pragma Unreferenced (Sub, V);
       use Operate.Typed.Conversions;
    begin
       if Man.Valid then
-         Observer.On_Next (+ Man.Value);
+         Man.Get_Observer.On_Next (+ Man.Value);
       end if;
    end On_Next;
 
@@ -96,12 +87,11 @@ package body Rx.Op.Sample is
    ------------------
 
    overriding procedure On_Completed (Man      : in out Manager;
-                                      Op       : in out Multi.Operator'Class;
-                                      Observer : in out Operate.Observer'Class)
+                                      Op       : in out Multi.Operator'Class)
    is
    begin
       if Man.Is_Subscribed then
-         Observer.On_Completed;
+         Man.Get_Observer.On_Completed;
          Man.Unsubscribe;
       end if;
       Op.Unsubscribe;
@@ -112,12 +102,11 @@ package body Rx.Op.Sample is
    ------------------
 
    overriding procedure On_Completed (Man      : in out Manager;
-                                      Sub      : in out Multi.Subscriber'Class;
-                                      Observer : in out Operate.Observer'Class)
+                                      Sub      : in out Multi.Subscriber'Class)
    is
    begin
       if Man.Is_Subscribed then
-         Observer.On_Completed;
+         Man.Get_Observer.On_Completed;
          Man.Unsubscribe;
       end if;
       Sub.Unsubscribe;
