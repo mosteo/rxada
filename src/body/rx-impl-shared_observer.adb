@@ -32,7 +32,11 @@ package body Rx.Impl.Shared_Observer is
       V : Typed.Type_Traits.T)
    is
    begin
-      This.Actual.On_Next (V);
+      if This.Actual /= null then
+         This.Actual.On_Next (V);
+      else
+         raise No_Longer_Subscribed;
+      end if;
    end On_Next;
 
    ------------------
@@ -41,8 +45,12 @@ package body Rx.Impl.Shared_Observer is
 
    overriding procedure On_Completed (This : in out Observer) is
    begin
-      This.Actual.On_Completed;
-      This.Release;
+      if This.Actual /= null then
+         This.Actual.On_Completed;
+         This.Release;
+      else
+         raise No_Longer_Subscribed;
+      end if;
    end On_Completed;
 
    --------------
@@ -54,8 +62,12 @@ package body Rx.Impl.Shared_Observer is
       Error :        Errors.Occurrence)
    is
    begin
-      This.Actual.On_Error (Error);
-      This.Release;
+      if This.Actual /= null then
+         This.Actual.On_Error (Error);
+         This.Release;
+      else
+         raise No_Longer_Subscribed;
+      end if;
    end On_Error;
 
 end Rx.Impl.Shared_Observer;

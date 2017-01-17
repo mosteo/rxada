@@ -1,5 +1,7 @@
 package body Rx.Impl.Multisubscribers is
 
+   subtype Critical_Section is Impl.Semaphores.Critical_Section;
+
    -----------------
    -- Unsubscribe --
    -----------------
@@ -39,9 +41,20 @@ package body Rx.Impl.Multisubscribers is
       V : Transformer.From.T)
    is
    begin
-      --  Generated stub: replace with real body!
-      pragma Compile_Time_Warning (Standard.True, "On_Next unimplemented");
-      raise Program_Error with "Unimplemented procedure On_Next";
+      if This.Manager.Is_Valid then
+         declare
+            Man : Manager'Class renames This.Manager.Ref;
+            CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
+         begin
+            if Man.Subscribed then
+               Man.On_Next (This, V);
+            else
+               raise No_Longer_Subscribed;
+            end if;
+         end;
+      else
+         raise No_Longer_Subscribed;
+      end if;
    end On_Next;
 
    ------------------
@@ -54,6 +67,11 @@ package body Rx.Impl.Multisubscribers is
       pragma Compile_Time_Warning (Standard.True, "On_Completed unimplemented");
       raise Program_Error with "Unimplemented procedure On_Completed";
    end On_Completed;
+
+   overriding procedure On_Error (This : in out Operator; E : Errors.Occurrence) is
+   begin
+      null;
+   end On_Error;
 
    ---------------
    -- Subscribe --
@@ -121,6 +139,11 @@ package body Rx.Impl.Multisubscribers is
       pragma Compile_Time_Warning (Standard.True, "On_Completed unimplemented");
       raise Program_Error with "Unimplemented procedure On_Completed";
    end On_Completed;
+
+   overriding procedure On_Error (This : in out Subscriber; Error : Errors.Occurrence) is
+   begin
+      null;
+   end On_Error;
 
    -----------------
    -- Unsubscribe --
