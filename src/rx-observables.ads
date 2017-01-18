@@ -19,6 +19,7 @@ private with Rx.Op.Filter;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
 private with Rx.Op.Map;
+private with Rx.Op.Merge;
 private with Rx.Op.No_Op;
 private with Rx.Op.Observe_On;
 private with Rx.Op.Print;
