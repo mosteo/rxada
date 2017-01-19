@@ -1,5 +1,46 @@
 package body Rx.Impl.Semaphores is
 
+   ---------------
+   -- Reentrant --
+   ---------------
+
+   protected body Reentrant is
+
+      -------------
+      -- Release --
+      -------------
+
+      procedure Release is
+      begin
+         Count := Count - 1;
+      end Release;
+
+      -----------
+      -- Seize --
+      -----------
+
+      entry Seize when True is
+         use type Ada.Task_Identification.Task_Id;
+      begin
+         if Reentrant.Seize'Caller = Owner then
+            Count := Count + 1;
+         else
+            requeue Wait with abort;
+         end if;
+      end Seize;
+
+      ----------
+      -- Wait --
+      ----------
+
+      entry Wait when Count = 0 is
+      begin
+         Count := 1;
+         Owner := Wait'Caller;
+      end Wait;
+
+   end Reentrant;
+
    function Tamper is new Shared_Semaphores.Tamper;
 
    subtype Proxy is Shared_Semaphores.Proxy;
@@ -8,7 +49,7 @@ package body Rx.Impl.Semaphores is
    -- Seize --
    -----------
 
-   not overriding procedure Seize (This : in out Shared_Binary) is
+   not overriding procedure Seize (This : in out Shared) is
    begin
       if not This.Fake then
          Tamper (Proxy (This)).Seize;
@@ -19,7 +60,7 @@ package body Rx.Impl.Semaphores is
    -- Release --
    -------------
 
-   not overriding procedure Release (This : in out Shared_Binary) is
+   not overriding procedure Release (This : in out Shared) is
    begin
       if not This.Fake then
          Tamper (Proxy (This)).Release;

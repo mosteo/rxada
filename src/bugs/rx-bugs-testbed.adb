@@ -34,7 +34,7 @@ procedure Rx.Bugs.Testbed is
 
    procedure Test_002_Blocking with Unreferenced is
       -- There should be no blocking operation exception here
-      Sem  : aliased Impl.Semaphores.Shared_Binary := Impl.Semaphores.Create;
+      Sem  : aliased Impl.Semaphores.Shared := Impl.Semaphores.Create_Reentrant;
       Crit : Impl.Semaphores.Critical_Section (Sem'Access) with Unreferenced;
    begin
       null;

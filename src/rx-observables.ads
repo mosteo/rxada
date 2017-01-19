@@ -16,6 +16,7 @@ private with Rx.Op.Debounce;
 private with Rx.Op.Distinct;
 private with Rx.Op.Element_At;
 private with Rx.Op.Filter;
+private with Rx.Op.Flatmap;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
 private with Rx.Op.Map;

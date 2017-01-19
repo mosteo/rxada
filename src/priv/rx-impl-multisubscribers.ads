@@ -76,7 +76,7 @@ package Rx.Impl.Multisubscribers is
 private
 
    type Manager is abstract tagged limited record
-      Mutex      : aliased Impl.Semaphores.Shared_Binary;
+      Mutex      : aliased Impl.Semaphores.Shared;
       Subscribed : Boolean := False;
       Downstream : aliased Transformer.Into.Definite_Observers.Observer;
       --  This could have been a holder but this way we
