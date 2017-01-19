@@ -139,7 +139,7 @@ package body Rx.Impl.Multisubscribers is
       Man : Manager'Class renames This.Manager.Ref;
    begin
       This.Subscribed := True;
-      Man.Mutex := Impl.Semaphores.Create (not Thread_Safe);
+      Man.Mutex := Impl.Semaphores.Create_Reentrant (not Thread_Safe);
       declare
          CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
          --  Needed because if a subscription is performed during operator subscription it could race us

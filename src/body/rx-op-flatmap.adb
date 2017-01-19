@@ -1,166 +1,115 @@
-with Rx.Errors;
---  with Rx.Impl.Definite_Observer; -- Does not exist yet
-with Rx.Impl.Shared_Observer;
-with Rx.Preserve;
-with Rx.Subscriptions;
+with Rx.Impl.Multisubscribers;
 
 package body Rx.Op.Flatmap is
 
-   package Operate is new Rx.Preserve (Typed.Into);
-   package Shared  is new Rx.Impl.Shared_Observer (Typed.Into);
+   package Multi is new Impl.Multisubscribers (Transformer, Transformer.Into);
+   package From  renames Transformer.From;
+   package Into  renames Transformer.Into;
 
-   --  The demiurge will be subscribed as shared_observer to all generated observables
-   --  Will have a protected member to track count of observables to which is subscribed
-   --  Also to check if a error has occurred, or the wrapper has seen a On_Completed
-   --  The wrapper of course also has the shared demiurge stored to pass the complete, error
-   --  events, and to wait for completion of the internal sequences in the concat policy
-   --  Not sure how the Switch policy can be implemented yet...
-   --  Some other intermediator will be probably needed
-   --  This mediator will be in the wrapper probably, since it is it who creates the
-   --  observables for the demiurge
+   subtype Operator   is Multi.Operator;
+   subtype Subscriber is Multi.Subscriber;
 
-   --  Now, since we'll possibly have multiple threads competing of On_Next, Unsubscribe,
-   --  this will require that the mediator be thread safe. The mediator could be a simple No_Op?
-   --  IIUC, this serialization is not needed in the Concat case
-
-   --  I knew this fscking flatmap was going to be a handful!
-
-   type Demiurge;
-
-   protected type Safe (Parent : access Demiurge) is
-      private
-   end Safe;
-
-   protected body Safe is
-   end Safe;
-
-   ----------------
-   --  Demiurge  --
-   ----------------
-
-   type Demiurge is new Operate.Operator with record
-      Child            : Shared.Subscriber;
-      Parent_Completed : Boolean with Atomic;
+   type Manager (Policy : Policies) is new Multi.Manager with record
+      Func              : Transformer.Actions.Flattener1;
+      Subscriptor_Count : Natural := 1;
    end record;
 
-   overriding procedure On_Next (This  : in out Demiurge;
-                                 V     :        Typed.Into.T);
+   overriding procedure Subscribe (Man      : in out Manager;
+                                   Op       : in out Operator'Class) is null;
 
-   overriding procedure On_Next (This  : in out Demiurge;
-                                 V     :        Typed.Into.T;
-                                 Child : in out Typed.Into.Observer'Class);
+   overriding procedure On_Next (Man      : in out Manager;
+                                 Op       : in out Operator'Class;
+                                 V        :        From.T);
 
-   procedure Mark_Completed (This : in out Demiurge) is
+   overriding procedure On_Next (Man      : in out Manager;
+                                 Sub      : in out Subscriber'Class;
+                                 V        :        Into.T);
+
+   overriding procedure On_Completed (Man      : in out Manager;
+                                      Op       : in out Operator'Class);
+
+   overriding procedure On_Completed (Man      : in out Manager;
+                                      Sub      : in out Subscriber'Class);
+
+   ------------------
+   -- Complete_One --
+   ------------------
+
+   procedure Complete_One (Man : in out Manager) is
    begin
-      This.Parent_Completed := True;
-   end Mark_Completed;
-
-   overriding procedure On_Next (This  : in out Demiurge;
-                                 V     :        Typed.Into.T)
-   is
-   begin
-      This.This.Get_Observer.On_Next (V);
-   end On_Next;
-
-   overriding procedure On_Next (This  : in out Demiurge;
-                                 V     :        Typed.Into.T;
-                                 Child : in out Typed.Into.Observer'Class) is
-   begin
-      raise Program_Error with "Should never be called";
-   end On_Next;
-
-   procedure Set_Child (This : in out Demiurge) is
-   begin
-      This.Child := Shared.Create (This);
-   end Set_Child;
-
-   ---------------
-   --  Wrapper  --
-   ---------------
-
-   type Wrapper (Func   : Typed.Actions.Flattener1;
-                 Policy : Policies) is new Typed.Operator with
-      record
-         Child   : Demiurge;
-         Current : Subscriptions.Subscription; -- To abort current in switch mode
-      end record;
-
-   overriding procedure On_Next (This  : in out Wrapper;
-                                 V     :        Typed.From.T;
-                                 Child : in out Typed.Into.Observer'Class);
-
-   overriding procedure On_Completed (This  : in out Wrapper;
-                                      Child : in out Typed.Into.Observer'Class);
-
-   overriding procedure On_Error (This  : in out Wrapper;
-                                  Error :        Errors.Occurrence;
-                                  Child : in out Typed.Into.Observer'Class);
-
-   overriding procedure Subscribe (Producer : in out Wrapper;
-                                   Consumer : in out Typed.Into.Subscriber);
+      Man.Subscriptor_Count := Man.Subscriptor_Count - 1;
+      if Man.Subscriptor_Count = 0 then
+         Man.Get_Observer.On_Completed;
+      end if;
+   end Complete_One;
 
    -------------
    -- On_Next --
    -------------
 
-   overriding procedure On_Next (This  : in out Wrapper;
-                                 V     :        Typed.From.T;
-                                 Child : in out Typed.Into.Observer'Class)
+   overriding procedure On_Next (Man      : in out Manager;
+                                 Op       : in out Operator'Class;
+                                 V        :        From.T)
    is
-      pragma Unreferenced (Child); -- Note that this is not the proper child, besides
-      Obs : Typed.Into.Observable'Class := This.Func (V);
+      Consumer : Multi.Subscriber'Class := Op.Create_Subscriber;
+      Producer : Into.Observable'Class  := Man.Func (V);
    begin
-      Obs.Subscribe (This.Child);
+      Man.Subscriptor_Count := Man.Subscriptor_Count + 1;
+      Producer.Subscribe (Consumer);
+   end On_Next;
+
+   -------------
+   -- On_Next --
+   -------------
+
+   overriding procedure On_Next (Man      : in out Manager;
+                                 Sub      : in out Subscriber'Class;
+                                 V        :        Into.T)
+   is
+      pragma Unreferenced (Sub);
+   begin
+      Man.Get_Observer.On_Next (V);
    end On_Next;
 
    ------------------
    -- On_Completed --
    ------------------
 
-   overriding procedure On_Completed (This  : in out Wrapper;
-                                      Child : in out Typed.Into.Observer'Class)
+   overriding procedure On_Completed (Man      : in out Manager;
+                                      Op       : in out Operator'Class)
    is
-      pragma Unreferenced (Child); -- Note that this is not the proper child, besides
+      pragma Unreferenced (Op);
    begin
-      Mark_Completed (This.Child);
+      Complete_One (Man);
    end On_Completed;
 
-   --------------
-   -- On_Error --
-   --------------
+   ------------------
+   -- On_Completed --
+   ------------------
 
-   overriding procedure On_Error (This  : in out Wrapper;
-                                  Error :        Errors.Occurrence;
-                                  Child : in out Typed.Into.Observer'Class)
+   overriding procedure On_Completed (Man      : in out Manager;
+                                      Sub      : in out Subscriber'Class)
    is
-      pragma Unreferenced (Child); -- Note that this is not the proper child, besides
+      pragma Unreferenced (Sub);
    begin
-      This.Child.On_Error (Error);
-   end On_Error;
+      Complete_One (Man);
+   end On_Completed;
 
-   overriding procedure Subscribe (Producer : in out Wrapper;
-                                   Consumer : in out Typed.Into.Subscriber)
-   is
+   ------------
+   -- Create --
+   ------------
+
+   function Create (Func   : Transformer.Actions.Flattener1;
+                    Policy : Policies := Merge) return Transformer.Operator'Class is
    begin
-      Producer.Child := Shared.Create (Consumer);
-      Typed.Operator (Producer).Subscribe (Producer.Child);
-   end Subscribe;
+      if Policy /= Merge then
+         raise Program_Error with "Unimplemented";
+      end if;
 
-   -------------
-   -- Flatten --
-   -------------
-
-   function Flatten
-     (Func   : Typed.Actions.Flattener1;
-      Policy : Policies)
-      return Typed.Operator
-   is
-   begin
-      return Wrapper'(Typed.Operator with
-                      Func    => Func,
-                      Policy  => Policy,
-                      Child   => <>,
-                      Current => <>);
-   end Flatten;
+      return Multi.Create (new Manager'(Multi.Manager with
+                           Policy => Policy,
+                           Func   => Func,
+                           others => <>));
+   end Create;
 
 end Rx.Op.Flatmap;
