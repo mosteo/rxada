@@ -1,15 +1,15 @@
-with Rx.Impl.Multisubscribers;
+with Rx.Impl.Multiobservers;
 
 package body Rx.Op.Flatmap is
 
-   package Multi is new Impl.Multisubscribers (Transformer, Transformer.Into);
+   package Multi is new Impl.Multiobservers (Transformer, Transformer.Into);
    package From  renames Transformer.From;
    package Into  renames Transformer.Into;
 
    subtype Operator   is Multi.Operator;
    subtype Subscriber is Multi.Subscriber;
 
-   type Manager (Policy : Policies) is new Multi.Manager with record
+   type Manager (Policy : Policies) is new Multi.Multiobserver with record
       Func              : Transformer.Actions.Flattener1;
       Subscriptor_Count : Natural := 1;
    end record;
@@ -25,10 +25,10 @@ package body Rx.Op.Flatmap is
                                  Sub      : in out Subscriber'Class;
                                  V        :        Into.T);
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Op       : in out Operator'Class);
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Sub      : in out Subscriber'Class);
 
    ------------------
@@ -39,7 +39,7 @@ package body Rx.Op.Flatmap is
    begin
       Man.Subscriptor_Count := Man.Subscriptor_Count - 1;
       if Man.Subscriptor_Count = 0 then
-         Man.Get_Observer.On_Completed;
+         Man.Get_Observer.On_Complete ;
       end if;
    end Complete_One;
 
@@ -72,28 +72,28 @@ package body Rx.Op.Flatmap is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Op       : in out Operator'Class)
    is
       pragma Unreferenced (Op);
    begin
       Complete_One (Man);
-   end On_Completed;
+   end On_Complete ;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Sub      : in out Subscriber'Class)
    is
       pragma Unreferenced (Sub);
    begin
       Complete_One (Man);
-   end On_Completed;
+   end On_Complete ;
 
    ------------
    -- Create --
@@ -106,7 +106,7 @@ package body Rx.Op.Flatmap is
          raise Program_Error with "Unimplemented";
       end if;
 
-      return Multi.Create (new Manager'(Multi.Manager with
+      return Multi.Create_Operator (new Manager'(Multi.Multiobserver with
                            Policy => Policy,
                            Func   => Func,
                            others => <>));

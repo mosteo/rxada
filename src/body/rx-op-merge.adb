@@ -1,13 +1,13 @@
-with Rx.Impl.Multisubscribers;
+with Rx.Impl.Multiobservers;
 
 package body Rx.Op.Merge is
 
-   package Multi is new Impl.Multisubscribers (Preserver.Transform, Preserver.Typed);
+   package Multi is new Impl.Multiobservers (Preserver.Transform, Preserver.Typed);
 
    subtype Operator   is Multi.Operator;
    subtype Subscriber is Multi.Subscriber;
 
-   type Manager is new Multi.Manager with record
+   type Manager is new Multi.Multiobserver with record
       Subscriptor_Count : Natural := 2;
       Merge_With        : Preserver.Typed.Definite_Observables.Observable;
    end record;
@@ -23,10 +23,10 @@ package body Rx.Op.Merge is
                                  Sub      : in out Subscriber'Class;
                                  V        :        Preserver.T);
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Op       : in out Operator'Class);
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Sub      : in out Subscriber'Class);
 
    ----------------
@@ -38,7 +38,7 @@ package body Rx.Op.Merge is
       This.Subscriptor_Count := This.Subscriptor_Count - 1;
       if This.Subscriptor_Count = 0 then
          This.Unsubscribe;
-         This.Get_Observer.On_Completed;
+         This.Get_Observer.On_Complete ;
       end if;
    end Remove_One;
 
@@ -81,28 +81,28 @@ package body Rx.Op.Merge is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Op       : in out Operator'Class)
    is
       pragma Unreferenced (Op);
    begin
       Remove_One (Man);
-   end On_Completed;
+   end On_Complete ;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Sub      : in out Subscriber'Class)
    is
       pragma Unreferenced (Sub);
    begin
       Remove_One (Man);
-   end On_Completed;
+   end On_Complete ;
 
    ------------
    -- Create --
@@ -113,7 +113,7 @@ package body Rx.Op.Merge is
       return Preserver.Operator'Class
    is
    begin
-      return Multi.Create (new Manager'(Multi.Manager with
+      return Multi.Create_Operator (new Manager'(Multi.Multiobserver with
                              Merge_With => Preserver.Typed.Definite_Observables.From (Merge_With),
                              others     => <>));
    end Create;

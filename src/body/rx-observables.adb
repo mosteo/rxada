@@ -16,10 +16,10 @@ package body Rx.Observables is
 
    procedure For_Each (Producer     : Typed.Observable;
                         On_Next      : Typed.Actions.Proc1   := null;
-                        On_Completed : Rx.Actions.Proc0      := null;
+                        On_Complete  : Rx.Actions.Proc0      := null;
                         On_Error     : Rx.Actions.Proc_Error := null)
    is
-      S : constant Subscriptions.Subscription := Producer & Subscribe (On_Next, On_Completed, On_Error);
+      S : constant Subscriptions.Subscription := Producer & Subscribe (On_Next, On_Complete , On_Error);
       pragma Unreferenced (S);
    begin
       null; -- Done in the declarative part

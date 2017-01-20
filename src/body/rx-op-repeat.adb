@@ -26,14 +26,14 @@ package body Rx.Op.Repeat is
                       V     :        Operate.T);
 
    overriding
-   procedure On_Completed (This : in out Operator);
+   procedure On_Complete  (This : in out Operator);
 
    overriding
    procedure On_Next (This  : in out Operator;
                       V     :        Operate.T) is
    begin
       if This.Kind = While_Do and then not This.First_Seen and then not This.Filter.Ref.Check then
-         This.Get_Observer.On_Completed;
+         This.Get_Observer.On_Complete ;
          This.Unsubscribe;
       else
          This.First_Seen := True;
@@ -43,7 +43,7 @@ package body Rx.Op.Repeat is
    end On_Next;
 
    overriding
-   procedure On_Completed (This : in out Operator)
+   procedure On_Complete  (This : in out Operator)
    is
       Check : Boolean;
    begin
@@ -73,8 +73,8 @@ package body Rx.Op.Repeat is
          end case;
       end if;
 
-      This.Get_Observer.On_Completed;
-   end On_Completed;
+      This.Get_Observer.On_Complete ;
+   end On_Complete ;
 
    --------------------
    -- Repeat_Forever --

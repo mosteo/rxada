@@ -14,7 +14,7 @@ package body Rx.Op.Last is
                       V     :        Operate.T);
 
    overriding
-   procedure On_Completed (This  : in out Operator);
+   procedure On_Complete  (This  : in out Operator);
 
    -------------
    -- On_Next --
@@ -32,19 +32,19 @@ package body Rx.Op.Last is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
    overriding
-   procedure On_Completed (This  : in out Operator) is
+   procedure On_Complete  (This  : in out Operator) is
    begin
       if This.Has_Last then
          This.Get_Observer.On_Next (+ This.Last);
-         This.Get_Observer.On_Completed;
+         This.Get_Observer.On_Complete ;
       else
          raise Constraint_Error with "Last completed without element";
       end if;
-   end On_Completed;
+   end On_Complete ;
 
    ------------
    -- Create --

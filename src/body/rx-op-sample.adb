@@ -1,10 +1,10 @@
-with Rx.Impl.Multisubscribers;
+with Rx.Impl.Multiobservers;
 
 package body Rx.Op.Sample is
 
-   package Multi is new Impl.Multisubscribers (Operate.Transform, Samplers, Thread_Safe => True);
+   package Multi is new Impl.Multiobservers (Operate.Transform, Samplers, Thread_Safe => True);
 
-   type Manager is new Multi.Manager with record
+   type Manager is new Multi.Multiobserver with record
       Policy  : Policies;
       Sampler : Samplers.Definite_Observables.Observable;
       Value   : Operate.Typed.D;
@@ -22,10 +22,10 @@ package body Rx.Op.Sample is
                                  Sub      : in out Multi.Subscriber'Class;
                                  V        :        Samplers.T);
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Op       : in out Multi.Operator'Class);
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Sub      : in out Multi.Subscriber'Class);
 
    ---------------
@@ -75,34 +75,34 @@ package body Rx.Op.Sample is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Op       : in out Multi.Operator'Class)
    is
    begin
       if Man.Is_Subscribed then
-         Man.Get_Observer.On_Completed;
+         Man.Get_Observer.On_Complete ;
          Man.Unsubscribe;
       end if;
       Op.Unsubscribe;
-   end On_Completed;
+   end On_Complete ;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (Man      : in out Manager;
+   overriding procedure On_Complete  (Man      : in out Manager;
                                       Sub      : in out Multi.Subscriber'Class)
    is
    begin
       if Man.Is_Subscribed then
-         Man.Get_Observer.On_Completed;
+         Man.Get_Observer.On_Complete ;
          Man.Unsubscribe;
       end if;
       Sub.Unsubscribe;
-   end On_Completed;
+   end On_Complete ;
 
    ------------
    -- Create --
@@ -114,7 +114,7 @@ package body Rx.Op.Sample is
       return Operate.Operator'Class
    is
    begin
-      return Multi.Create (new Manager'(Multi.Manager with
+      return Multi.Create_Operator (new Manager'(Multi.Multiobserver with
                            Policy  => Policy,
                            Sampler => Samplers.Definite_Observables.From (Sampler),
                            others  => <>));

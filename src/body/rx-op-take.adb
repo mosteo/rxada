@@ -22,7 +22,7 @@ package body Rx.Op.Take is
             if This.Emit_Last then
                This.Get_Observer.On_Next (V);
             end if;
-            This.Get_Observer.On_Completed;
+            This.Get_Observer.On_Complete ;
             This.Unsubscribe;
          end if;
       else

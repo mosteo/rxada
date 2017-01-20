@@ -7,13 +7,13 @@ generic
    with package Typed is new Rx.Typed (<>);
 package Rx.Impl.Events is
 
-   type Kinds is (On_Next, On_Completed, On_Error);
+   type Kinds is (On_Next, On_Complete , On_Error);
 
    type Event (Kind : Kinds) is private;
 
    function On_Next (V : Typed.T) return Event;
 
-   function On_Completed return Event;
+   function On_Complete  return Event;
 
    function On_Error (E : Errors.Occurrence) return Event;
 
@@ -31,7 +31,7 @@ private
       case Kind is
          when On_Next      => V : Typed.D;
          when On_Error     => E : Errors.Occurrence;
-         when On_Completed => null;
+         when On_Complete  => null;
       end case;
    end record;
 
@@ -39,7 +39,7 @@ private
 
    function On_Next (V : Typed.T) return Event is (On_Next, +V);
 
-   function On_Completed return Event is (Kind => On_Completed);
+   function On_Complete  return Event is (Kind => On_Complete );
 
    function On_Error (E : Errors.Occurrence) return Event is (On_Error, E);
 

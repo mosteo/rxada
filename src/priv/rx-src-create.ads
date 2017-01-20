@@ -25,7 +25,7 @@ package Rx.Src.Create with Preelaborate is
 
       function Create (Initial : State) return Typed.Observable;
       --  Creates an observable that can receive different initial states
-      --  On_Completed is optionally automatically called
+      --  On_Complete  is optionally automatically called
 
    end With_State;
 

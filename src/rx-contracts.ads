@@ -18,7 +18,7 @@ package Rx.Contracts is
    --  Someone interested in receiving data
 
    procedure On_Next      (This : in out Observer; V : T) is abstract;
-   procedure On_Completed (This : in out Observer) is abstract;
+   procedure On_Complete  (This : in out Observer) is abstract;
    procedure On_Error     (This : in out Observer; Error : Errors.Occurrence) is abstract;
 
    ----------------

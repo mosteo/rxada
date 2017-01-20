@@ -16,7 +16,7 @@ package body Rx.Op.Serialize is
 
    overriding procedure On_Next (This : in out Serializer; V : Operate.T);
 
-   overriding procedure On_Completed (This : in out Serializer);
+   overriding procedure On_Complete  (This : in out Serializer);
 
    overriding procedure On_Error (This : in out Serializer; Error : Errors.Occurrence);
 
@@ -27,14 +27,14 @@ package body Rx.Op.Serialize is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Serializer) is
+   overriding procedure On_Complete  (This : in out Serializer) is
       CS : Critical_Section (This.Mutex'Access) with Unreferenced;
    begin
-      This.Get_Observer.On_Completed;
-   end On_Completed;
+      This.Get_Observer.On_Complete ;
+   end On_Complete ;
 
    --------------
    -- On_Error --

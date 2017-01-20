@@ -45,7 +45,7 @@ package body Rx.Debug.Observers is
    end record;
 
    overriding procedure On_Next      (This : in out Checker; V : Typed.T);
-   overriding procedure On_Completed (This : in out Checker);
+   overriding procedure On_Complete  (This : in out Checker);
    overriding procedure On_Error     (This : in out Checker; Error : Errors.Occurrence);
 
    -------------
@@ -71,10 +71,10 @@ package body Rx.Debug.Observers is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Checker) is
+   overriding procedure On_Complete  (This : in out Checker) is
    begin
       Log ("debug.observer on_completed enter", Note);
       if This.Watcher /= null then
@@ -103,7 +103,7 @@ package body Rx.Debug.Observers is
       when others =>
          Log ("debug.observer on_completed exit with exception", Note);
          raise;
-   end On_Completed;
+   end On_Complete ;
 
    --------------
    -- On_Error --
@@ -159,7 +159,7 @@ package body Rx.Debug.Observers is
    end record;
 
    overriding procedure On_Next      (This : in out Counter; V : Typed.T);
-   overriding procedure On_Completed (This : in out Counter);
+   overriding procedure On_Complete  (This : in out Counter);
 
    ----------------
    -- Do_On_Next --
@@ -177,10 +177,10 @@ package body Rx.Debug.Observers is
    end On_Next;
 
    ---------------------
-   -- Do_On_Completed --
+   -- Do_On_Complete  --
    ---------------------
 
-   overriding procedure On_Completed (This : in out Counter) is
+   overriding procedure On_Complete  (This : in out Counter) is
    begin
       if This.Count /= This.Safe_Count.Get then
          Put_Line ("Safe count:  " & Natural'Image (This.Safe_Count.Get));
@@ -188,7 +188,7 @@ package body Rx.Debug.Observers is
          raise Constraint_Error
            with "Count was mismatched:" & This.Count'Img & " /=" & Natural'Image (This.Safe_Count.Get);
       end if;
-   end On_Completed;
+   end On_Complete ;
 
    -----------------------------
    -- Subscribe_Count_Printer --

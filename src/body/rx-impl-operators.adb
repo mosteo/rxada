@@ -1,13 +1,13 @@
 package body Rx.Impl.Operators is
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Operator) is
+   overriding procedure On_Complete  (This : in out Operator) is
    begin
-      This.Get_Observer.On_Completed;
-   end On_Completed;
+      This.Get_Observer.On_Complete ;
+   end On_Complete ;
 
    --------------
    -- On_Error --

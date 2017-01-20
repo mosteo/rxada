@@ -13,7 +13,7 @@ package body Rx.Devsupport is
       Observer.On_Next (3);
       Observer.On_Next (4);
       Observer.On_Next (5);
-      Observer.On_Completed;
+      Observer.On_Complete ;
    end Blah123;
 
 end Rx.Devsupport;

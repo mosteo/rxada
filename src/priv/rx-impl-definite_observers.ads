@@ -17,7 +17,7 @@ package Rx.Impl.Definite_Observers with Preelaborate is
    overriding procedure On_Next      (This : in out Observer; V : Contracts.T)
      with Pre => This.Is_Valid or else raise Constraint_Error;
 
-   overriding procedure On_Completed (This : in out Observer)
+   overriding procedure On_Complete  (This : in out Observer)
      with Pre => This.Is_Valid or else raise Constraint_Error;
 
    overriding procedure On_Error     (This : in out Observer; Error : Errors.Occurrence)

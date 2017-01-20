@@ -40,18 +40,18 @@ package body Rx.Impl.Shared_Observer is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Observer) is
+   overriding procedure On_Complete  (This : in out Observer) is
    begin
       if This.Actual /= null then
-         This.Actual.On_Completed;
+         This.Actual.On_Complete ;
          This.Release;
       else
          raise No_Longer_Subscribed;
       end if;
-   end On_Completed;
+   end On_Complete ;
 
    --------------
    -- On_Error --

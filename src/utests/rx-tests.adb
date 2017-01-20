@@ -103,7 +103,7 @@ package body Rx.Tests is
 
       For_Each (Integers.Error (Some_Error),
                 On_Next      => Int_Fail'Access,
-                On_Completed => Fail'Access,
+                On_Complete  => Fail'Access,
                 On_Error     => Int_Err_Pass'Access);
       --  Should only call On_Error and get a pass
 
@@ -355,7 +355,7 @@ package body Rx.Tests is
             Observer.On_Next (2); delay 0.2;
             Observer.On_Next (3);
             Observer.On_Next (4);
-            Observer.On_Completed;
+            Observer.On_Complete ;
          end Debounced;
       begin
          For_Each (Integers.Create (Debounced'Access)
