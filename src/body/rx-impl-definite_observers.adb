@@ -22,13 +22,13 @@ package body Rx.Impl.Definite_Observers is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Observer) is
+   overriding procedure On_Complete  (This : in out Observer) is
    begin
-      This.Actual.Ref.On_Completed;
-   end On_Completed;
+      This.Actual.Ref.On_Complete ;
+   end On_Complete ;
 
    --------------
    -- On_Error --

@@ -1,4 +1,4 @@
-package body Rx.Impl.Multisubscribers is
+package body Rx.Impl.Multiobservers is
 
    subtype Critical_Section is Impl.Semaphores.Critical_Section;
 
@@ -6,14 +6,14 @@ package body Rx.Impl.Multisubscribers is
    -- Get_Observer --
    ------------------
 
-   function Get_Observer (From : in out Manager) return Reference is
+   function Get_Observer (From : in out Multiobserver) return Reference is
      (Reference'(Observer => From.Downstream'Access));
 
    -----------------
    -- Unsubscribe --
    -----------------
 
-   procedure Unsubscribe (This : in out Manager'Class) is
+   procedure Unsubscribe (This : in out Multiobserver'Class) is
    begin
       This.Subscribed := False;
       This.Downstream.Clear;
@@ -23,18 +23,18 @@ package body Rx.Impl.Multisubscribers is
    -- Create --
    ------------
 
-   function Create (Man   : Manager_access) return Operator is
+   function Create_Operator (Man   : Manager_access) return Operator is
    begin
       return Operator'(Transformer.Operator with
                        Manager => Wrap (Man),
                        others => <>);
-   end Create;
+   end Create_Operator;
 
    -----------------------
    -- Create_Subscriber --
    -----------------------
 
-   function Create_Subscriber (From : in out Operator'Class) return Subscriber'Class is
+   function Create_Subscriber (From : in out Operator) return Subscriber'Class is
    begin
       return Subscriber'(Observable.Contracts.Sink with Manager => From.Manager, Subscribed => True);
    end Create_Subscriber;
@@ -47,7 +47,7 @@ package body Rx.Impl.Multisubscribers is
    begin
       if This.Manager.Is_Valid then
          declare
-            Man : Manager'Class renames This.Manager.Ref;
+            Man : Multiobserver'Class renames This.Manager.Ref;
          begin
             return Man.Downstream'Unchecked_Access;
          end;
@@ -67,7 +67,7 @@ package body Rx.Impl.Multisubscribers is
    begin
       if This.Manager.Is_Valid then
          declare
-            Man : Manager'Class renames This.Manager.Ref;
+            Man : Multiobserver'Class renames This.Manager.Ref;
             CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
          begin
             if Man.Subscribed then
@@ -82,18 +82,18 @@ package body Rx.Impl.Multisubscribers is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Operator) is
+   overriding procedure On_Complete  (This : in out Operator) is
    begin
       if This.Manager.Is_Valid then
          declare
-            Man : Manager'Class renames This.Manager.Ref;
+            Man : Multiobserver'Class renames This.Manager.Ref;
             CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
          begin
             if Man.Subscribed then
-               Man.On_Completed (This);
+               Man.On_Complete  (This);
                This.Unsubscribe;
             else
                raise No_Longer_Subscribed;
@@ -102,7 +102,7 @@ package body Rx.Impl.Multisubscribers is
       else
          raise No_Longer_Subscribed;
       end if;
-   end On_Completed;
+   end On_Complete ;
 
    --------------
    -- On_Error --
@@ -112,7 +112,7 @@ package body Rx.Impl.Multisubscribers is
    begin
       if This.Manager.Is_Valid then
          declare
-            Man : Manager'Class renames This.Manager.Ref;
+            Man : Multiobserver'Class renames This.Manager.Ref;
             CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
          begin
             if Man.Subscribed then
@@ -136,7 +136,7 @@ package body Rx.Impl.Multisubscribers is
      (This     : in out Operator;
       Observer : in out Transformer.Into.Observer'Class)
    is
-      Man : Manager'Class renames This.Manager.Ref;
+      Man : Multiobserver'Class renames This.Manager.Ref;
    begin
       This.Subscribed := True;
       Man.Mutex := Impl.Semaphores.Create_Reentrant (not Thread_Safe);
@@ -172,7 +172,7 @@ package body Rx.Impl.Multisubscribers is
    begin
       if This.Manager.Is_Valid then
          declare
-            Man : Manager'Class renames This.Manager.Ref;
+            Man : Multiobserver'Class renames This.Manager.Ref;
             CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
          begin
             if Man.Subscribed then
@@ -187,18 +187,18 @@ package body Rx.Impl.Multisubscribers is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Subscriber) is
+   overriding procedure On_Complete  (This : in out Subscriber) is
    begin
       if This.Manager.Is_Valid then
          declare
-            Man : Manager'Class renames This.Manager.Ref;
+            Man : Multiobserver'Class renames This.Manager.Ref;
             CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
          begin
             if Man.Subscribed then
-               Man.On_Completed (This);
+               Man.On_Complete  (This);
                This.Unsubscribe;
             else
                raise No_Longer_Subscribed;
@@ -207,7 +207,7 @@ package body Rx.Impl.Multisubscribers is
       else
          raise No_Longer_Subscribed;
       end if;
-   end On_Completed;
+   end On_Complete ;
 
    --------------
    -- On_Error --
@@ -217,7 +217,7 @@ package body Rx.Impl.Multisubscribers is
    begin
       if This.Manager.Is_Valid then
          declare
-            Man : Manager'Class renames This.Manager.Ref;
+            Man : Multiobserver'Class renames This.Manager.Ref;
             CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
          begin
             if Man.Subscribed then
@@ -243,4 +243,4 @@ package body Rx.Impl.Multisubscribers is
       This.Manager.Forget;
    end Unsubscribe;
 
-end Rx.Impl.Multisubscribers;
+end Rx.Impl.Multiobservers;

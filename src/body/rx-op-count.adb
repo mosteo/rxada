@@ -11,7 +11,7 @@ package body Rx.Op.Count is
                       V     :        Transform.From.T);
 
    overriding
-   procedure On_Completed (This : in out Counter);
+   procedure On_Complete  (This : in out Counter);
 
    -------------
    -- On_Next --
@@ -28,15 +28,15 @@ package body Rx.Op.Count is
 
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
    overriding
-   procedure On_Completed (This : in out Counter) is
+   procedure On_Complete  (This : in out Counter) is
    begin
       This.Get_Observer.On_Next (Transform.Into.Type_Traits.To_Indefinite (This.Count));
-      This.Get_Observer.On_Completed;
-   end On_Completed;
+      This.Get_Observer.On_Complete ;
+   end On_Complete ;
 
    -----------
    -- Count --

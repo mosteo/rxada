@@ -51,8 +51,8 @@ package body Rx.Dispatchers is
                end;
             when On_Error =>
                RW.Downstream.On_Error (Base.Error (R.Event));
-            when On_Completed =>
-               RW.Downstream.On_Completed;
+            when On_Complete  =>
+               RW.Downstream.On_Complete ;
          end case;
       exception
          when No_Longer_Subscribed =>
@@ -73,16 +73,16 @@ package body Rx.Dispatchers is
       end On_Next;
 
       ------------------
-      -- On_Completed --
+      -- On_Complete  --
       ------------------
 
-      procedure On_Completed
+      procedure On_Complete 
         (Sched : in out Dispatcher'Class;
          Observer : Shared.Observer)
       is
       begin
-         Sched.Schedule (Runner'(Base.On_Completed, Base.On_Completed, Observer));
-      end On_Completed;
+         Sched.Schedule (Runner'(Base.On_Complete , Base.On_Complete , Observer));
+      end On_Complete ;
 
       --------------
       -- On_Error --

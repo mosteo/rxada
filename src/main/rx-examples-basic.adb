@@ -14,7 +14,7 @@ procedure Rx.Examples.Basic is
       Observer.On_Next (7);
       Observer.On_Next (8);
       Observer.On_Next (9);
-      Observer.On_Completed;
+      Observer.On_Complete ;
    end Custom_Src_1;
 
 begin
@@ -65,7 +65,7 @@ begin
          Observer.On_Next (4);
          Observer.On_Next (5);
          Observer.On_Next (6);
-         Observer.On_Completed;
+         Observer.On_Complete ;
       end Custom_Src_2;
    begin
       Sub :=

@@ -40,7 +40,7 @@ package body Rx.Op.Debounce is
    --  Must always be provided
 
    overriding
-   procedure On_Completed (This  : in out Operator);
+   procedure On_Complete  (This  : in out Operator);
    --  By default calls Child.On_Complete
 
    overriding
@@ -97,8 +97,8 @@ package body Rx.Op.Debounce is
 
          if Other.Is_Valid then
             case Other.CRef.Kind is
-               when On_Completed =>
-                  Child.Ref.On_Completed;
+               when On_Complete  =>
+                  Child.Ref.On_Complete ;
                when On_Error =>
                   Child.Ref.On_Error (Events.Error (Other.CRef));
                when On_Next =>
@@ -171,12 +171,12 @@ package body Rx.Op.Debounce is
    end On_Next;
 
    overriding
-   procedure On_Completed (This  : in out Operator)
+   procedure On_Complete  (This  : in out Operator)
    is
    begin
       This.Done := True;
-      This.Live.On_Event (Events.On_Completed);
-   end On_Completed;
+      This.Live.On_Event (Events.On_Complete );
+   end On_Complete ;
 
    overriding
    procedure On_Error (This  : in out Operator;

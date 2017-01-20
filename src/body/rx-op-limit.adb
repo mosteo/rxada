@@ -11,20 +11,20 @@ package body Rx.Op.Limit is
    overriding procedure On_Next (This  : in out Operator;
                                  V     :        Operate.T);
 
-   overriding procedure On_Completed (This  : in out Operator);
+   overriding procedure On_Complete  (This  : in out Operator);
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This  : in out Operator) is
+   overriding procedure On_Complete  (This  : in out Operator) is
    begin
       if not This.Completed then
          This.Completed := True;
-         This.Get_Observer.On_Completed;
+         This.Get_Observer.On_Complete ;
          This.Unsubscribe;
       end if;
-   end On_Completed;
+   end On_Complete ;
 
    -------------
    -- On_Next --
@@ -45,7 +45,7 @@ package body Rx.Op.Limit is
 
       if This.Remaining = 0 and not This.Completed then
          This.Completed := True;
-         This.Get_Observer.On_Completed;
+         This.Get_Observer.On_Complete ;
          This.Unsubscribe;
       end if;
    end On_Next;

@@ -20,14 +20,14 @@ package body Rx.Transformers is
    end Subscribe;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Operator) is
+   overriding procedure On_Complete  (This : in out Operator) is
    begin
-      This.Get_Observer.On_Completed;
+      This.Get_Observer.On_Complete ;
       This.Unsubscribe;
-   end On_Completed;
+   end On_Complete ;
 
    --------------
    -- On_Error --

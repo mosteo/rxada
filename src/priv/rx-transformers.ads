@@ -30,9 +30,9 @@ package Rx.Transformers with Preelaborate is
    overriding procedure On_Next (This : in out Operator; V : From.T) is null;
 --     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
 
-   overriding procedure On_Completed (This : in out Operator);
+   overriding procedure On_Complete  (This : in out Operator);
 --     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
-   --  By default calls downstream On_Completed
+   --  By default calls downstream On_Complete 
 
    overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence);
 --     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;

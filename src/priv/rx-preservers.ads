@@ -23,9 +23,9 @@ package Rx.Preservers with Preelaborate is
    package From renames Transform.From;
    package Into renames Transform.Into;
 
-   function Will_Observe (Producer : From.Contracts.Observable'Class;
+   function Will_Observe (Producer : Typed.Contracts.Observable'Class;
                           Consumer : Transform.Operator'Class)
-                          return Into.Observable renames Transform.Will_Observe;
+                          return Typed.Observable renames Transform.Will_Observe;
    -- Shortcut for simpler use elsewhere (particularly in Rx.Observables)
 
    package Holders is new Rx.Tools.Holders (Operator'Class, "operator");

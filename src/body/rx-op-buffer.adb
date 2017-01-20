@@ -19,7 +19,7 @@ package body Rx.Op.Buffer is
    overriding procedure On_Next (This  : in out Counter;
                                  V     :        Transform.From.T);
 
-   overriding procedure On_Completed (This  : in out Counter);
+   overriding procedure On_Complete  (This  : in out Counter);
 
    overriding procedure On_Error (This  : in out Counter;
                                   Error :        Errors.Occurrence);
@@ -60,16 +60,16 @@ package body Rx.Op.Buffer is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This  : in out Counter) is
+   overriding procedure On_Complete  (This  : in out Counter) is
    begin
       if This.Have > 0 then
          Emit (This);
       end if;
-      This.Get_Observer.On_Completed;
-   end On_Completed;
+      This.Get_Observer.On_Complete ;
+   end On_Complete ;
 
    --------------
    -- On_Error --

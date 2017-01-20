@@ -36,7 +36,7 @@ package body Rx.Src.Ranges is
             Observer.On_Error (Errors.Create (E));
       end;
 
-      Observer.On_Completed;
+      Observer.On_Complete ;
    end Subscribe;
 
    -------------------

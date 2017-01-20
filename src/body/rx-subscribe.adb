@@ -16,10 +16,10 @@ package body Rx.Subscribe is
    end Create;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Subscribe) is
+   overriding procedure On_Complete  (This : in out Subscribe) is
       use Rx.Actions;
    begin
       if This.Completed then
@@ -30,15 +30,15 @@ package body Rx.Subscribe is
       end if;
 
       if This.Is_Subscribed then
-         if This.Func_On_Completed /= null then
-            This.Func_On_Completed.all;
+         if This.Func_On_Complete  /= null then
+            This.Func_On_Complete .all;
          elsif This.Observer.Is_Valid then
-            This.Observer.Ref.On_Completed;
+            This.Observer.Ref.On_Complete ;
          end if;
       end if;
 
       This.Completed := True;
-   end On_Completed;
+   end On_Complete ;
 
    --------------
    -- On_Error --
@@ -90,13 +90,13 @@ package body Rx.Subscribe is
    ------------
 
    function Create (On_Next      : Typed.Actions.Proc1   := null;
-                    On_Completed : Rx.Actions.Proc0      := null;
+                    On_Complete  : Rx.Actions.Proc0      := null;
                     On_Error     : Proc_Error            := Typed.Defaults.Default_On_Error'Access)
                     return Typed.Contracts.Sink'Class is
    begin
       return S : Subscribe do
          S.Func_On_Next	     := On_Next;
-         S.Func_On_Completed := On_Completed;
+         S.Func_On_Complete  := On_Complete ;
          S.Func_On_Error     := On_Error;
       end return;
    end Create;

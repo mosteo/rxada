@@ -13,7 +13,7 @@ package body Rx.Op.Observe_On is
    end record;
 
    overriding procedure On_Next      (This : in out Op; V : Operate.T);
-   overriding procedure On_Completed (This : in out Op);
+   overriding procedure On_Complete  (This : in out Op);
    overriding procedure On_Error     (This : in out Op; Error : Errors.Occurrence);
 
    overriding procedure Subscribe    (This : in out Op; Observer : in out Operate.Into.Observer'Class);
@@ -34,13 +34,13 @@ package body Rx.Op.Observe_On is
    end On_Next;
 
    ------------------
-   -- On_Completed --
+   -- On_Complete  --
    ------------------
 
-   overriding procedure On_Completed (This : in out Op) is
+   overriding procedure On_Complete  (This : in out Op) is
    begin
-      Remote.On_Completed (This.Scheduler.all, Get_Downstream (This));
-   end On_Completed;
+      Remote.On_Complete  (This.Scheduler.all, Get_Downstream (This));
+   end On_Complete ;
 
    --------------
    -- On_Error --

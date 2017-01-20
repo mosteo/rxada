@@ -19,7 +19,7 @@ package Rx.Defaults with Preelaborate is
 
    overriding procedure On_Next (This : in out Observer; V : Contracts.T) is null;
 
-   overriding procedure On_Completed (This : in out Observer) is null;
+   overriding procedure On_Complete  (This : in out Observer) is null;
 
    overriding procedure On_Error (This : in out Observer;
                                   E    :        Errors.Occurrence);

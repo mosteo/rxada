@@ -155,7 +155,7 @@ package Rx.Observables is
 
    procedure For_Each (Producer     : Typed.Observable;
                        On_Next      : Typed.Actions.Proc1   := null;
-                       On_Completed : Rx.Actions.Proc0      := null;
+                       On_Complete  : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null);
 
    procedure For_Each (Producer : Typed.Observable;
@@ -266,13 +266,13 @@ package Rx.Observables is
    ---------------
 
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
-                       On_Completed : Rx.Actions.Proc0      := null;
+                       On_Complete  : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Sink;
 
    function Subscribe (Observer : Typed.Observer) return Sink;
 
    function Subscribe (On_Next      : Collections.Typed_Lists.Actions.Proc1 := null;
-                       On_Completed : Rx.Actions.Proc0                      := null;
+                       On_Complete  : Rx.Actions.Proc0                      := null;
                        On_Error     : Rx.Actions.Proc_Error                 := null)
                        return Collections.Typed_Lists.Sink;
 
@@ -497,18 +497,18 @@ private
 
    package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
-                       On_Completed : Rx.Actions.Proc0      := null;
+                       On_Complete  : Rx.Actions.Proc0      := null;
                        On_Error     : Rx.Actions.Proc_Error := null) return Sink
-   is (RxSubscribe.Create (On_Next, On_Completed, RxSubscribe.Proc_Error (On_Error)));
+   is (RxSubscribe.Create (On_Next, On_Complete , RxSubscribe.Proc_Error (On_Error)));
 
    function Subscribe (Observer : Typed.Observer) return Sink renames RxSubscribe.Create;
 
    package RxSubscribeLists is new Rx.Subscribe (Collections.Typed_Lists);
    function Subscribe (On_Next      : Collections.Typed_Lists.Actions.Proc1 := null;
-                       On_Completed : Rx.Actions.Proc0                      := null;
+                       On_Complete  : Rx.Actions.Proc0                      := null;
                        On_Error     : Rx.Actions.Proc_Error                 := null)
                        return Collections.Typed_Lists.Sink is
-      (RxSubscribeLists.Create (On_Next, On_Completed, RxSubscribeLists.Proc_Error (On_Error)));
+      (RxSubscribeLists.Create (On_Next, On_Complete , RxSubscribeLists.Proc_Error (On_Error)));
 
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;

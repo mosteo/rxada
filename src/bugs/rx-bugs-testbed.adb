@@ -51,7 +51,7 @@ procedure Rx.Bugs.Testbed is
          null;
       end;
       -- After tasks completion, print:
-      Dumpee.On_Completed;
+      Dumpee.On_Complete ;
    end Test_003_Serialize;
 
 begin
