@@ -22,7 +22,7 @@ procedure Rx.Bugs.Testbed is
 
    procedure Test_001_Shared_Leak with Unreferenced is
       -- There should be no leak here
-      S : Integers.Subscription;
+      S : Subscription;
       pragma Unreferenced (S);
    begin
       S :=

@@ -49,10 +49,10 @@ package body Rx.Impl.Transformers is
    end Unsubscribe;
 
    ------------------
-   -- Will_Observe --
+   -- Concatenate --
    ------------------
 
-   function Will_Observe (Producer : From.Observable;
+   function Concatenate (Producer : From.Observable;
                           Consumer : Operator'Class)
                           return Into.Observable
    is
@@ -60,6 +60,6 @@ package body Rx.Impl.Transformers is
       return Actual : Operator'Class := Consumer do
          Actual.Set_Parent (Producer);
       end return;
-   end Will_Observe;
+   end Concatenate;
 
 end Rx.Impl.Transformers;
