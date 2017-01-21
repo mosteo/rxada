@@ -7,7 +7,7 @@ with Rx.Typed;
 generic
    with package From is new Rx.Typed (<>);
    with package Into is new Rx.Typed (<>);
-package Rx.Transformers with Preelaborate is
+package Rx.Impl.Transformers with Preelaborate is
 
    --  Renamings for bug workarounds
    subtype From_Observable is From.Observable'Class;
@@ -95,4 +95,4 @@ private
       else
          raise No_Longer_Subscribed);
 
-end Rx.Transformers;
+end Rx.Impl.Transformers;

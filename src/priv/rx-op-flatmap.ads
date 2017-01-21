@@ -1,7 +1,7 @@
-with Rx.Transformers;
+with Rx.Impl.Transformers;
 
 generic
-   with package Transformer is new Rx.Transformers (<>);
+   with package Transformer is new Rx.Impl.Transformers (<>);
 package Rx.Op.Flatmap is
 
    type Policies is -- For the mixing of the generated observables
