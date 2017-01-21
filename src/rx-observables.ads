@@ -332,29 +332,29 @@ package Rx.Observables is
    --  Final subscription for observers of T lists
 
    function "&" (Producer : Observable; Consumer : Operator) return Observable
-                 renames Operate.Will_Observe;
+                 renames Operate.Concatenate;
    --  Concatenation for type preservers
 
    function "&" (Producer : Observable;
                  Consumer : Into_List_Transformer)
                  return     Into_List_Transformers.Into_Observable
-                 renames Into_List_Transformers.Will_Observe;
+                 renames Into_List_Transformers.Concatenate;
    --  Concatenation for groupers into lists
 
    function "&" (Producer : From_List_Transformers.From_Observable;
                  Consumer : From_List_Transformer) return Observable
-                 renames From_List_Transformers.Will_Observe;
+                 renames From_List_Transformers.Concatenate;
    --  Concatenation of ungroupers
 
    function "&" (Producer : List_Preservers.Observable;
                  Consumer : List_Preservers.Operator'Class)
                  return     List_Preservers.Observable
-                 renames List_Preservers.Will_Observe;
+                 renames List_Preservers.Concatenate;
    --  Concatenation for preservers between lists
 
    function "&" (Producer : Observable'Class;
                  Consumer : Into_Valueless.Operator'Class) return Into_Valueless.Into_Observable'Class
-                 renames Into_Valueless.Will_Observe;
+                 renames Into_Valueless.Concatenate;
 
    package Linkers is
 
@@ -369,15 +369,15 @@ package Rx.Observables is
       function "&" (Producer : List_Preservers.Observable;
                     Consumer : List_Preservers.Operator'Class)
                     return     List_Preservers.Observable
-                    renames List_Preservers.Will_Observe;
+                    renames List_Preservers.Concatenate;
 
       function "&" (Producer : From_List_Transformers.From_Observable;
                     Consumer : From_List_Transformer) return Observable
-                    renames From_List_Transformers.Will_Observe;
+                    renames From_List_Transformers.Concatenate;
 
       function "&" (Producer : Observable'Class;
                     Consumer : Into_Valueless.Operator'Class) return Into_Valueless.Into_Observable'Class
-                    renames Into_Valueless.Will_Observe;
+                    renames Into_Valueless.Concatenate;
 
    end Linkers;
 

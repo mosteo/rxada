@@ -24,7 +24,7 @@ package Rx.Operators is
    ---------
 
    function "&" (L : From.Observable; R : Operator) return Into.Observable
-   renames Typed.Will_Observe;
+   renames Typed.Concatenate;
 
    --  From here on, instances of operators that transform between two types
 

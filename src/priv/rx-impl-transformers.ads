@@ -61,14 +61,14 @@ package Rx.Impl.Transformers with Preelaborate is
    --  Chain building --
    ---------------------
 
-   function Will_Observe (Producer : From.Observable;
+   function Concatenate (Producer : From.Observable;
                           Consumer : Operator'Class)
                           return Into.Observable;
    --  This does the magic of preparing a passive chain, ready for actual subscription/observation
 
    function "&" (Producer : From.Observable;
                  Consumer : Operator'Class)
-                 return Into.Observable renames Will_Observe;
+                 return Into.Observable renames Concatenate;
 
 private
 
