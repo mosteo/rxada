@@ -1,4 +1,4 @@
-package body Rx.Transformers is
+package body Rx.Impl.Transformers is
 
    ---------------
    -- Subscribe --
@@ -62,4 +62,4 @@ package body Rx.Transformers is
       end return;
    end Will_Observe;
 
-end Rx.Transformers;
+end Rx.Impl.Transformers;

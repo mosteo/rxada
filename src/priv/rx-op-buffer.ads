@@ -1,7 +1,7 @@
-with Rx.Transformers;
+with Rx.Impl.Transformers;
 
 generic
-   with package Transform is new Rx.Transformers (<>);
+   with package Transform is new Rx.Impl.Transformers (<>);
    Empty : Transform.Into.D;
    with procedure Append (Container : in out Transform.Into.D; V : Transform.From.T) is <>;
 package Rx.Op.Buffer with Preelaborate is

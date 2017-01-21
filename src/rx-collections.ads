@@ -2,7 +2,7 @@ with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 
 with Rx.Preservers;
 with Rx.Traits.Types;
-with Rx.Transformers;
+with Rx.Impl.Transformers;
 with Rx.Typed;
 with Rx.Valueless;
 
@@ -16,7 +16,7 @@ package Rx.Collections is
    --  Valueless  --
    -----------------
 
-   package Valueless is new Transformers (Typed, Valueless.Typed);
+   package Valueless is new Impl.Transformers (Typed, Valueless.Typed);
 
    -------------------------
    --  Emission of Lists  --
@@ -46,9 +46,9 @@ package Rx.Collections is
    -----------------
 
    package List_Preservers        is new Rx.Preservers  (Typed_Lists);
-   package Into_List_Transformers is new Rx.Transformers (Typed, Typed_Lists);
-   package From_List_Transformers is new Rx.Transformers (Typed_Lists, Typed);
+   package Into_List_Transformers is new Rx.Impl.Transformers (Typed, Typed_Lists);
+   package From_List_Transformers is new Rx.Impl.Transformers (Typed_Lists, Typed);
 
-   package Obs_Transformers  is new Rx.Transformers (Typed, Typed_Observables);
+   package Obs_Transformers  is new Rx.Impl.Transformers (Typed, Typed_Observables);
 
 end Rx.Collections;

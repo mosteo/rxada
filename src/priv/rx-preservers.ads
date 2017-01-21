@@ -1,5 +1,5 @@
 with Rx.Tools.Holders;
-with Rx.Transformers;
+with Rx.Impl.Transformers;
 with Rx.Typed;
 
 generic
@@ -14,7 +14,7 @@ package Rx.Preservers with Preelaborate is
    subtype Observable is Typed.Observable'Class;
    subtype Observer   is Typed.Observer'Class;
 
-   package Transform is new Rx.Transformers (Typed, Typed);
+   package Transform is new Rx.Impl.Transformers (Typed, Typed);
    --  Specialization with type preservation here
 
    subtype Operator is Transform.Operator;
