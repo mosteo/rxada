@@ -3,7 +3,7 @@ with Ada.Exceptions;
 with Rx.Actions;
 with Rx.Collections;
 with Rx.Errors;
-with Rx.Preservers;
+with Rx.Impl.Preservers;
 with Rx.Schedulers;
 with Rx.Subscribe;
 with Rx.Subscriptions;
@@ -75,7 +75,7 @@ package Rx.Observables is
 
    -- Preservers Scaffolding
 
-   package Operate   is new Rx.Preservers (Typed);
+   package Operate   is new Rx.Impl.Preservers (Typed);
    subtype Operator  is Operate.Operator'Class;
 
    ------------

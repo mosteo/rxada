@@ -2,7 +2,7 @@ with Ada.Calendar;
 
 with Rx.Errors;
 with Rx.Impl.Shared_Observer;
-with Rx.Preservers;
+with Rx.Impl.Preservers;
 with Rx.Typed;
 
 package Rx.Dispatchers is
@@ -33,7 +33,7 @@ package Rx.Dispatchers is
    end Events;
 
    generic
-      with package Operate is new Rx.Preservers (<>);
+      with package Operate is new Rx.Impl.Preservers (<>);
    package Subscribe is
 
       procedure On_Subscribe (Sched  : in out Dispatcher'Class;
