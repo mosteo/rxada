@@ -1,8 +1,8 @@
-with Rx.Preservers;
+with Rx.Impl.Preservers;
 with Rx.Typed;
 
 generic
-   with package Operate is new Rx.Preservers (<>);
+   with package Operate is new Rx.Impl.Preservers (<>);
    with package Samplers is new Rx.Typed (<>);
 package Rx.Op.Sample is
 

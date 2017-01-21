@@ -1,6 +1,6 @@
 with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 
-with Rx.Preservers;
+with Rx.Impl.Preservers;
 with Rx.Traits.Types;
 with Rx.Impl.Transformers;
 with Rx.Typed;
@@ -45,7 +45,7 @@ package Rx.Collections is
    --  Operators  --
    -----------------
 
-   package List_Preservers        is new Rx.Preservers  (Typed_Lists);
+   package List_Preservers        is new Rx.Impl.Preservers  (Typed_Lists);
    package Into_List_Transformers is new Rx.Impl.Transformers (Typed, Typed_Lists);
    package From_List_Transformers is new Rx.Impl.Transformers (Typed_Lists, Typed);
 
