@@ -1,6 +1,6 @@
 package body Rx.Impl.Multiobservers is
 
-   subtype Critical_Section is Impl.Semaphores.Critical_Section;
+   subtype Critical_Section is Rx.Tools.Semaphores.Critical_Section;
 
    ------------------
    -- Get_Observer --
@@ -139,7 +139,7 @@ package body Rx.Impl.Multiobservers is
       Man : Multiobserver'Class renames This.Manager.Ref;
    begin
       This.Subscribed := True;
-      Man.Mutex := Impl.Semaphores.Create_Reentrant (not Thread_Safe);
+      Man.Mutex := Rx.Tools.Semaphores.Create_Reentrant (not Thread_Safe);
       declare
          CS  : Critical_Section (Man.Mutex'Access) with Unreferenced;
          --  Needed because if a subscription is performed during operator subscription it could race us

@@ -1,4 +1,4 @@
-package body Rx.Impl.Semaphores is
+package body Rx.Tools.Semaphores is
 
    ---------------
    -- Reentrant --
@@ -96,4 +96,4 @@ package body Rx.Impl.Semaphores is
       end if;
    end Finalize;
 
-end Rx.Impl.Semaphores;
+end Rx.Tools.Semaphores;

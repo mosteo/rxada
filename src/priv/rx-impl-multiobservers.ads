@@ -2,9 +2,9 @@ with Rx.Impl.Transformers;
 with Rx.Typed;
 
 private with Rx.Errors;
-private with Rx.Impl.Semaphores;
-private with Rx.Impl.Shared_Data;
 private with Rx.Subscriptions;
+private with Rx.Tools.Semaphores;
+private with Rx.Tools.Shared_Data;
 
 generic
    with package Transformer is new Rx.Impl.Transformers (<>);
@@ -76,7 +76,7 @@ package Rx.Impl.Multiobservers is
 private
 
    type Multiobserver is abstract tagged limited record
-      Mutex      : aliased Impl.Semaphores.Shared;
+      Mutex      : aliased Tools.Semaphores.Shared;
       Subscribed : Boolean := False;
       Downstream : aliased Transformer.Into.Definite_Observers.Observer;
       --  This could have been a holder but this way we
@@ -84,7 +84,7 @@ private
 
    function Is_Subscribed (This : Multiobserver'Class) return Boolean is (This.Subscribed);
 
-   package Shared_Managers is new Impl.Shared_Data (Multiobserver'Class, Manager_Access);
+   package Shared_Managers is new Tools.Shared_Data (Multiobserver'Class, Manager_Access);
 
    type Shared_Manager is new Shared_Managers.Proxy with null record;
 

@@ -1,6 +1,6 @@
 with Ada.Unchecked_Deallocation;
 
-package body Rx.Lazy is
+package body Rx.Tools.Lazies is
 
    procedure Free is new Ada.Unchecked_Deallocation (Content, Ptr);
 
@@ -8,7 +8,7 @@ package body Rx.Lazy is
    -- Get --
    ---------
 
-   function Get (This : in out Rx.Lazy.Lazy) return Ptr is
+   function Get (This : in out Lazy) return Ptr is
       X : Ptr;
    begin
       This.Safe.Get (X);
@@ -19,7 +19,7 @@ package body Rx.Lazy is
    -- Safe --
    ----------
 
-   protected body Safe is
+   protected body Safes is
 
       ---------
       -- Get --
@@ -44,15 +44,15 @@ package body Rx.Lazy is
          Free (Instance);
       end Free;
 
-   end Safe;
+   end Safes;
 
    --------------
    -- Finalize --
    --------------
 
-   overriding procedure Finalize (This : in out Rx.Lazy.Lazy) is
+   overriding procedure Finalize (This : in out Lazy) is
    begin
       This.Safe.Free;
    end Finalize;
 
-end Rx.Lazy;
+end Rx.Tools.Lazies;

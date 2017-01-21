@@ -1,7 +1,7 @@
 with Rx.Bugs.Support;
 with Rx.Debug; use Rx.Debug;
 with Rx.Debug.Observers;
-with Rx.Impl.Semaphores;
+with Rx.Tools.Semaphores;
 with Rx.Std;   use Rx.Std;
 with Rx.Schedulers;
 with Rx.Subscriptions;
@@ -34,8 +34,8 @@ procedure Rx.Bugs.Testbed is
 
    procedure Test_002_Blocking with Unreferenced is
       -- There should be no blocking operation exception here
-      Sem  : aliased Impl.Semaphores.Shared := Impl.Semaphores.Create_Reentrant;
-      Crit : Impl.Semaphores.Critical_Section (Sem'Access) with Unreferenced;
+      Sem  : aliased Tools.Semaphores.Shared := Tools.Semaphores.Create_Reentrant;
+      Crit : Tools.Semaphores.Critical_Section (Sem'Access) with Unreferenced;
    begin
       null;
    end Test_002_Blocking;
