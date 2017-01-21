@@ -54,8 +54,6 @@ package Rx.Observables is
 
    subtype Definite_Observable is Typed.Definite_Observables.Observable;
 
-   subtype Subscription is Subscriptions.Subscription;
-
    -- Collections Scaffolding
 
    package Collections is new  Rx.Collections (Typed);
