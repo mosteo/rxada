@@ -1,12 +1,12 @@
 with Rx.Errors;
-with Rx.Impl.Semaphores;
+with Rx.Tools.Semaphores;
 
 package body Rx.Op.Serialize is
 
-   subtype Critical_Section is Impl.Semaphores.Critical_Section;
+   subtype Critical_Section is Tools.Semaphores.Critical_Section;
 
    type Serializer is new Operate.Operator with record
-      Mutex : aliased Impl.Semaphores.Shared_Binary;
+      Mutex : aliased Tools.Semaphores.Shared_Binary;
    end record;
 
    overriding procedure Unsubscribe (This : in out Serializer);
@@ -64,7 +64,7 @@ package body Rx.Op.Serialize is
                                    Consumer :        Operate.Into.Subscriber)
    is
    begin
-      Producer.Mutex := Impl.Semaphores.Create;         -- New mutex for this chain
+      Producer.Mutex := Tools.Semaphores.Create;         -- New mutex for this chain
       Operate.Operator (Producer).Subscribe (Consumer); -- Normal subscription
    end Subscribe;
 

@@ -3,7 +3,7 @@ private with Ada.Finalization;
 generic
    type Item (<>) is limited private;
    type Item_Access is access Item;
-package Rx.Impl.Shared_Data with Preelaborate is
+package Rx.Tools.Shared_Data with Preelaborate is
 
    --  Your typical refcounted thread-safe access type
 
@@ -70,4 +70,4 @@ private
 
    function Get    (P : Proxy) return Const_Ref is (P.Safe.Get);
 
-end Rx.Impl.Shared_Data;
+end Rx.Tools.Shared_Data;

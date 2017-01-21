@@ -1,9 +1,9 @@
 private with Ada.Finalization;
 private with Ada.Task_Identification;
 
-private with Rx.Impl.Shared_Data;
+private with Rx.Tools.Shared_Data;
 
-package Rx.Impl.Semaphores is
+package Rx.Tools.Semaphores is
 
    type Shared is private;
    --  A ref-counted semaphore which is initially invalid
@@ -29,7 +29,7 @@ private
 
    type Reentrant_Ptr is access Reentrant;
 
-   package Shared_Semaphores is new Rx.Impl.Shared_Data (Reentrant, Reentrant_Ptr);
+   package Shared_Semaphores is new Rx.Tools.Shared_Data (Reentrant, Reentrant_Ptr);
 
    type Shared is new Shared_Semaphores.Proxy with record
       Fake : Boolean := False;
@@ -56,4 +56,4 @@ private
    overriding procedure Initialize (This : in out Critical_Section);
    overriding procedure Finalize   (This : in out Critical_Section);
 
-end Rx.Impl.Semaphores;
+end Rx.Tools.Semaphores;
