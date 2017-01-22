@@ -1,9 +1,9 @@
 with Rx.Impl.Preservers;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
    with package Operate is new Rx.Impl.Preservers (<>);
-   with package Samplers is new Rx.Typed (<>);
+   with package Samplers is new Rx.Impl.Typed (<>);
 package Rx.Op.Sample is
 
    type Policies is (Keep_First, Keep_Last);

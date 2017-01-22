@@ -11,7 +11,7 @@ with Rx.Traits.Types;
 
 generic
    with package Type_Traits is new Rx.Traits.Types (<>);
-package Rx.Typed with Preelaborate is
+package Rx.Impl.Typed with Preelaborate is
 
    package Contracts is new Rx.Contracts (Type_Traits.T);
    --  The beginning of it all
@@ -35,4 +35,4 @@ package Rx.Typed with Preelaborate is
    package Factories            is new Rx.Factories (Contracts);
    package Holders              is new Impl.Holders (Contracts);
 
-end Rx.Typed;
+end Rx.Impl.Typed;

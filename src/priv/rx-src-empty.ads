@@ -1,10 +1,10 @@
 with Ada.Exceptions;
 
 with Rx.Errors;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
 package Rx.Src.Empty is
 
    function Empty return Typed.Observable;

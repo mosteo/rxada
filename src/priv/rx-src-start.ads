@@ -1,7 +1,7 @@
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
 package Rx.Src.Start is
 
    function Create (Func : Typed.Actions.TFunc0'Class) return Typed.Observable;

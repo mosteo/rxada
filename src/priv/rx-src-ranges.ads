@@ -1,7 +1,7 @@
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
    with function Succ (V : Typed.T) return Typed.T is <>;
    with function "<" (L, R : Typed.T) return Boolean is <>;
 package Rx.Src.Ranges is

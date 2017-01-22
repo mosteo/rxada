@@ -8,7 +8,7 @@ with Rx.Schedulers;
 with Rx.Subscribe;
 with Rx.Subscriptions;
 with Rx.Traits.Arrays;
-with Rx.Typed;
+with Rx.Impl.Typed;
 with Rx.Valueless;
 
 private with Rx.Op.Buffer;
@@ -38,7 +38,7 @@ private with Rx.Src.Start;
 private with Rx.Src.Timer;
 
 generic
-   with package User_Typed is new Rx.Typed (<>);
+   with package User_Typed is new Rx.Impl.Typed (<>);
 package Rx.Observables is
 
    package Typed renames User_Typed; -- Bug workaround

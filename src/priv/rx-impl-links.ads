@@ -1,8 +1,8 @@
 with Rx.Tools.Holders;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
 package Rx.Impl.Links is
 
    pragma Preelaborate;

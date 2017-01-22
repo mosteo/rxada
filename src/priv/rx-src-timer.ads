@@ -1,8 +1,8 @@
 with Rx.Schedulers;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>); -- Items emitted
+   with package Typed is new Rx.Impl.Typed (<>); -- Items emitted
 package Rx.Src.Timer with Elaborate_Body is
 
    function Create (V         : Typed.T;
