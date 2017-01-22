@@ -20,7 +20,7 @@ package body Rx.RST2017 is
    function Image (I : Rx_Integer) return String is (Rx_Integer'Image (I));
 
    S : constant Subscription :=
-         Interval (First => 1) &
+         Interval (First => 1, Period => 1.0) &
    -- The RxAda Interval observable uses Duration as the time unit, and uses Ada tasks to implement Rx threads
          Observe_On (Schedulers.Computation) &
    -- Switch to a computation task
