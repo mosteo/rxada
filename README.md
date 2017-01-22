@@ -1,6 +1,6 @@
 # README #
 
-RxAda, an experiment on porting [ReactiveX](http://reactivex.io/) to Ada. At this time this is an incomplete proof-of-concept with a few implemented operators. Schedulers and subscriptions are implemented though.
+RxAda, an experiment on porting [ReactiveX](http://reactivex.io/) to Ada. 
 
 Quick example. Suppose a Java 8 case where we print the length of a string:
 
@@ -37,8 +37,8 @@ You need to instantiate a package for each type you want to use in a Rx chain, a
 ```
 #!Ada
 
-package Strings  is new Rx.Indefinites (String);  -- Comes pre-instantiated as Rx.Std
-package Integers is new Rx.Definites (Integer);   -- Comes pre-instantiated as Rx.Std
+package Strings  is new Rx.Indefinites (String);  -- Comes pre-instantiated in Rx.Std
+package Integers is new Rx.Definites (Integer);   -- Comes pre-instantiated in Rx.Std
 package StrToInt is new Rx.Operators (Strings.Observables, Integers.Observables);
 ```
 
@@ -56,7 +56,7 @@ Functions are passed to operators via their 'Access, so standard accessibility c
 
 ### Rationale and design goals ###
 
-I became acquainted with RxJava recently, and soon appreciated its power for tidy code and sane concurrency in event driven systems (like Android). This is particularly true when using Java 8 with lambda functions.
+I became acquainted with RxJava recently, and soon appreciated its power for tidy code and sane concurrency in event-driven systems (like Android). This is particularly true when using Java 8 with lambda functions.
 
 Given Ada lack of lambda functions and inline generics, increased verbosity is inevitable: functions have to be declared in advance (and at library level), and the types involved require generic instantiations in advance too.
 
