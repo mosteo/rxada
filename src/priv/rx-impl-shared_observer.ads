@@ -1,8 +1,8 @@
 with Rx.Errors;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
 package Rx.Impl.Shared_Observer with Preelaborate is
 
    type Observer is new Typed.Contracts.Observer with private;

@@ -1,5 +1,5 @@
 with Rx.Impl.Transformers;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 private with Rx.Errors;
 private with Rx.Subscriptions;
@@ -8,7 +8,7 @@ private with Rx.Tools.Shared_Data;
 
 generic
    with package Transformer is new Rx.Impl.Transformers (<>);
-   with package Observable  is new Rx.Typed (<>);
+   with package Observable  is new Rx.Impl.Typed (<>);
    Thread_Safe : Boolean := True;
    --  Optionally, thread-safety is built-in via mutex
 package Rx.Impl.Multiobservers is

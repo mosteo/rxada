@@ -1,8 +1,8 @@
 with Rx.Schedulers;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>); -- Items emitted
+   with package Typed is new Rx.Impl.Typed (<>); -- Items emitted
    with function Succ (V : Typed.T) return Typed.T; -- Next in sequence
 package Rx.Src.Interval is
 

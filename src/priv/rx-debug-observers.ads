@@ -1,7 +1,7 @@
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
    Default_T : Typed.T;
    with function Image (V : Typed.T) return String is <>;
 package Rx.Debug.Observers is

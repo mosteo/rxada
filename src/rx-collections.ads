@@ -3,11 +3,11 @@ with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 with Rx.Impl.Preservers;
 with Rx.Traits.Types;
 with Rx.Impl.Transformers;
-with Rx.Typed;
+with Rx.Impl.Typed;
 with Rx.Valueless;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
 package Rx.Collections is
 
    -- Instances of types and transformations that we get automatically when creating a new Rx type
@@ -28,7 +28,7 @@ package Rx.Collections is
    function Identity (L : List) return List is (L) with Inline;
 
    package List_Traits is new Rx.Traits.Types (List, List, Identity, Identity);
-   package Typed_Lists is new Rx.Typed (List_Traits);
+   package Typed_Lists is new Rx.Impl.Typed (List_Traits);
 
    -------------------------------
    --  Emission of observables  --
@@ -39,7 +39,7 @@ package Rx.Collections is
                                                      Typed.Definite_Observables.From,
                                                      Typed.Definite_Observables.To_Indef);
 
-   package Typed_Observables is new Rx.Typed (Observable_Traits);
+   package Typed_Observables is new Rx.Impl.Typed (Observable_Traits);
 
    -----------------
    --  Operators  --

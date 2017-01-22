@@ -1,5 +1,5 @@
 with Rx.Traits.Types;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 package Rx.Valueless with Preelaborate is
 
@@ -10,7 +10,7 @@ package Rx.Valueless with Preelaborate is
 
    package Traits is new Rx.Traits.Types (Nothing, Nothing);
 
-   package Typed is new Rx.Typed (Traits);
+   package Typed is new Rx.Impl.Typed (Traits);
 
    subtype Observable is Typed.Observable;
 

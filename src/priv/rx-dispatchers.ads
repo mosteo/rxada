@@ -3,7 +3,7 @@ with Ada.Calendar;
 with Rx.Errors;
 with Rx.Impl.Shared_Observer;
 with Rx.Impl.Preservers;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 package Rx.Dispatchers is
 
@@ -21,7 +21,7 @@ package Rx.Dispatchers is
                        Time  : Ada.Calendar.Time := Ada.Calendar.Clock) is abstract;
 
    generic
-      with package Typed is new Rx.Typed (<>);
+      with package Typed is new Rx.Impl.Typed (<>);
    package Events is
 
       package Shared is new Rx.Impl.Shared_Observer (Typed);

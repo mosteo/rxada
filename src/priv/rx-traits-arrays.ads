@@ -1,7 +1,7 @@
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
 
    type Indexes is (<>);
 package Rx.Traits.Arrays is

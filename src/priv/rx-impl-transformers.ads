@@ -2,11 +2,11 @@ with Rx.Actions.Transform;
 with Rx.Errors;
 with Rx.Impl.Links;
 with Rx.Subscriptions;
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package From is new Rx.Typed (<>);
-   with package Into is new Rx.Typed (<>);
+   with package From is new Rx.Impl.Typed (<>);
+   with package Into is new Rx.Impl.Typed (<>);
 package Rx.Impl.Transformers with Preelaborate is
 
    --  Renamings for bug workarounds

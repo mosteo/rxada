@@ -1,7 +1,7 @@
-with Rx.Typed;
+with Rx.Impl.Typed;
 
 generic
-   with package Typed is new Rx.Typed (<>);
+   with package Typed is new Rx.Impl.Typed (<>);
 package Rx.Src.Create with Preelaborate is
 
    package Contracts renames Typed.Contracts;
