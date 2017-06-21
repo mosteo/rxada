@@ -5,6 +5,8 @@ with Rx.Tests;
 procedure Rx.Examples.Tests is
 begin
    GNAT.Exception_Traces.Trace_On (GNAT.Exception_Traces.Unhandled_Raise);
+   --  GNAT.Exception_Traces.Trace_On (GNAT.Exception_Traces.Every_Raise);
+   --  Might be useful for debugging
 
    pragma Assert (Rx.Tests.Misc_Tests);
    pragma Assert (Rx.Tests.Subscriptions);
