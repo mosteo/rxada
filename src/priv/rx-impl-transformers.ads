@@ -53,13 +53,13 @@ package Rx.Impl.Transformers with Preelaborate is
 --     not overriding function Get_Observer (This : in out Operator) return Into.Holders.Observers.Reference;
    --     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
 
-   not overriding function Get_Observer (This : in out Operator) return access Into.Observer'Class
-     with Post'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
+   not overriding function Get_Observer (This : in out Operator) return access Into.Observer'Class;
+--     with Post'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
    --  Workaround for two reference-related bugs: memory-leak and access error
 
    ---------------------
    --  Chain building --
-   ---------------------
+   --------------------- 
 
    function Concatenate (Producer : From.Observable;
                           Consumer : Operator'Class)

@@ -63,7 +63,7 @@ private
 
    function Idle_Thread return Scheduler is (Scheduler (Pool_Idle.Find_Idle));
 
-   function New_Thread return Scheduler is (Scheduler (Pool_Excl.Grow));
+   function New_Thread return Scheduler is (Scheduler (Pool_Excl.New_One));
 
    use Ada.Task_Identification;
    function Current_Thread_Id return String is (Image (Current_Task));
