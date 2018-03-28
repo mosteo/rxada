@@ -194,6 +194,12 @@ package Rx.Observables is
 
    function Limit (Max : Rx_Natural) return Operator;
 
+   ---------
+   -- Map --
+   ---------
+
+   function Map (F : Operate.Transform.Actions.Func1) return Operator;
+
    -----------
    -- Never --
    -----------
@@ -450,6 +456,9 @@ private
 
    package RxLimit is new Rx.Op.Limit (Operate);
    function Limit (Max : Rx_Natural) return Operator renames RxLimit.Create;
+
+   package RxMap is new Rx.Op.Map (Operate.Transform);
+   function Map (F : Operate.Transform.Actions.Func1) return Operator renames RxMap.Create;
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
