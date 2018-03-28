@@ -8,7 +8,7 @@ procedure Rx.Devel is
 
    S : constant Subscription :=
          Integers.From ((1, 2, 3, 4)) &
-         Integers.Map (Inc'Access) & -- Testing that this can't be done
+--         Integers.Map (Inc'Access) & -- Testing that this can't be done
          Integers.Subscribe;
 begin
    null;
