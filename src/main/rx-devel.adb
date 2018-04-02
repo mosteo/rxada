@@ -8,8 +8,11 @@ procedure Rx.Devel is
 
    S : constant Subscription :=
          Integers.From ((1, 2, 3, 4)) &
---         Integers.Map (Inc'Access) & -- Testing that this can't be done
-         Integers.Subscribe;
+         Integers.Map (Inc'Unrestricted_Access) & -- Testing that this can't be done with checked access
+         Inc'Unrestricted_Access &                -- Alternate Map with &
+         Images.Integers.Print &
+         Integers.Subscribe
+   with Unreferenced;
 begin
-   null;
+   Std.For_Each (Integers.Just (1) & Images.Integers.Print & Subscribe);
 end Rx.Devel;
