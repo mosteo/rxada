@@ -159,6 +159,9 @@ package Rx.Observables is
    procedure For_Each (Producer : Typed.Observable;
                        Consumer : Typed.Sink);
 
+   procedure For_Each (Subscription : Subscriptions.Subscription) is null;
+   --  Discard a subscription so a declare block is not needed
+
    ----------
    -- From --
    ----------
@@ -199,6 +202,8 @@ package Rx.Observables is
    ---------
 
    function Map (F : Operate.Transform.Actions.Func1) return Operator;
+
+   --  See the particular "&" below
 
    -----------
    -- Never --
@@ -361,6 +366,11 @@ package Rx.Observables is
    function "&" (Producer : Observable'Class;
                  Consumer : Into_Valueless.Operator'Class) return Into_Valueless.Into_Observable'Class
                  renames Into_Valueless.Concatenate;
+   --  Concatenation for ??
+
+   function "&" (Producer : Observable'Class;
+                 Consumer : Operate.Transform.Actions.Func1)
+                 return Observable;
 
    package Linkers is
 
@@ -384,6 +394,10 @@ package Rx.Observables is
       function "&" (Producer : Observable'Class;
                     Consumer : Into_Valueless.Operator'Class) return Into_Valueless.Into_Observable'Class
                     renames Into_Valueless.Concatenate;
+
+      function "&" (Producer : Observable'Class;
+                    Consumer : Operate.Transform.Actions.Func1)
+                    return Observable renames Observables."&";
 
    end Linkers;
 
@@ -459,6 +473,8 @@ private
 
    package RxMap is new Rx.Op.Map (Operate.Transform);
    function Map (F : Operate.Transform.Actions.Func1) return Operator renames RxMap.Create;
+   function "&" (Producer : Observable'Class;
+                 Consumer : Operate.Transform.Actions.Func1) return Observable renames RxMap."&";
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;

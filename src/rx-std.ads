@@ -18,6 +18,9 @@ package Rx.Std is
 
    subtype Subscription is Rx.Subscriptions.Subscription;
 
+   procedure For_Each (Subscription : Subscriptions.Subscription) is null;
+   --  Discard a subscription so a declare block is not needed
+
    --  Convenience instances
 
    --  Base Std types

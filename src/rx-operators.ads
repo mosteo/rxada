@@ -19,15 +19,6 @@ package Rx.Operators is
 
    subtype Operator Is Typed.Operator'Class;
 
-   ---------
-   -- "&" --
-   ---------
-
-   function "&" (L : From.Observable; R : Operator) return Into.Observable
-   renames Typed.Concatenate;
-
-   --  From here on, instances of operators that transform between two types
-
    --------------
    -- Counters --
    --------------
@@ -70,10 +61,33 @@ package Rx.Operators is
       with function Size (V : From.T) return Into.T;
    function Size return Operator'Class;
 
+   ---------
+   -- "&" --
+   ---------
+
+   function "&" (L : From.Observable; R : Operator) return Into.Observable
+                 renames Typed.Concatenate;
+
+   function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable;
+   --  The Map operator alternative
+
+   package Linkers is
+
+      --  Analog to the one in Observables
+
+      function "&" (L : From.Observable; R : Operator) return Into.Observable
+                    renames Typed.Concatenate;
+
+      function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable
+                    renames Operators."&";
+
+   end Linkers;
+
 private
 
    package RxMap is new Rx.Op.Map (Typed);
    function Map (F : Typed.Actions.Func1) return Operator renames RxMap.Create;
+   function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable renames RxMap."&";
 
    package RxScan is new Rx.Op.Scan (Typed);
    function Scan (F         : Typed.Actions.Func2;
