@@ -10,8 +10,13 @@ package Rx.Src.Create with Preelaborate is
 
    function Parameterless (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
                            return Typed.Observable;
-   --  Creates an Observable that requires no parameters, from a function
+   --  Creates an Observable that requires no parameters, from a procedure that calls the Observer
    --  Does not autocomplete
+
+   function Enumerator (Initial : Typed.T;
+                        Succ    : not null Typed.Actions.Func1;
+                        Count   : Rx_Integer := Rx_Integer'Last) return Typed.Observable;
+   --  Observable from a function that, given a value, produces the next one
 
    generic
       type State is private;

@@ -61,12 +61,54 @@ package body Rx.Src.Create is
       Initial (Observer);
    end On_Subscribe;
 
+   --------------------------
+   -- Create_Parameterless --
+   --------------------------
+
    package Create_Parameterless is new With_State (Parameterless_Proc, On_Subscribe, Autocompletes => False);
+
+   -------------------
+   -- Parameterless --
+   -------------------
 
    function Parameterless (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
                            return Typed.Observable is
    begin
       return Create_Parameterless.Create (On_Subscribe);
    end Parameterless;
+
+   ----------------
+   -- Enumerator --
+   ----------------
+
+   type Enum_State is record
+      Initial : Typed.D;
+      Count   : Rx_Integer;
+      Succ    : Typed.Actions.Func1;
+   end record;
+
+   procedure On_Subscribe (Initial  : Enum_State;
+                           Observer : in out Typed.Observer)
+   is
+      use Typed.Conversions;
+
+      Next : Typed.D := Initial.Initial;
+   begin
+      for I in 1 .. Initial.Count loop
+         Observer.On_Next (+Next);
+         if I /= Initial.Count then
+            Next := +Initial.Succ (+Next);
+         end if;
+      end loop;
+   end On_Subscribe;
+
+   package Enumerate is new With_State (Enum_State, On_Subscribe);
+
+   function Enumerator (Initial : Typed.T;
+                        Succ    : not null Typed.Actions.Func1;
+                        Count   : Rx_Integer := Rx_Integer'Last) return Typed.Observable is
+     (Enumerate.Create (Enum_State'(Typed.Conversions.Def (Initial),
+                                    Count,
+                                    Succ)));
 
 end Rx.Src.Create;

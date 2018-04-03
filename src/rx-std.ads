@@ -45,8 +45,29 @@ package Rx.Std is
    package Float_To_String   renames Impl.Std.Float_To_String;
    package Integer_To_String renames Impl.Std.Integer_To_String;
 
-   function String_Succ (S : String) return String;
-   -- Lexicographic enumeration over the Character type. Useless I guess.
+   subtype Printable_Character is Character range Character'Val (16#20#) .. Character'Val (16#7E#);
+
+   function String_Succ    (S : Rx_String) return Rx_String;
+   function Printable_Succ (S : Rx_String) return Rx_String with
+     Pre  => (for all C of S                     => C in Printable_Character),
+     Post => (for all C of Printable_Succ'Result => C in Printable_Character);
+   -- Lexicographic enumerations over the Character type. Useless I guess.
+
+   function All_Integers (Initial : Rx_Integer := Rx_Integer'First;
+                          Count   : Rx_Integer := Rx_Integer'Last) return Integers.Observable;
+
+   function All_Naturals (Count   : Rx_Integer := Rx_Integer'Last) return Integers.Observable;
+
+   function All_Positives (Count   : Rx_Integer := Rx_Integer'Last) return Integers.Observable;
+
+   --  See also Rx.Src.Ranges
+
+   function All_Strings (Initial : Rx_String  := "";
+                         Count   : Rx_Integer := Rx_Integer'Last) return Strings.Observable;
+
+   function All_Printable_Strings (Initial : Rx_String  := "";
+                                   Count   : Rx_Integer := Rx_Integer'Last) return Strings.Observable with
+     Pre => (for all C of Initial => C in Printable_Character);
 
    --  Standard Rx sources and operators
 
@@ -90,9 +111,34 @@ package Rx.Std is
 
 private
 
-   function String_Succ (S : String) return String
-   is (if    S'Length = 0                 then String'(1 => Character'First)
-       elsif S (S'Last) /= Character'Last then S (S'First .. S'Last - 1) & Character'Succ (S (S'Last))
-       else  S & Character'First);
+   function String_Succ (S : Rx_String) return Rx_String is
+     (if    S'Length = 0                 then Rx_String'(1 => Character'First)
+      elsif S (S'Last) /= Character'Last then S (S'First .. S'Last - 1) & Character'Succ (S (S'Last))
+      else  S & Character'First);
+
+   function Printable_Succ (S : Rx_String) return Rx_String is
+     (if    S'Length = 0                 then String'(1 => Printable_Character'First)
+      elsif S (S'Last) /= Printable_Character'Last then S (S'First .. S'Last - 1) & Printable_Character'Succ (S (S'Last))
+      else  S & Printable_Character'First);
+
+   function Succ (I : Rx_Integer) return Rx_Integer is (Rx_Integer'Succ (I)) with Inline;
+
+   function All_Integers (Initial : Rx_Integer := Rx_Integer'First;
+                          Count   : Rx_Integer := Rx_Integer'Last) return Integers.Observable is
+      (Integers.Create (Initial, Succ'Access, Count));
+
+   function All_Naturals (Count   : Rx_Integer := Rx_Integer'Last) return Integers.Observable is
+      (All_Integers (Initial => 0, Count => Count));
+
+   function All_Positives (Count   : Rx_Integer := Rx_Integer'Last) return Integers.Observable is
+      (All_Integers (Initial => 1, Count => Count));
+
+   function All_Strings (Initial : Rx_String  := "";
+                         Count   : Rx_Integer := Rx_Integer'Last) return Strings.Observable is
+      (Strings.Create (Initial, String_Succ'Access, Count));
+
+   function All_Printable_Strings (Initial : Rx_String  := "";
+                                   Count   : Rx_Integer := Rx_Integer'Last) return Strings.Observable is
+      (Strings.Create (Initial, Printable_Succ'Access, Count));
 
 end Rx.Std;

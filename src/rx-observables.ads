@@ -89,7 +89,12 @@ package Rx.Observables is
    function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
                     return Observable;
 
+   function Create (Initial : T;
+                    Succ    : not null Typed.Actions.Func1;
+                    Count   : Rx_Integer := Rx_Integer'Last) return Observable;
+
    --  You can always extend a plain Contracts.Observable, of course!
+   --  Also, see Rx.Op.Create for other alternatives
 
    --------------
    -- Debounce --
@@ -145,7 +150,6 @@ package Rx.Observables is
    --------------
 
    function Flat_Map return From_List_Transformer;
-
 
    --------------
    -- For_Each --
@@ -418,6 +422,9 @@ private
    package RxCreate is new Rx.Src.Create (Typed);
    function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
                     return Observable renames RxCreate.Parameterless;
+   function Create (Initial : T;
+                    Succ    : not null Typed.Actions.Func1;
+                    Count   : Rx_Integer := Rx_Integer'Last) return Observable renames RxCreate.Enumerator;
 
    package RxDebounce is new Op.Debounce (Operate);
    function Debounce (Window : Duration) return Operator renames RxDebounce.Create;
