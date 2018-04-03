@@ -13,6 +13,7 @@ package Rx.Impl.Casts is
 
    function To_String (V : Rx_Integer) return String is (Trim (Rx_Integer'Image (V), Both));
    function To_String (V : Rx_Float)   return String is (Trim (Rx_Float'Image (V), Both));
+   function To_String (V : Rx_String)  return String is (V) with Inline;
    --  A default conversion with 4 decimal digits
 
 end Rx.Impl.Casts;
