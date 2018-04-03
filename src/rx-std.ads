@@ -18,9 +18,6 @@ package Rx.Std is
 
    subtype Subscription is Rx.Subscriptions.Subscription;
 
-   procedure For_Each (Subscription : Subscriptions.Subscription) is null;
-   --  Discard a subscription so a declare block is not needed
-
    --  Convenience instances
 
    --  Base Std types
@@ -95,6 +92,7 @@ package Rx.Std is
 
       package Floats   is new Std.Floats.Image   (Impl.Casts.To_String);
       package Integers is new Std.Integers.Image (Impl.Casts.To_String);
+      package Strings  is new Std.Strings.Image  (Impl.Casts.To_String);
 
    end Images;
 
@@ -111,15 +109,22 @@ package Rx.Std is
 
 private
 
+   function Succ (Head, Tail : String; Printable : Boolean) return String is
+     (if Head = "" then (1 .. Tail'Length + 1 => (if Printable then Printable_Character'First else Character'First))
+      elsif Head (Head'Last) < (if Printable then Printable_Character'Last else Character'Last) then
+           Head (Head'First .. Head'Last - 1) & (if Printable
+                                                 then Printable_Character'Succ (Head (Head'Last))
+                                                 else Character'Succ (Head (Head'Last))) & Tail
+      else Succ (Head (Head'First .. Head'Last - 1),
+                 String'(1 .. Tail'Length + 1 => (if Printable then Printable_Character'First else Character'First)),
+                 Printable));
+
+
    function String_Succ (S : Rx_String) return Rx_String is
-     (if    S'Length = 0                 then Rx_String'(1 => Character'First)
-      elsif S (S'Last) /= Character'Last then S (S'First .. S'Last - 1) & Character'Succ (S (S'Last))
-      else  S & Character'First);
+     (Succ (S, "", False));
 
    function Printable_Succ (S : Rx_String) return Rx_String is
-     (if    S'Length = 0                 then String'(1 => Printable_Character'First)
-      elsif S (S'Last) /= Printable_Character'Last then S (S'First .. S'Last - 1) & Printable_Character'Succ (S (S'Last))
-      else  S & Printable_Character'First);
+     (Succ (S, "", True));
 
    function Succ (I : Rx_Integer) return Rx_Integer is (Rx_Integer'Succ (I)) with Inline;
 

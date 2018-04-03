@@ -163,9 +163,6 @@ package Rx.Observables is
    procedure For_Each (Producer : Typed.Observable;
                        Consumer : Typed.Sink);
 
-   procedure For_Each (Subscription : Subscriptions.Subscription) is null;
-   --  Discard a subscription so a declare block is not needed
-
    ----------
    -- From --
    ----------
@@ -288,6 +285,11 @@ package Rx.Observables is
                        On_Complete  : Rx.Actions.Proc0                      := null;
                        On_Error     : Rx.Actions.Proc_Error                 := null)
                        return Collections.Typed_Lists.Sink;
+
+   procedure Subscribe (Producer     : Observable;
+                        On_Next      : Typed.Actions.Proc1   := null;
+                        On_Complete  : Rx.Actions.Proc0      := null;
+                        On_Error     : Rx.Actions.Proc_Error := null) renames For_Each;
 
    ------------------
    -- Subscribe_On --

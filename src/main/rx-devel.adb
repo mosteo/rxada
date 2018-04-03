@@ -14,5 +14,5 @@ procedure Rx.Devel is
          Integers.Subscribe
    with Unreferenced;
 begin
-   Std.For_Each (Integers.Just (1) & Images.Integers.Print & Subscribe);
+   Integers.subscribe (Integers.Just (1) & Images.Integers.Print);
 end Rx.Devel;
