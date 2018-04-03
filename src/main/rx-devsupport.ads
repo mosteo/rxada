@@ -9,6 +9,6 @@ package Rx.Devsupport is
    package Create is new Src.Create (Std.Integers.Typed);
    package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Rx_Integer'Image);
 
-   procedure Blah123 (Observer : in out Std.Integers.Typed.Subscriber);
+   procedure Blah123 (Observer : in out Std.Integers.Typed.Observer'Class);
 
 end Rx.Devsupport;

@@ -4,7 +4,7 @@ package body Rx.Devsupport is
    -- Blah123 --
    -------------
 
-   procedure Blah123 (Observer : in out Std.Integers.Typed.Subscriber) is
+   procedure Blah123 (Observer : in out Std.Integers.Typed.Observer'Class) is
    begin
       Observer.On_Next (1);
       delay 0.2;
