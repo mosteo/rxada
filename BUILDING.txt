@@ -10,4 +10,4 @@ rxada_examples.gpr:
 builds demo executables
 
 rxada_dev.gpr:
-aggregate project that builds all previous ones, to be used by the developer
+aggregate project that builds all sources and examples (but not the lib), to be used by the developer
