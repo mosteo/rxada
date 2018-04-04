@@ -1,8 +1,11 @@
-project RxAda_Examples extends "rxada.gpr" is
+with "rxada";
+
+project RxAda_Examples is
 
    for Source_Dirs use ("src/bugs",
                         "src/main");
 
+   for Object_Dir use "obj";
    for Exec_Dir use "bin";
 
    for Main use ("rx-devel.adb",
@@ -13,5 +16,11 @@ project RxAda_Examples extends "rxada.gpr" is
                  "rx-examples-threading.adb",
                  "rx-bugs-op_leak.adb",
                  "rx-bugs-testbed.adb");
+
+   package Builder renames RxAda.Builder;
+
+   package Compiler renames RxAda.Compiler;
+
+   package Binder renames RxAda.Binder;
 
 end RxAda_Examples;
