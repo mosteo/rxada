@@ -7,7 +7,8 @@
 image: reznik/gnat:gpl.2017.slim
 
 pipelines:
-  default:
-    - step:
-        script:
-          - /opt/gnat/bin/gprbuild -p -P rxada_dev
+  branches:
+    default:
+      - step:
+          script:
+            - /opt/gnat/bin/gprbuild -p -P rxada_dev
