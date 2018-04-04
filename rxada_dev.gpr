@@ -1,7 +1,9 @@
 aggregate project RxAda_Dev is
 
    for Project_Files use ("rxada.gpr",
-                          "rxada_examples.gpr",
-                          "rxada_lib.gpr");
+                          "rxada_examples.gpr");
+   --  Lib is not compiled here because it would double compilation times
+   --  Those needing a library can use that project
+   --  The effect of full compilation even if not linked in is achieved with rxada.gpr without main files
 
 end RxAda_Dev;
