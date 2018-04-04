@@ -4,10 +4,10 @@
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
 
-image: tomekw/ada-gnat:7.2.0
+image: reznik/gnat:gpl.2017.slim
 
 pipelines:
   default:
     - step:
         script:
-          - gprbuild -p -P rxada_dev
+          - /opt/gnat/bin/gprbuild -p -P rxada_dev
