@@ -1,3 +1,3 @@
-with Rx.Lazy;
+with Rx.Tools.Lazies;
 
-package Rx.Dispatchers.Single.Lazy is new Rx.Lazy (Single.Dispatcher, Single.Ptr);
+package Rx.Dispatchers.Single.Lazy is new Rx.Tools.Lazies (Single.Dispatcher, Single.Ptr);

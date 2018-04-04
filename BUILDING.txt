@@ -1,0 +1,13 @@
+The following project files are available:
+
+rxada.gpr: 
+to be used in client projects that do not care about having a full library linked in.
+
+rxada_lib.gpr: 
+to be used to generate a library (and to ensure all sources are compiled, regardless of use)
+
+rxada_examples.gpr:
+builds demo executables
+
+rxada_dev.gpr:
+aggregate project that builds all previous ones, to be used by the developer

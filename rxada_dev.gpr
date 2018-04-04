@@ -1,0 +1,7 @@
+aggregate project RxAda_Dev is
+
+   for Project_Files use ("rxada.gpr",
+                          "rxada_examples.gpr",
+                          "rxada_lib.gpr");
+
+end RxAda_Dev;
