@@ -6,13 +6,13 @@ package body Rx.Op.Serialize is
    subtype Critical_Section is Tools.Semaphores.Critical_Section;
 
    type Serializer is new Operate.Operator with record
-      Mutex : aliased Tools.Semaphores.Shared_Binary;
+      Mutex : aliased Tools.Semaphores.Shared;
    end record;
 
    overriding procedure Unsubscribe (This : in out Serializer);
 
    overriding procedure Subscribe (Producer : in out Serializer;
-                                   Consumer :        Operate.Into.Subscriber'Class);
+                                   Consumer : in out Operate.Into.Observer'Class);
 
    overriding procedure On_Next (This : in out Serializer; V : Operate.T);
 
@@ -61,11 +61,11 @@ package body Rx.Op.Serialize is
    ---------------
 
    overriding procedure Subscribe (Producer : in out Serializer;
-                                   Consumer :        Operate.Into.Subscriber)
+                                   Consumer : in out Operate.Into.Observer'Class)
    is
    begin
-      Producer.Mutex := Tools.Semaphores.Create;         -- New mutex for this chain
-      Operate.Operator (Producer).Subscribe (Consumer); -- Normal subscription
+      Producer.Mutex := Tools.Semaphores.Create_Reentrant; -- New mutex for this chain
+      Operate.Operator (Producer).Subscribe (Consumer);    -- Normal subscription
    end Subscribe;
 
    ------------
@@ -74,7 +74,7 @@ package body Rx.Op.Serialize is
 
    function Create return Operate.Operator'Class is
    begin
-      return Serializer'(Operate.Operator with others => <>));
+      return Serializer'(Operate.Operator with others => <>);
    end Create;
 
 end Rx.Op.Serialize;

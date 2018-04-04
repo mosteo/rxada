@@ -1,0 +1,6 @@
+library project RxAda_Lib extends "rxada.gpr" is
+
+   for Library_Name use "rxada";
+   for Library_Dir  use "lib";
+
+end RxAda_Lib;

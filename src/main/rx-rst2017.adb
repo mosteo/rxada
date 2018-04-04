@@ -3,7 +3,7 @@ With Rx.Schedulers;
 with Rx.Std; use Rx.Std;
 with Rx.Subscriptions;
 
-with System.String_Hash;
+with GNAT.String_Hash;
 
 package body Rx.RST2017 is
 
@@ -13,7 +13,7 @@ package body Rx.RST2017 is
 
    type Hashes is mod 2 ** 32;
 
-   function Modular_Hash is new System.String_Hash.Hash (Character, Rx_String, Hashes);
+   function Modular_Hash is new GNAT.String_Hash.Hash (Character, Rx_String, Hashes);
 
    function String_Hash (S : String) return Rx_Integer is (Rx_Integer (Modular_Hash (S)));
 
@@ -30,6 +30,6 @@ package body Rx.RST2017 is
    -- E.g. instance of System.String_Hash
          Observe_On (Schedulers.IO) &
    -- Switch to an Input/Output thread
-         Subscribe (Put_Line'Access);
+         Subscribe (Put_Line'Access) with Unreferenced;
 
 end Rx.RST2017;

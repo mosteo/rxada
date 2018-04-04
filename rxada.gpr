@@ -1,16 +1,10 @@
 project RxAda is
 
    for Source_Dirs use ("src/**");
+   for Excluded_Source_Dirs use ("src/bugs",
+                                 "src/main");
+
    for Object_Dir use "obj";
-   for Exec_Dir use "bin";
-   for Main use ("rx-devel.adb",
-                 "rx-examples-tests.adb",
-                 "rx-examples-minimal.adb",
-                 "rx-examples-misc.adb",
-                 "rx-examples-basic.adb",
-                 "rx-examples-threading.adb",
-                 "rx-bugs-op_leak.adb",
-                 "rx-bugs-testbed.adb");
 
    type Build_Type is ("debug", "release");
    Build : Build_Type := external ("build", "debug");
@@ -51,15 +45,6 @@ project RxAda is
             null;
       end case;
    end Binder;
-
-   package Linker is
-      case Build is
-         when "debug" =>
-            for Default_Switches ("ada") use ("-g");
-         when "release" =>
-            null;
-      end case;
-   end Linker;
 
    package Gnattest is
       for Tests_Dir use "../aunit";

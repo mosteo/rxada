@@ -1,4 +1,4 @@
-procedure Cla is
+procedure Precedence is
 
    generic
    package Nested is
@@ -29,4 +29,4 @@ begin
    Op (1, 2).Method;  --  Fine
    "&" (1, 2).Method;  --  Fine too
    --(1 & 2).Method;  --  Error: statement expected (gpl2015/16)
-end Cla;
+end Precedence;

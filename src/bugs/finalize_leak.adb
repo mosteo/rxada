@@ -67,7 +67,7 @@ begin
    for I in 1 .. 1 loop
       Put_Line ("---8<---");
       declare
-         Leak : Leftie'Class := N & N;
+         Leak : Leftie'Class := N & N with Unreferenced;
       begin
          null;
       end;
