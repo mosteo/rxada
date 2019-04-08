@@ -1,0 +1,19 @@
+language: none # Ada
+
+branches:
+    only:
+        - master
+        - testing
+
+env:
+    - IMAGE_TAG="ubuntu-lts"
+    - IMAGE_TAG="debian-testing"
+    - IMAGE_TAG="community-2018"
+
+build:
+    pre_ci_boot:
+        image_name: alire/gnat
+        image_tag: $IMAGE_TAG
+        pull: true
+    ci:
+        - gprbuild -j0 -p -P rxada_dev.gpr

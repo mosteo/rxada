@@ -525,7 +525,7 @@ private
 
    package RxStrip is new Rx.Op.Map (Into_Valueless);
    function Strip (V : T) return Rx_Nothing is (null record) with Inline;
-   function Strip return Into_Valueless.Operator is (RxStrip.Create (Strip'Access));
+   function Strip return Into_Valueless.Operator is (Into_Valueless.Operator (RxStrip.Create (Strip'Access)));
 
    package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
