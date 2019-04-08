@@ -1,3 +1,5 @@
+[![Run Status](https://api.shippable.com/projects/5cab2d66b875100006518dd4/badge?branch=master)]() 
+
 # README #
 
 RxAda, an experiment on porting [ReactiveX](http://reactivex.io/) to Ada. 
