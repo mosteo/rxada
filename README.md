@@ -4,8 +4,7 @@ RxAda, an experiment on porting [ReactiveX](http://reactivex.io/) to Ada.
 
 Quick example. Suppose a Java 8 case where we print the length of a string:
 
-```
-#!java
+```java
 
 Observable
    .just("Hello, world!")
@@ -15,8 +14,7 @@ Observable
 
 With RxAda this becomes (tested with gnat GPL 2015/2016 and gnat from Ubuntu 16.10):
 
-```
-#!Ada
+```Ada
 
 declare
    S : Rx.Subscriptions.Subscription;
@@ -34,8 +32,7 @@ For a working example check the file [rx-examples-basic.adb](https://bitbucket.o
 
 You need to instantiate a package for each type you want to use in a Rx chain, and a transformation package for each pair of types involved in some operation. The basic String and Integer types are already available in Rx.Std. Supposing you didn't know about this, you would do:
 
-```
-#!Ada
+```Ada
 
 package Strings  is new Rx.Indefinites (String);  -- Comes pre-instantiated in Rx.Std
 package Integers is new Rx.Definites (Integer);   -- Comes pre-instantiated in Rx.Std
@@ -44,8 +41,7 @@ package StrToInt is new Rx.Operators (Strings.Observables, Integers.Observables)
 
 Otherwise, it is enough to do:
 
-```
-#!Ada
+```Ada
 
 package StrToInt is new Rx.Operators (Std.Strings, Std.Integers);
 ```
