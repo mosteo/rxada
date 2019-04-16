@@ -3,3 +3,4 @@ gnatinspect.*
 gpsauto.cgpr
 obj
 
+*-loc.xml
