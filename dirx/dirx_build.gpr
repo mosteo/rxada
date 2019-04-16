@@ -1,0 +1,11 @@
+aggregate project DirX_Build is
+
+   for Project_Path use (
+                         ".",
+                         ".."
+                         );
+
+   for Project_Files use ("dirx.gpr",
+                          "dirx_examples.gpr");
+
+end DirX_Build;
