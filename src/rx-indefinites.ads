@@ -13,6 +13,11 @@ package Rx.Indefinites is
    -- Actually usable package
    package Observables renames Instance.Observables;
 
+   -- Other shortcuts
+   package Contracts renames Instance.Typed.Contracts;
+
+   subtype Observable is Instance.Observable;
+
    --  For easy visibility of this heresy:
    package Arrays renames Observables.Default_Arrays;
 

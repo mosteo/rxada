@@ -1,6 +1,7 @@
 bin
 gnatinspect.*
 gpsauto.cgpr
+lib
 obj
 
 *-loc.xml

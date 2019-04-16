@@ -10,7 +10,7 @@ project RxAda is
    Build : Build_Type := external ("build", "debug");
 
    package Ide is
-      for Vcs_Kind use "Mercurial";
+      for Vcs_Kind use "git";
       for Documentation_Dir use "doc/";
    end Ide;
 

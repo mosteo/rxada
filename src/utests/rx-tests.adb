@@ -27,7 +27,7 @@ package body Rx.Tests is
    use Strings;
 
    use Float_To_Integer;
-   use Float_To_String;
+   -- use Float_To_String;
    use Integer_To_Float;
    use Integer_To_String;
    use String_To_Integer;
