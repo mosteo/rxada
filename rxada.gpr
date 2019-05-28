@@ -1,3 +1,5 @@
+with "rxada_common";
+
 project RxAda is
 
    for Source_Dirs use ("src/**");
@@ -6,49 +8,14 @@ project RxAda is
 
    for Object_Dir use "obj";
 
-   type Build_Type is ("debug", "release");
-   Build : Build_Type := external ("build", "debug");
+   package Ide renames RxAda_Common.Ide;
 
-   package Ide is
-      for Vcs_Kind use "git";
-      for Documentation_Dir use "doc/";
-   end Ide;
+   package Builder renames RxAda_Common.Builder;
 
-   package Pretty_Printer is
-      for Default_Switches ("ada") use ("--no-separate-is");
-   end Pretty_Printer;
+   package Compiler renames RxAda_Common.Compiler;
 
-   package Builder is
-      case Build is
-         when "debug" =>
-            for Default_Switches ("ada") use ("-j0", "-s", "-g");
-         when "release" =>
-            for Default_Switches ("ada") use ("-j0", "-s");
-      end case;
-   end Builder;
+   package Binder renames RxAda_Common.Binder;
 
-   package Compiler is
-      case Build is
-         when "debug" =>
-            for Default_Switches ("ada") use ("-gnatwal.f", "-gnatVa", "-g", "-Og", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
-            --for Default_Switches ("ada") use ("-gnatwal", "-gnatVa", "-g", "-Og", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
-         when "release" =>
-            for Default_Switches ("ada") use ("-O3", "-gnatn", "-gnat12");
-      end case;
-   end Compiler;
-
-   package Binder is
-      case Build is
-         when "debug" =>
-            for Default_Switches ("ada") use ("-E", "-Es");
-         when "release" =>
-            null;
-      end case;
-   end Binder;
-
-   package Gnattest is
-      for Tests_Dir use "../aunit";
-      for Stubs_Default use "pass";
-   end Gnattest;
+   package Gnattest renames RxAda_Common.Gnattest;
 
 end RxAda;

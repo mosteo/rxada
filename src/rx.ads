@@ -4,6 +4,9 @@ pragma Detect_Blocking;
 
 package Rx with Pure is
 
+   Unimplemented : exception;
+   --  Used to signal features that are on the roadmap, but not yet completed
+
    No_Longer_Subscribed : exception;
    --  This is the only subscription pervading this design.
    --  Generators of data must be aware that this can be raised in any observer call.

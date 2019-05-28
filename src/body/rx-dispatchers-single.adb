@@ -13,7 +13,6 @@ package body Rx.Dispatchers.Single is
       What  : Runnable'Class;
       Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
    is
-      use Ada.Calendar;
       use Ada.Task_Identification;
 
       Must_Notify : Boolean;

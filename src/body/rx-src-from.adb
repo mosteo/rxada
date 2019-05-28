@@ -44,7 +44,6 @@ package body Rx.Src.From is
       procedure On_Subscribe (State    : Iterable.Container;
                               Consumer : in out Iterable.Typed.Observer)
       is
-         use Iterable;
          procedure For_Each (V : Iterable.Typed.T) is
          begin
             Consumer.On_Next (V);

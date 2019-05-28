@@ -33,9 +33,13 @@ package DirX is
 
    function Get_Entry (This : Directory_Entry) return Entry_Reference;
 
+   function Is_Directory (This : Directory_Entry) return Boolean;
+
 private
 
    package AD renames Ada.Directories;
+
+   use all type AD.File_Kind;
 
    type Entry_Access is access AD.Directory_Entry_Type;
 
@@ -44,7 +48,18 @@ private
 
    type Directory_Entry is new Shared_Entries.Proxy with null record;
 
+   ---------------
+   -- Get_Entry --
+   ---------------
+
    function Get_Entry (This : Directory_Entry) return Entry_Reference is
-      (Entry_Reference'(The_Entry => Shared_Entries.Proxy (This).Get.Actual));
+     (Entry_Reference'(The_Entry => Shared_Entries.Proxy (This).Get.Actual));
+
+   ------------------
+   -- Is_Directory --
+   ------------------
+
+   function Is_Directory (This : Directory_Entry) return Boolean is
+     (AD.Kind (This.Get_Entry) = AD.Directory);
 
 end DirX;

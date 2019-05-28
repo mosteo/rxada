@@ -62,13 +62,13 @@ package Rx.Observables is
    package List_Preservers        renames Collections.List_Preservers;
    package Into_List_Transformers renames Collections.Into_List_Transformers;
    package From_List_Transformers renames Collections.From_List_Transformers;
-   package Obs_Transformers       renames Collections.Obs_Transformers;
+--     package Obs_Transformers       renames Collections.Obs_Transformers;
    package Into_Valueless         renames Collections.Valueless;
-
+--
    subtype List_Preserver         is List_Preservers.Operator'Class;
    subtype Into_List_Transformer  is Into_List_Transformers.Operator'Class;
    subtype From_List_Transformer  is From_List_Transformers.Operator'Class;
-   subtype Obs_Transformer        is Obs_Transformers.Operator'Class;
+--     subtype Obs_Transformer        is Obs_Transformers.Operator'Class;
    subtype T_List                 is Collections.List;
 
    -- Preservers Scaffolding
@@ -144,12 +144,13 @@ package Rx.Observables is
    ------------
 
    function Filter (Check : not null Typed.Actions.Filter1) return Operator;
+   function Filter (Check : Typed.Actions.TFilter1'Class) return Operator;
 
    --------------
    -- Flat_Map --
    --------------
 
-   function Flat_Map return From_List_Transformer;
+   function Flat_Map (Func : Operate.Transform.Actions.Flattener1) return Operator;
 
    --------------
    -- For_Each --
@@ -205,6 +206,12 @@ package Rx.Observables is
    function Map (F : Operate.Transform.Actions.Func1) return Operator;
 
    --  See the particular "&" below
+
+   -----------
+   -- Merge --
+   -----------
+
+   function Merge (Merge_With : Observable) return Operator;
 
    -----------
    -- Never --
@@ -409,7 +416,7 @@ package Rx.Observables is
 
 
    -- Debug helpers
-   function "-" (O : Observable) return Subscriptions.No_Subscription is (null record);
+   function "-" (Dummy : Observable) return Subscriptions.No_Subscription is (null record);
 
 private
 
@@ -454,8 +461,11 @@ private
 
    package RxFilter is new Rx.Op.Filter (Operate);
    function Filter (Check : not null Typed.Actions.Filter1) return Operator renames RxFilter.Create;
+   function Filter (Check : Typed.Actions.TFilter1'Class) return Operator renames RxFilter.Create;
 
-   function Flat_Map return From_List_Transformer renames Split;
+   package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform);
+   function Flat_Map (Func : Operate.Transform.Actions.Flattener1) return Operator is
+     (RxFlatMap.Create (Func, RxFlatMap.Merge));
 
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable
@@ -484,6 +494,9 @@ private
    function Map (F : Operate.Transform.Actions.Func1) return Operator renames RxMap.Create;
    function "&" (Producer : Observable'Class;
                  Consumer : Operate.Transform.Actions.Func1) return Observable renames RxMap."&";
+
+   package RxMerge is new Rx.Op.Merge (Operate);
+   function Merge (Merge_With : Observable) return Operator renames RxMerge.Create;
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
@@ -524,7 +537,7 @@ private
    function Split return From_List_Transformer renames RxSplit.Create;
 
    package RxStrip is new Rx.Op.Map (Into_Valueless);
-   function Strip (V : T) return Rx_Nothing is (null record) with Inline;
+   function Strip (Dummy : T) return Rx_Nothing is (null record) with Inline;
    function Strip return Into_Valueless.Operator is (Into_Valueless.Operator (RxStrip.Create (Strip'Access)));
 
    package RxSubscribe is new Rx.Subscribe (Typed);

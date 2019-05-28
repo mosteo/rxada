@@ -299,6 +299,13 @@ package body Rx.Tests is
                            Do_First => True, Ok_First => 4,
                            Do_Last  => True, Ok_Last  => 4);
 
+      -- Merge
+--        Subs :=
+--          Ints.From ((1, 2, 3))
+--          & Ints.Merge (From ((4, 5, 6)))
+--          & Subscribe_Checker (Do_Count => True, Ok_Count => 6);
+
+
       -- No_Op
       Subs :=
         Just (1) &
@@ -335,7 +342,7 @@ package body Rx.Tests is
         Buffer (10) &
         Split &
         Buffer (7) &
-        Flat_Map & -- This kind of flatmap is equivalent to split
+        Split &
         Subscribe_Checker (Do_Count => True, Ok_Count => 101,
                            Do_First => True, Ok_First => 1,
                            Do_Last  => True, Ok_Last  => 101);

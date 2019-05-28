@@ -5,9 +5,9 @@ with Rx.Schedulers.Pools;
 
 procedure Rx.Examples.Threading is
    use Integers;
-   use Strings;
-   use Integer_To_String;
-   use String_To_Integer;
+--     use Strings;
+--     use Integer_To_String;
+--     use String_To_Integer;
 
    Custom_Pool : Schedulers.Pools.Pool := Schedulers.Pools.Create (Size => 2, Name => "Custom");
 

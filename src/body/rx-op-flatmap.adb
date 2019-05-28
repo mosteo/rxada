@@ -103,7 +103,7 @@ package body Rx.Op.Flatmap is
                     Policy : Policies := Merge) return Transformer.Operator'Class is
    begin
       if Policy /= Merge then
-         raise Program_Error with "Unimplemented";
+         raise Unimplemented;
       end if;
 
       return Multi.Create_Operator (new Manager'(Multi.Multiobserver with

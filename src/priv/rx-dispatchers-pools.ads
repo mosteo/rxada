@@ -6,7 +6,9 @@ private with Ada.Finalization;
 
 package Rx.Dispatchers.Pools is
 
-   type Pool (Initial_Size : Positive := 8; Name : access String := new String'("anonymous"))
+   type String_Access is access all String;
+
+   type Pool (Initial_Size : Positive := 8; Name : String_Access := new String'("anonymous"))
    is tagged limited private;
 
    function Get (From : in out Pool; Reuse : Boolean := True) return Single.Ptr;
@@ -56,7 +58,7 @@ private
       --  There might be less than Size created elements in Threads
    end Safe_Pool;
 
-   type Pool (Initial_Size : Positive := 8; Name : access String := new String'("anonymous"))
+   type Pool (Initial_Size : Positive := 8; Name : String_Access := new String'("anonymous"))
    is new Ada.Finalization.Limited_Controlled with record
       Safe : Safe_Pool (Pool'Access);
    end record;

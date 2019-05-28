@@ -45,7 +45,6 @@ package body Rx.Subscribe is
    --------------
 
    overriding procedure On_Error (This : in out Subscribe; Error : Errors.Occurrence) is
-      use Rx.Actions;
    begin
       if This.Errored then
          raise Program_Error with "Doubly errored";

@@ -43,14 +43,18 @@ package Rx.Actions.Typed with Preelaborate is
    --  Filter that passes Times times and then fails forever
 
    function "not" (Filter : TFilter1'Class) return TFilter1'Class;
+   function "not" (Filter : Filter1) return TFilter1'Class;
    --  Negates the result of some filter
 
    function Negate (Filter : TFilter1'Class) return TFilter1'Class renames "not";
 
 private
 
-   function Always_True (V : T) return Boolean is (True);
+   function Always_True (Unused : T) return Boolean is (True);
 
    function Always_Pass return TFilter1'Class is (Wrap (Always_True'Access));
+
+   function "not" (Filter : Filter1) return TFilter1'Class is
+      (Negate (Wrap (Filter)));
 
 end Rx.Actions.Typed;

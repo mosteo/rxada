@@ -14,6 +14,7 @@ package Rx.Indefinites is
    package Observables renames Instance.Observables;
 
    -- Other shortcuts
+   package Actions   renames Instance.Typed.Actions;
    package Contracts renames Instance.Typed.Contracts;
 
    subtype Observable is Instance.Observable;

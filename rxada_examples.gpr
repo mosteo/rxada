@@ -13,6 +13,7 @@ project RxAda_Examples is
                  "rx-examples-minimal.adb",
                  "rx-examples-misc.adb",
                  "rx-examples-basic.adb",
+                 "rx-examples-advanced.adb",
                  "rx-examples-threading.adb",
                  "rx-bugs-op_leak.adb",
                  "rx-bugs-testbed.adb");

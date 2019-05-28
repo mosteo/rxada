@@ -6,7 +6,7 @@ with DirX.Observables;
 
 -- with Rx.Std; use Rx.Std;
 
-procedure DirX.Main is
+procedure DirX.Lsr is
    use Ada.Command_Line;
 
    ---------------------
@@ -22,9 +22,11 @@ procedure DirX.Main is
                               then "."
                               else Argument (1));
 begin
-   --  List current or argument folder contents
+   --  Recursive listing of files
    DirX.Observables.RxEntries.Observables.For_Each
-     (DirX.Observables.Directory_Entries (Target),
+     (DirX.Observables.Directory_Entries_Recursive (Target,
+      Filter => (Ada.Directories.Ordinary_File => True,
+                 others                        => False)),
       On_Next => Print_Full_Name'Unrestricted_Access);
 
-end DirX.Main;
+end DirX.Lsr;
