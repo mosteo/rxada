@@ -12,6 +12,8 @@ package body Rx.Debug.Observers is
       entry Finished;
    end Watchdog;
 
+   type Watchdog_Access is access all Watchdog;
+
    task body Watchdog is
    begin
       select
@@ -41,7 +43,7 @@ package body Rx.Debug.Observers is
       Ok_Last  : Typed.D := + Default_T;
 
       Do_Watch : Boolean := True;
-      Watcher  : access Watchdog;
+      Watcher  : Watchdog_Access;
    end record;
 
    overriding procedure On_Next      (This : in out Checker; V : Typed.T);

@@ -1,3 +1,5 @@
+with Rx.Debug;
+
 package body Rx.Op.Count is
 
    use Transform.Into.Conversions;
@@ -23,6 +25,7 @@ package body Rx.Op.Count is
    is
       pragma Unreferenced (V);
    begin
+      Debug.Put_Line ("COUNTING");
       This.Count := +Succ (+This.Count);
    end On_Next;
 
@@ -34,9 +37,10 @@ package body Rx.Op.Count is
    overriding
    procedure On_Complete  (This : in out Counter) is
    begin
+      Debug.Put_Line ("COMPLETING");
       This.Get_Observer.On_Next (Transform.Into.Type_Traits.To_Indefinite (This.Count));
-      This.Get_Observer.On_Complete ;
-   end On_Complete ;
+      This.Get_Observer.On_Complete;
+   end On_Complete;
 
    -----------
    -- Count --

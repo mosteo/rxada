@@ -10,13 +10,22 @@ procedure Rx.Examples.Advanced is
 
 
 begin
-   Debug.Put_Line ("Merge example");
+   Debug.Put_Line ("Merge example 1 (merged items)");
    Sub :=
      From ((1, 2, 3))
---     & Merge (From ((4, 5, 6)))
+     & Merge (From ((4, 5, 6)))
      & Std.Casts.To_String
      & Subscribe (Debug.Put_Line'Access);
 
+   Debug.Put_Line ("Merge example (merged count)");
+   Sub :=
+     From ((1, 2, 3))
+     & Merge (From ((4, 5, 6)))
+     & Numeric.Integers.Count
+     & Std.Casts.To_String
+     & Subscribe (Debug.Put_Line'Access);
+
+   Debug.Put_Line ("Done.");
 exception
    when E : others =>
       Debug.Print (E);

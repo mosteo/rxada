@@ -45,9 +45,9 @@ package Rx.Std is
    subtype Printable_Character is Character range Character'Val (16#20#) .. Character'Val (16#7E#);
 
    function String_Succ    (S : Rx_String) return Rx_String;
-   function Printable_Succ (S : Rx_String) return Rx_String with
-     Pre  => (for all C of S                     => C in Printable_Character),
-     Post => (for all C of Printable_Succ'Result => C in Printable_Character);
+   function Printable_Succ (S : Rx_String) return Rx_String; -- with
+--       Pre  => (for all C of S                     => C in Printable_Character),
+--       Post => (for all C of Printable_Succ'Result => C in Printable_Character);
    -- Lexicographic enumerations over the Character type. Useless I guess.
 
    function All_Integers (Initial : Rx_Integer := Rx_Integer'First;
@@ -63,8 +63,8 @@ package Rx.Std is
                          Count   : Rx_Integer := Rx_Integer'Last) return Strings.Observable;
 
    function All_Printable_Strings (Initial : Rx_String  := "";
-                                   Count   : Rx_Integer := Rx_Integer'Last) return Strings.Observable with
-     Pre => (for all C of Initial => C in Printable_Character);
+                                   Count   : Rx_Integer := Rx_Integer'Last) return Strings.Observable; -- with
+--       Pre => (for all C of Initial => C in Printable_Character);
 
    --  Standard Rx sources and operators
 

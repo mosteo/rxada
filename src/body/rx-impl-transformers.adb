@@ -25,7 +25,7 @@ package body Rx.Impl.Transformers is
 
    overriding procedure On_Complete  (This : in out Operator) is
    begin
-      This.Get_Observer.On_Complete ;
+      This.Get_Observer.On_Complete;
       This.Unsubscribe;
    end On_Complete ;
 

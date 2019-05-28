@@ -13,6 +13,8 @@ procedure Rx.Bugs.Testbed is
 
    task type Dumper (Dumpee : access Integers.Sink);
 
+   type Dumper_Access is access all Dumper;
+
    task body Dumper is
    begin
       for I in 1 .. 1000 loop
@@ -40,12 +42,14 @@ procedure Rx.Bugs.Testbed is
       null;
    end Test_002_Blocking;
 
+   Dumpee  : aliased Integers.Sink := Checkers.Subscribe_Count_Printer;
+
    procedure Test_003_Serialize with Unreferenced is
       --  Check for serialize efectiveness
-      Dumpee  : aliased Integers.Sink := Checkers.Subscribe_Count_Printer;
    begin
       declare
-         Dumpers : array (1 .. 10) of access Dumper := (others => new Dumper (Dumpee => Dumpee'Access))
+         Dumpers : array (1 .. 10) of Dumper_Access :=
+                     (others => new Dumper (Dumpee => Dumpee'Access))
            with Unreferenced;
       begin
          null;

@@ -1,121 +1,112 @@
-with Rx.Impl.Multiobservers;
+with Rx.Debug;
+with Rx.Errors;
+with Rx.Impl.Shared_Observer;
+with Rx.Tools.Semaphores;
 
 package body Rx.Op.Merge is
 
-   package Multi is new Impl.Multiobservers (Preserver.Transform, Preserver.Typed);
+   package Shared_Observer is new Impl.Shared_Observer (Preserver.Typed);
 
-   subtype Operator   is Multi.Operator;
-   subtype Subscriber is Multi.Subscriber;
+   subtype Critical_Section is Tools.Semaphores.Critical_Section;
 
-   type Manager is new Multi.Multiobserver with record
-      Subscriptor_Count : Natural := 2;
-      Merge_With        : Preserver.Typed.Definite_Observables.Observable;
+   type Merger is new Preserver.Operator with record
+      Mutex      : aliased Tools.Semaphores.Shared;
+      Merge_With : Preserver.Typed.Definite_Observables.Observable;
+      Observer   : Shared_Observer.Observer;
+
+      Completed  : Natural := 0;
    end record;
 
-   overriding procedure Subscribe (Man      : in out Manager;
-                                   Op       : in out Operator'Class);
+   overriding procedure On_Next (This : in out Merger; V : Preserver.T);
+   overriding procedure On_Complete  (This : in out Merger);
+   overriding procedure On_Error (This : in out Merger; Error : Errors.Occurrence);
 
-   overriding procedure On_Next (Man      : in out Manager;
-                                 Op       : in out Operator'Class;
-                                 V        : Preserver.T);
-
-   overriding procedure On_Next (Man      : in out Manager;
-                                 Sub      : in out Subscriber'Class;
-                                 V        :        Preserver.T);
-
-   overriding procedure On_Complete  (Man      : in out Manager;
-                                      Op       : in out Operator'Class);
-
-   overriding procedure On_Complete  (Man      : in out Manager;
-                                      Sub      : in out Subscriber'Class);
-
-   ----------------
-   -- Remove_One --
-   ----------------
-
-   procedure Remove_One (This : in out Manager) is
-   begin
-      This.Subscriptor_Count := This.Subscriptor_Count - 1;
-      if This.Subscriptor_Count = 0 then
-         This.Unsubscribe;
-         This.Get_Observer.On_Complete ;
-      end if;
-   end Remove_One;
-
-   ---------------
-   -- Subscribe --
-   ---------------
-
-   overriding procedure Subscribe (Man      : in out Manager;
-                                   Op       : in out Operator'Class)
-   is
-      Consumer : Subscriber'Class := Op.Create_Subscriber;
-   begin
-      Man.Merge_With.Subscribe (Consumer);
-   end Subscribe;
-
-   -------------
-   -- On_Next --
-   -------------
-
-   overriding procedure On_Next (Man      : in out Manager;
-                                 Op       : in out Operator'Class;
-                                 V        : Preserver.T)
-   is
-      pragma Unreferenced (Op);
-   begin
-      Man.Get_Observer.On_Next (V);
-   end On_Next;
-
-   -------------
-   -- On_Next --
-   -------------
-
-   overriding procedure On_Next (Man      : in out Manager;
-                                 Sub      : in out Subscriber'Class;
-                                 V        :        Preserver.T)
-   is
-      pragma Unreferenced (Sub);
-   begin
-      Man.Get_Observer.On_Next (V);
-   end On_Next;
-
-   ------------------
-   -- On_Complete  --
-   ------------------
-
-   overriding procedure On_Complete  (Man      : in out Manager;
-                                      Op       : in out Operator'Class)
-   is
-      pragma Unreferenced (Op);
-   begin
-      Remove_One (Man);
-   end On_Complete ;
-
-   ------------------
-   -- On_Complete  --
-   ------------------
-
-   overriding procedure On_Complete  (Man      : in out Manager;
-                                      Sub      : in out Subscriber'Class)
-   is
-      pragma Unreferenced (Sub);
-   begin
-      Remove_One (Man);
-   end On_Complete ;
+   overriding procedure Subscribe (This     : in out Merger;
+                                   Consumer : in out Preserver.Observer'Class);
 
    ------------
    -- Create --
    ------------
 
-   function Create
-     (Merge_With : Preserver.Observable'Class)
-      return Preserver.Operator'Class
-   is
+   function Create (Merge_With : Preserver.Observable'Class) return Preserver.Operator'Class is
    begin
-      return Multi.Create_Operator (new Manager'(Multi.Multiobserver with
-                             Merge_With => Preserver.Typed.Definite_Observables.From (Merge_With),
-                             others     => <>));
+      return This : Merger do
+         This.Merge_With.From (Merge_With);
+      end return;
    end Create;
+
+   -----------------
+   -- On_Complete --
+   -----------------
+
+   overriding procedure On_Complete  (This : in out Merger) is
+      CS : Critical_Section (This.Mutex'Access) with Unreferenced;
+   begin
+      if This.Is_Subscribed then
+         This.Completed := This.Completed + 1;
+      end if;
+
+      Debug.Put_Line ("COMPLETE:" & This.Completed'Img);
+
+      if This.Completed = 2 then
+         This.Observer.On_Complete;
+         This.Unsubscribe;
+      end if;
+   end On_Complete;
+
+   -------------
+   -- On_Next --
+   -------------
+
+   overriding procedure On_Next (This : in out Merger; V : Preserver.T) is
+      CS : Critical_Section (This.Mutex'Access) with Unreferenced;
+   begin
+      This.Observer.On_Next (V);
+   end On_Next;
+
+   --------------
+   -- On_Error --
+   --------------
+
+   overriding procedure On_Error (This  : in out Merger;
+                                  Error :        Errors.Occurrence)
+   is
+      CS : Critical_Section (This.Mutex'Access) with Unreferenced;
+   begin
+      if This.Is_Subscribed then
+         This.Observer.On_Error (Error);
+         This.Unsubscribe;
+      end if;
+   end On_Error;
+
+   ---------------
+   -- Subscribe --
+   ---------------
+
+   overriding
+   procedure Subscribe (This     : in out Merger;
+                        Consumer : in out Preserver.Observer'Class)
+   is
+      Actual : Merger := This;
+      --  New copy, which is actually shared by both upstream observables
+   begin
+      --  Create mutex
+      Actual.Mutex := Tools.Semaphores.Create_Reentrant;
+
+      --  Store shared observer
+      Actual.Observer := Shared_Observer.Create (Consumer);
+
+      declare
+         Actual_Shared : Shared_Observer.Observer :=
+                           Shared_Observer.Create (Actual);
+         --  Because we need both upstream observables to share downstream
+      begin
+         --  We insert our shared downstream as the regular downstream
+         Preserver.Operator (This).Subscribe (Actual_Shared);
+
+         --  Subscribe to the stored 2nd observable
+         This.Merge_With.Subscribe (Actual_shared);
+      end;
+   end Subscribe;
 
 end Rx.Op.Merge;
