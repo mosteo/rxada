@@ -1,8 +1,31 @@
 package body Rx.Debug is
 
-   procedure Trace (S : String) is
+   ----------
+   -- Head --
+   ----------
+
+   function Head (S : String; Sep : Character := ' ') return String is
    begin
-      Log (S, Impl);
+      for I in S'Range loop
+         if S (I) = Sep then
+            return S (S'First .. I - 1);
+         end if;
+      end loop;
+
+      return S;
+   end Head;
+
+   -----------
+   -- Trace --
+   -----------
+
+   procedure Trace (S : String; Prefix : String := GNAT.Source_Info.Source_Location) is
+   begin
+      pragma Warnings (Off);
+      if Level = Impl then -- To allow dead code removal when inlining
+         Log (S & " @ " & Head (Prefix), Impl);
+      end if;
+      pragma Warnings (On);
    end Trace;
 
    ---------
@@ -11,9 +34,11 @@ package body Rx.Debug is
 
    procedure Log (S : String; Level : Levels) is
    begin
+      pragma Warnings (Off);
       if Level >= Debug.Level then
          Put_Line ("debug [" & Level'Img & "]: " & S);
       end if;
+      pragma Warnings (On);
    end Log;
 
    --------------

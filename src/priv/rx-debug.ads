@@ -1,7 +1,8 @@
 with Ada.Exceptions;
 with Ada.Tags;
 
-with Gnat.IO;
+with GNAT.IO;
+with GNAT.Source_Info;
 
 private with Ada.Strings;
 private with Ada.Strings.Fixed;
@@ -17,12 +18,13 @@ package Rx.Debug is
                    Error  -- Something is definitely not working as expected
                    );
 
-   Level : Levels := Info;
+   Level : constant Levels := Info;
    --  Minimum level a message has to have for it to be printed
 
    procedure Log (S : String; Level : Levels); -- Prints S if above configured level
 
-   procedure Trace (S : String); -- Log at Impl level
+   procedure Trace (S : String; Prefix : String := GNAT.Source_Info.Source_Location) -- Log at Impl level
+     with Inline;
 
    procedure Put_Line (I : Rx_Integer);
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;

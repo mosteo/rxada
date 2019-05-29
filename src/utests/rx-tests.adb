@@ -267,21 +267,24 @@ package body Rx.Tests is
       Subs :=
         From ((1, 2, 3)) &
         Last &
-        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+        Subscribe_Checker (Name     => "last",
+                           Do_Count => True, Ok_Count => 1,
                            Do_First => True, Ok_First => 3,
                            Do_Last  => True, Ok_Last  => 3);
 
       Subs :=
         Integers.Empty &
         Last_Or_Default (3) &
-        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+        Subscribe_Checker (Name     => "last_or_default",
+                           Do_Count => True, Ok_Count => 1,
                            Do_First => True, Ok_First => 3,
                            Do_Last  => True, Ok_Last  => 3);
 
       Subs :=
         From ((1, 2, 3)) &
         Last (Is_Even'Access) &
-        Subscribe_Checker (Do_Count => True, Ok_Count => 1,
+        Subscribe_Checker (Name     => "last conditional",
+                           Do_Count => True, Ok_Count => 1,
                            Do_First => True, Ok_First => 2,
                            Do_Last  => True, Ok_Last  => 2);
 

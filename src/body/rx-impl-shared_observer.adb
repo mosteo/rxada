@@ -61,6 +61,7 @@ package body Rx.Impl.Shared_Observer is
       V : Typed.Type_Traits.T)
    is
    begin
+      Debug.Trace ("shared_observer on_next");
       Ref (This).Actual.Actual.On_Next (V);
    end On_Next;
 

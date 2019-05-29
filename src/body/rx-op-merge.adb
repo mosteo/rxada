@@ -7,12 +7,28 @@ package body Rx.Op.Merge is
 
    package RxSerialize is new Rx.Op.Serialize (Preserver);
 
-   package Shared_Observer is new Impl.Shared_Observer (Preserver.Typed);
+   package Shared_Observers is new Impl.Shared_Observer (Preserver.Typed);
 
-   type Shared_Merger is new Shared_Observer.Observer with null record;
+   type Shared_Merger is new Preserver.Typed.Contracts.Observer with record
+      Observer : Shared_Observers.Observer;
+   end record;
 
+   overriding procedure On_Next (This : in out Shared_Merger; V : Preserver.T);
    overriding procedure On_Complete (This : in out Shared_Merger);
    --  Need to override, because it will be correctly called twice
+   overriding procedure On_Error (This : in out Shared_Merger; E : Errors.Occurrence);
+
+   overriding procedure On_Next (This : in out Shared_Merger; V : Preserver.T) is
+   begin
+      Debug.Trace ("shared_merger on_next");
+      This.Observer.On_Next (V);
+   end On_Next;
+
+   overriding procedure On_Error (This : in out Shared_Merger; E : Errors.Occurrence) is
+   begin
+      Debug.Trace ("shared_merger on_error");
+      This.Observer.On_Error (E);
+   end On_Error;
 
    type Fake_Merger is new Preserver.Operator with record
       Merge_With : Preserver.Typed.Definite_Observables.Observable;
@@ -49,7 +65,7 @@ package body Rx.Op.Merge is
 
    overriding procedure On_Complete  (This : in out Real_Merger) is
    begin
-      Debug.Trace ("Merge.Real.On_Complete");
+      Debug.Trace ("real_merger no_complete");
       if This.Is_Subscribed then
          This.Completed := This.Completed + 1;
 
@@ -57,6 +73,7 @@ package body Rx.Op.Merge is
             This.Get_Observer.On_Complete;
             This.Unsubscribe;
          end if;
+         Debug.Trace ("real_merger on_complete count" & This.Completed'Img);
       else
          raise No_Longer_Subscribed;
       end if;
@@ -64,8 +81,8 @@ package body Rx.Op.Merge is
 
    overriding procedure On_Complete (This : in out Shared_Merger) is
    begin
-      Debug.Trace ("Merge.Shared.On_Complete");
-      This.On_Complete_Without_Completion;
+      Debug.Trace ("shared_merger on_complete");
+      This.Observer.On_Complete_Without_Completion;
    end On_Complete;
 
    -------------
@@ -74,11 +91,13 @@ package body Rx.Op.Merge is
 
    overriding procedure On_Next (This : in out Fake_Merger; V : Preserver.T) is
    begin
+      Debug.Trace ("fake_merger on_next");
       This.Get_Observer.On_Next (V);
    end On_Next;
 
    overriding procedure On_Next (This : in out Real_Merger; V : Preserver.T) is
    begin
+      Debug.Trace ("real_merger on_next");
       This.Get_Observer.On_Next (V);
    end On_Next;
 
@@ -93,9 +112,9 @@ package body Rx.Op.Merge is
       Real      : Real_Merger;
       Serialize : Preserver.Operator'Class := RxSerialize.Create;
    begin
-      Real       .Set_Observer (Consumer);    -- Stores a downstream copy
-      This.Shared.Set_Observer (Real);        -- Create a shared front
-      Serialize  .Set_Observer (This.Shared); -- Serialize calls to downstream
+      Real                .Set_Observer (Consumer);    -- Stores a downstream copy
+      This.Shared.Observer.Set_Observer (Real);        -- Create a shared front
+      Serialize           .Set_Observer (This.Shared); -- Serialize calls to downstream
 
       --  Set_Observer is the poor man's way of setting chains during
       --    implementation, before all operators and "&" are available.

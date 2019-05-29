@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Errors;
 with Rx.Tools.Semaphores;
 
@@ -27,6 +28,7 @@ package body Rx.Op.Serialize is
    overriding procedure On_Next (This : in out Serializer; V : Operate.T) is
       CS : Critical_Section (This.Mutex'Access) with Unreferenced;
    begin
+      Debug.Trace ("serialize on_next");
       This.Get_Observer.On_Next (V);
    end On_Next;
 
@@ -37,6 +39,7 @@ package body Rx.Op.Serialize is
    overriding procedure On_Complete  (This : in out Serializer) is
       CS : Critical_Section (This.Mutex'Access) with Unreferenced;
    begin
+      Debug.Trace ("serialize on_complete");
       This.Get_Observer.On_Complete ;
    end On_Complete ;
 
@@ -47,6 +50,7 @@ package body Rx.Op.Serialize is
    overriding procedure On_Error (This : in out Serializer; Error :        Errors.Occurrence) is
       CS : Critical_Section (This.Mutex'Access) with Unreferenced;
    begin
+      Debug.Trace ("serialize on_error");
       This.Get_Observer.On_Error (Error);
    end On_Error;
 

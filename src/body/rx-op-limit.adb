@@ -1,4 +1,4 @@
---  with Rx.Debug;
+with Rx.Debug;
 with Rx.Subscriptions;
 
 package body Rx.Op.Limit is
@@ -19,10 +19,13 @@ package body Rx.Op.Limit is
 
    overriding procedure On_Complete  (This  : in out Operator) is
    begin
+      Debug.Trace ("limit on_complete");
       if not This.Completed then
          This.Completed := True;
          This.Get_Observer.On_Complete ;
          This.Unsubscribe;
+      else
+         raise Constraint_Error with "Doubly completed";
       end if;
    end On_Complete ;
 
@@ -35,15 +38,18 @@ package body Rx.Op.Limit is
    is
    begin
       if This.Completed then
+         Debug.Trace ("limit on_next after completed");
          raise No_Longer_Subscribed;
       end if;
 
       if This.Remaining > 0 then
+         Debug.Trace ("limit on_next");
          This.Get_Observer.On_Next (V);
          This.Remaining := This.Remaining - 1;
       end if;
 
       if This.Remaining = 0 and not This.Completed then
+         Debug.Trace ("limit on_next completing");
          This.Completed := True;
          This.Get_Observer.On_Complete ;
          This.Unsubscribe;

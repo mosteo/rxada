@@ -26,8 +26,6 @@ begin
      & Std.Casts.To_String
      & Subscribe (Debug.Put_Line'Access);
 
-   Debug.Level := Debug.Impl;
-
    Debug.Put_Line ("Merge example (racing)");
    Sub := Interval (First => 1000, Period => 0.001)
      & Observe_On (Schedulers.New_Thread)
@@ -37,6 +35,7 @@ begin
               & Observe_On (Schedulers.New_Thread))
      & Std.Casts.To_String
      & Subscribe (Debug.Put_Line'Access);
+
    while Sub.Is_Subscribed loop
       delay 0.1;
    end loop;

@@ -17,12 +17,14 @@ package body Rx.Src.Create is
         (Producer : in out Source;
          Consumer : in out Typed.Observer)
       is
-         Actual : Typed.Observer := Consumer;
+         Actual       : Typed.Observer := Consumer;
+         Unsubscribed : Boolean := False;
       begin
          begin
             On_Subscribe (Producer.Initial, Actual);
          exception
             when No_Longer_Subscribed =>
+               Unsubscribed := True;
                Debug.Log ("At Create.Subscribe: caught No_Longer_Subscribed", Debug.Note);
             when E : others =>
                if Autocompletes then -- Because the error was within On_Next somewhere
@@ -32,7 +34,7 @@ package body Rx.Src.Create is
                end if;
          end;
 
-         if Autocompletes then
+         if Autocompletes and not Unsubscribed then
             Actual.On_Complete ;
          end if;
       exception

@@ -30,11 +30,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure On_Next (This : in out Op; V : Operate.T) is
    begin
-      if not Get_Downstream (This).Is_completed then
-         Remote.On_Next (This.Scheduler.all, Get_Downstream (This), V);
-      else
-         raise No_Longer_Subscribed;
-      end if;
+      Remote.On_Next (This.Scheduler.all, Get_Downstream (This), V);
    end On_Next;
 
    ------------------

@@ -62,6 +62,7 @@ package body Rx.Dispatchers is
          end case;
       exception
          when No_Longer_Subscribed =>
+            RW.Downstream.Mark_Completed;
             Debug.Log ("Dispatchers.Runner caught Not_Longer_Subscribed", Debug.Note);
       end Run;
 
@@ -91,7 +92,11 @@ package body Rx.Dispatchers is
          Observer : Shared.Observer)
       is
       begin
-         Sched.Schedule (Runner'(Base.On_Complete , Base.On_Complete , Observer));
+         if Observer.Is_Completed then 
+            raise No_Longer_Subscribed;
+         else 
+            Sched.Schedule (Runner'(Base.On_Complete , Base.On_Complete , Observer));
+         end if;
       end On_Complete ;
 
       --------------
@@ -104,7 +109,11 @@ package body Rx.Dispatchers is
          E : Rx.Errors.Occurrence)
       is
       begin
-         Sched.Schedule (Runner'(Base.On_Error, Base.On_Error (E), Observer));
+         if Observer.Is_Completed then 
+            raise No_Longer_Subscribed;
+         else 
+            Sched.Schedule (Runner'(Base.On_Error, Base.On_Error (E), Observer));
+         end if;
       end On_Error;
 
    end Events;
