@@ -1,5 +1,14 @@
 package body Rx.Contracts is
 
+   -----------------
+   -- On_Complete --
+   -----------------
+
+   overriding procedure On_Complete (This : in out Sink) is
+   begin
+      This.Subscription.Unsubscribe;
+   end On_Complete;
+
    ----------------------
    -- Set_Subscription --
    ----------------------

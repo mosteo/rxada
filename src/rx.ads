@@ -1,6 +1,5 @@
-pragma License (Modified_GPL);
-
 pragma Detect_Blocking;
+pragma License (Modified_GPL);
 
 package Rx with Pure is
 

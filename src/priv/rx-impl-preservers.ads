@@ -28,6 +28,9 @@ package Rx.Impl.Preservers with Preelaborate is
                           return Typed.Observable renames Transform.Concatenate;
    -- Shortcut for simpler use elsewhere (particularly in Rx.Observables)
 
+   package Linkers renames Transform.Linkers;
+   --  Useable package
+
    package Holders is new Rx.Tools.Holders (Operator'Class, "operator");
 
 end Rx.Impl.Preservers;

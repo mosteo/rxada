@@ -38,7 +38,7 @@ package Rx.Numeric_Observables is
 
    function Interval (First       : T;
                       Pause       : Duration             := 1.0;
-                      First_Pause : Duration             := 1.0;
+                      First_Pause : Duration             := 0.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Observable;
 
@@ -75,7 +75,7 @@ private
 
    function Interval (First       : T;
                       Pause       : Duration := 1.0;
-                      First_Pause : Duration := 1.0;
+                      First_Pause : Duration := 0.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Observable renames RxInterval.Create;
 

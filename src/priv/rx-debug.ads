@@ -10,16 +10,19 @@ package Rx.Debug is
 
    pragma Preelaborate;
 
-   type Levels is (Note, -- Highly chatty
+   type Levels is (Impl, -- Implementation detail, for debugging
+                   Note, -- Highly chatty
                    Info, -- Out-of-usual
                    Warn, -- Shouldn't happen but not critical (?)
                    Error  -- Something is definitely not working as expected
                    );
 
-   Level : constant Levels := Info;
+   Level : Levels := Info;
    --  Minimum level a message has to have for it to be printed
 
    procedure Log (S : String; Level : Levels); -- Prints S if above configured level
+
+   procedure Trace (S : String); -- Log at Impl level
 
    procedure Put_Line (I : Rx_Integer);
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;

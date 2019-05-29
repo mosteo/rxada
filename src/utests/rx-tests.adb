@@ -300,11 +300,19 @@ package body Rx.Tests is
                            Do_Last  => True, Ok_Last  => 4);
 
       -- Merge
---        Subs :=
---          Ints.From ((1, 2, 3))
---          & Ints.Merge (From ((4, 5, 6)))
---          & Subscribe_Checker (Do_Count => True, Ok_Count => 6);
+      Subs :=
+        Ints.From ((1, 2, 3))
+        & Ints.Merge (From ((4, 5, 6)))
+        & Subscribe_Checker (Name     => "two-way merge",
+                             Do_Count => True, Ok_Count => 6);
 
+      Subs :=
+        From ((1, 2, 3))
+        & Merge (From ((4, 5, 6)))
+        & Numeric.Integers.Count
+        & Subscribe_Checker (Name     => "merge & count",
+                             Do_Count => True, Ok_Count => 1,
+                             Do_Last  => True, Ok_Last  => 6);
 
       -- No_Op
       Subs :=

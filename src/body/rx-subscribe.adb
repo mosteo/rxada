@@ -35,6 +35,8 @@ package body Rx.Subscribe is
          elsif This.Observer.Is_Valid then
             This.Observer.Ref.On_Complete ;
          end if;
+
+         Typed.Contracts.Sink (This).On_Complete;
       end if;
 
       This.Completed := True;

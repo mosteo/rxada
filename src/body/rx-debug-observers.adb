@@ -31,7 +31,9 @@ package body Rx.Debug.Observers is
    end Watchdog;
 
    subtype Checker_Parent is Typed.Defaults.Observer;
-   type Checker is new Checker_Parent with record
+   type Checker (Name_Len : Natural) is new Checker_Parent with record
+      Name      : String (1 .. Name_Len);
+
       Counter   : Natural := 0;
       Last_Seen : Typed.D;
 
@@ -98,7 +100,8 @@ package body Rx.Debug.Observers is
       Log ("OK " &
            (if This.Do_First then Trim (Image (+This.Ok_First)) & " " else "_ ")
            & (if This.Do_Last then Trim (Image (+This.Ok_Last)) & " " else "_ ")
-           & (if This.Do_Count then Trim (This.Counter'Img) else "_"),
+           & (if This.Do_Count then Trim (This.Counter'Img) else "_")
+           & (if This.Name /= "" then " (" & This.Name & ")" else ""),
            Info);
       Log ("debug.observer on_completed exit", Note);
    exception
@@ -124,7 +127,8 @@ package body Rx.Debug.Observers is
    -----------------
 
    function Subscribe_Checker
-     (Do_Count : Boolean := False;
+     (Name     : String  := "";
+      Do_Count : Boolean := False;
       Ok_Count : Natural := 0;
       Do_First : Boolean := False;
       Ok_First : Typed.T := Default_T;
@@ -136,6 +140,8 @@ package body Rx.Debug.Observers is
    is
    begin
       return RxSubscribe.Create (Checker'(Checker_Parent with
+                                 Name_Len => Name'Length,
+                                 Name     => Name,
                                  Do_Count => Do_Count,
                                  Ok_Count => Ok_Count,
                                  Do_First => Do_First,

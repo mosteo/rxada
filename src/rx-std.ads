@@ -98,7 +98,7 @@ package Rx.Std is
 
    function Interval (First       : Rx_Integer := 0;
                       Period      : Duration := 1.0;
-                      First_Pause : Duration := 1.0;
+                      First_Pause : Duration := 0.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                       return Integers.Observable renames Numeric.Integers.Interval;
 

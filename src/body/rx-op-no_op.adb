@@ -1,6 +1,12 @@
+-- with Rx.Debug;
+
 package body Rx.Op.No_Op is
 
    type Operator is new Operate.Operator with null record;
+
+   -------------
+   -- On_Next --
+   -------------
 
    overriding
    procedure On_Next (This  : in out Operator;

@@ -37,6 +37,10 @@ package body Rx.Dispatchers is
          Downstream : Shared.Observer;
       end record;
 
+      ---------
+      -- Run --
+      ---------
+
       overriding procedure Run (R : Runner) is
          use all type Base.Kinds;
          RW : Runner := R; -- Local writable copy
@@ -46,6 +50,9 @@ package body Rx.Dispatchers is
                begin
                   RW.Downstream.On_Next (Base.Value (R.Event));
                exception
+                  when No_Longer_Subscribed =>
+                     RW.Downstream.Release; -- Just in case
+                     raise;
                   when E : others =>
                      Typed.Defaults.Default_Error_Handler (RW.Downstream, E);
                end;
@@ -106,12 +113,20 @@ package body Rx.Dispatchers is
          Child  : Operate.Typed.Holders.Observers.Definite;
       end record;
 
+      ---------
+      -- Run --
+      ---------
+
       overriding procedure Run (R : Runner) is
          Parent : Operate.Typed.Observable'Class := R.Parent.To_Indef;
          Child  : Operate.Typed.Observer'Class := R.Child.Get;
       begin
          Parent.Subscribe (Child);
       end Run;
+
+      ------------------
+      -- On_Subscribe --
+      ------------------
 
       procedure On_Subscribe (Sched  : in out Dispatcher'Class;
                               Parent :        Operate.Observable'Class;

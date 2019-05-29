@@ -72,7 +72,7 @@ package body Rx.Src.Interval is
    function Create
      (First       : Typed.T;
                     Period       : Duration := 1.0;
-                    First_Pause : Duration := 1.0;
+                    First_Pause : Duration  := 0.0;
                     Scheduler   : Schedulers.Scheduler := Schedulers.Computation)
                     return Typed.Observable
    is

@@ -48,6 +48,9 @@ package Rx.Contracts is
 
    overriding function Is_Subscribed (This : Sink) return Boolean;
 
+   overriding procedure On_Complete (This : in out Sink);
+   --  Call this if overrinding it
+
    not overriding
    procedure Set_Subscription (This : in out Sink; S : Subscriptions.Subscription);
    --  A sink receives a subscription at the moment of being subscribed

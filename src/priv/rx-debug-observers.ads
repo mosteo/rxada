@@ -9,7 +9,8 @@ package Rx.Debug.Observers is
    --  Observer classes with a precise behaviour for testing
 
    function Subscribe_Checker
-     (Do_Count : Boolean := False;
+     (Name     : String  := "";
+      Do_Count : Boolean := False;
       Ok_Count : Natural := 0;
       Do_First : Boolean := False;
       Ok_First : Typed.T := Default_T;
@@ -20,7 +21,8 @@ package Rx.Debug.Observers is
      with Pre => Do_Count or Do_First or Do_Last;
 
    function Subscribe
-     (Do_Count : Boolean := False;
+     (Name     : String  := "";
+      Do_Count : Boolean := False;
       Ok_Count : Natural := 0;
       Do_First : Boolean := False;
       Ok_First : Typed.T := Default_T;

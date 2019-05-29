@@ -1,5 +1,18 @@
 package body Rx.Impl.Transformers is
 
+   ------------------
+   -- Set_Observer --
+   ------------------
+
+   procedure Set_Observer (This : in out Operator; Consumer : Into.Observer'Class) is
+   begin
+      if This.Downstream.Is_Empty then
+         This.Downstream.Hold (Consumer);
+      else
+         raise Constraint_Error with "Downstream Observer already set";
+      end if;
+   end Set_Observer;
+
    ---------------
    -- Subscribe --
    ---------------
@@ -11,7 +24,7 @@ package body Rx.Impl.Transformers is
          declare
             Parent : From.Observable := This.Get_Parent; -- Our own copy
          begin
-            This.Downstream.Hold (Consumer);
+            This.Set_Observer (Consumer);
             Parent.Subscribe (This);
          end;
       else
@@ -53,7 +66,7 @@ package body Rx.Impl.Transformers is
    ------------------
 
    function Concatenate (Producer : From.Observable;
-                          Consumer : Operator'Class)
+                         Consumer : Operator'Class)
                           return Into.Observable
    is
    begin

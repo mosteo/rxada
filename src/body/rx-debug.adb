@@ -1,5 +1,10 @@
 package body Rx.Debug is
 
+   procedure Trace (S : String) is
+   begin
+      Log (S, Impl);
+   end Trace;
+
    ---------
    -- Log --
    ---------

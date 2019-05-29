@@ -3,6 +3,8 @@ private with Ada.Task_Identification;
 
 private with Rx.Tools.Shared_Data;
 
+private with System.Address_Image;
+
 package Rx.Tools.Semaphores is
 
    type Shared is private;
@@ -11,10 +13,15 @@ package Rx.Tools.Semaphores is
    function Create_Reentrant (Fake : Boolean := False) return Shared;
    --  Allocate an available semaphore (or a fake one that does nothing)
 
-   type Critical_Section (Mutex : access Shared) is limited private;
+   type Critical_Section (Mutex : access Shared) is tagged limited private;
    --  Declare an instance of this type in the scope to be made exclusive
    --  It automatically seizes/releases the semaphore on entering/exiting the scope of declaration
    --  The mutex is copied and could be disposed of by the caller inside the critical section
+
+   function Image (This : Shared) return String;
+
+   function Image (This : Critical_Section) return String is
+     (Image (This.Mutex.all));
 
 private
 
@@ -47,6 +54,9 @@ private
         (Shared_Semaphores.Proxy with Fake => True)
       else
         (Wrap (new Reentrant)));
+
+   function Image (This : Shared) return String is
+      (System.Address_Image (This.Get.Actual.all'Address));
 
    type Critical_Section (Mutex : not null access Shared) is new Ada.Finalization.Limited_Controlled
    with record

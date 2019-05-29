@@ -14,6 +14,12 @@ package Rx.Impl.Shared_Observer with Preelaborate is
    --  See Operator Serialize for a safeguard for cases where this is not true
 
    function Create (Held : Typed.Observer) return Observer;
+   procedure Set_Observer (This : in out Observer; Held : Typed.Observer);
+   --  For naming consistency with Operator.Set_Observer
+
+   function Is_Valid (This : Observer) return Boolean;
+   --  Say if it holds a shared observer still
+
    procedure Release (This : in out Observer);
 
    overriding procedure On_Next      (This : in out Observer; V : Typed.Type_Traits.T);
@@ -22,6 +28,11 @@ package Rx.Impl.Shared_Observer with Preelaborate is
 
    Null_Observer : constant Observer;
 
+   type Reference (Actual : access Typed.Observer) is limited null record
+     with Implicit_Dereference => Actual;
+
+   function Ref (This : Observer) return Reference;
+
 private
 
    type Observer_Access is access Typed.Observer;
@@ -29,6 +40,11 @@ private
    type Observer is new Typed.Contracts.Observer with record
       Actual : Observer_Access;
    end record;
+
+   function Is_Valid (This : Observer) return Boolean is (This.Actual /= null);
+
+   function Ref (This : Observer) return Reference is
+      (Reference'(Actual => This.Actual));
 
    Null_Observer : constant Observer := (Typed.Contracts.Observer with Actual => null);
 

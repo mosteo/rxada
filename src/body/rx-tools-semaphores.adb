@@ -1,3 +1,5 @@
+with Rx.Debug;
+
 package body Rx.Tools.Semaphores is
 
    ---------------
@@ -12,6 +14,7 @@ package body Rx.Tools.Semaphores is
 
       procedure Release is
       begin
+         Debug.Trace ("Releasing");
          Count := Count - 1;
       end Release;
 
@@ -20,11 +23,13 @@ package body Rx.Tools.Semaphores is
       -----------
 
       entry Seize when True is
-         use type Ada.Task_Identification.Task_Id;
+         use Ada.Task_Identification;
       begin
          if Reentrant.Seize'Caller = Owner then
+            Debug.Trace ("Seizing @ " & Image (Owner));
             Count := Count + 1;
          else
+            Debug.Trace ("Waiting @ " & Image (Reentrant.Seize'Caller));
             requeue Wait with abort;
          end if;
       end Seize;
@@ -34,7 +39,9 @@ package body Rx.Tools.Semaphores is
       ----------
 
       entry Wait when Count = 0 is
+         use Ada.Task_Identification;
       begin
+         Debug.Trace ("Seizing [wait] @ " & Image (Wait'Caller));
          Count := 1;
          Owner := Wait'Caller;
       end Wait;

@@ -1,7 +1,5 @@
 with Ada.Unchecked_Deallocation;
 
--- with Gnat.IO; use Gnat.IO;
-
 package body Rx.Impl.Shared_Observer is
 
    ------------
@@ -12,6 +10,19 @@ package body Rx.Impl.Shared_Observer is
    begin
       return (Actual => new Typed.Observer'(Held));
    end Create;
+
+   ------------------
+   -- Set_Observer --
+   ------------------
+
+   procedure Set_Observer (This : in out Observer; Held : Typed.Observer) is
+   begin
+      if This.Actual /= null then
+         raise Constraint_Error with "Shared observer cannot be set again";
+      else
+         This.Actual := new Typed.Observer'(Held);
+      end if;
+   end Set_Observer;
 
    -------------
    -- Release --
@@ -33,7 +44,13 @@ package body Rx.Impl.Shared_Observer is
    is
    begin
       if This.Actual /= null then
-         This.Actual.On_Next (V);
+         begin
+            This.Actual.On_Next (V);
+         exception
+            when No_Longer_Subscribed =>
+               This.Release;
+               raise;
+         end;
       else
          raise No_Longer_Subscribed;
       end if;

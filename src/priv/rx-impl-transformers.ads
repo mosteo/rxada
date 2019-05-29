@@ -43,9 +43,15 @@ package Rx.Impl.Transformers with Preelaborate is
    overriding procedure Subscribe (This : in out Operator; Consumer : in out Into.Observer'Class);
 --     with Post'Class => This.Is_Subscribed;
    --  Can be overriden to modify the actual consumer that will be stored.
-   --  In that case, the parent implementation should be called
-
+   --  In that case, the parent implementation should be called  
+   
    --  Typically, there won't be a need to override these:
+   
+   procedure Set_Observer (This : in out Operator; Consumer : Into.Observer'Class);
+   --  This allows patching a custom downstream without triggering a subscrition,
+   --    and without requiring that downstream is a full operator.
+   --  Usually needed by complex operators that override Subscribe   
+   --  See Rx.Op.Merge for example
 
    overriding procedure Unsubscribe (This : in out Operator);
 --     with Post'Class => not This.Is_Subscribed;
@@ -69,6 +75,13 @@ package Rx.Impl.Transformers with Preelaborate is
    function "&" (Producer : From.Observable;
                  Consumer : Operator'Class)
                  return Into.Observable renames Concatenate;
+   
+   --  Useable package
+   package Linkers is
+      function "&" (Producer : From.Observable;
+                    Consumer : Operator'Class)
+                    return Into.Observable renames Transformers."&";
+   end Linkers;
 
 private
 

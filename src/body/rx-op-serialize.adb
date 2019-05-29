@@ -20,6 +20,10 @@ package body Rx.Op.Serialize is
 
    overriding procedure On_Error (This : in out Serializer; Error : Errors.Occurrence);
 
+   -------------
+   -- On_Next --
+   -------------
+
    overriding procedure On_Next (This : in out Serializer; V : Operate.T) is
       CS : Critical_Section (This.Mutex'Access) with Unreferenced;
    begin
@@ -63,8 +67,8 @@ package body Rx.Op.Serialize is
    overriding procedure Subscribe (Producer : in out Serializer;
                                    Consumer : in out Operate.Into.Observer'Class)
    is
+      CS : Critical_Section (Producer.Mutex'Access) with Unreferenced;
    begin
-      Producer.Mutex := Tools.Semaphores.Create_Reentrant; -- New mutex for this chain
       Operate.Operator (Producer).Subscribe (Consumer);    -- Normal subscription
    end Subscribe;
 
@@ -74,7 +78,8 @@ package body Rx.Op.Serialize is
 
    function Create return Operate.Operator'Class is
    begin
-      return Serializer'(Operate.Operator with others => <>);
+      return Serializer'(Operate.Operator with
+                           Mutex => Tools.Semaphores.Create_Reentrant);
    end Create;
 
 end Rx.Op.Serialize;
