@@ -19,8 +19,8 @@ package body Rx.Op.Observe_On is
    overriding procedure Subscribe    (This : in out Op; Observer : in out Operate.Into.Observer'Class);
 
    function Get_Downstream (This : in out Op'Class) return Shared.Observer is
-     (if This.Get_Observer /= null then -- There's a bug here on creation of the reference
-         Shared.Observer (This.Get_Observer.all)
+     (if This.Is_Subscribed then -- There's a bug here on creation of the reference
+         Shared.Observer (This.Get_Observer.Actual.all)
       else
          raise No_Longer_Subscribed);
 
