@@ -51,7 +51,6 @@ package body Rx.Dispatchers is
                   RW.Downstream.On_Next (Base.Value (R.Event));
                exception
                   when No_Longer_Subscribed =>
-                     RW.Downstream.Release; -- Just in case
                      raise;
                   when E : others =>
                      Typed.Defaults.Default_Error_Handler (RW.Downstream, E);
@@ -76,7 +75,11 @@ package body Rx.Dispatchers is
          V : Typed.Type_Traits.T)
       is
       begin
-         Sched.Schedule (Runner'(Base.On_Next, Base.On_Next (V), Observer));
+         if not Observer.Is_Completed then 
+            Sched.Schedule (Runner'(Base.On_Next, Base.On_Next (V), Observer));
+         else
+            raise No_Longer_Subscribed;
+         end if;
       end On_Next;
 
       ------------------

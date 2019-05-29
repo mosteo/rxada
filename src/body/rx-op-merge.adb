@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Errors;
 with Rx.Impl.Shared_Observer;
 with Rx.Op.Serialize;
@@ -25,7 +26,6 @@ package body Rx.Op.Merge is
 
    type Real_Merger is new Preserver.Operator with record
       Completed  : Natural := 0;
-      Debug_Count : Natural := 0;
    end record;
    --  Used as a shared observer, during subscription
 
@@ -49,25 +49,23 @@ package body Rx.Op.Merge is
 
    overriding procedure On_Complete  (This : in out Real_Merger) is
    begin
+      Debug.Trace ("Merge.Real.On_Complete");
       if This.Is_Subscribed then
          This.Completed := This.Completed + 1;
-      end if;
 
-      if This.Completed = 2 then
-         This.Get_Observer.On_Complete;
-         This.Unsubscribe;
+         if This.Completed = 2 then
+            This.Get_Observer.On_Complete;
+            This.Unsubscribe;
+         end if;
+      else
+         raise No_Longer_Subscribed;
       end if;
    end On_Complete;
 
    overriding procedure On_Complete (This : in out Shared_Merger) is
    begin
-      This.Ref.On_Complete;
-      if This.Is_Valid Then
-         if Real_Merger (This.Ref.Actual.all).Completed = 2 then
-            This.Release;
-         end if;
-      end if;
-
+      Debug.Trace ("Merge.Shared.On_Complete");
+      This.On_Complete_Without_Completion;
    end On_Complete;
 
    -------------
@@ -82,7 +80,6 @@ package body Rx.Op.Merge is
    overriding procedure On_Next (This : in out Real_Merger; V : Preserver.T) is
    begin
       This.Get_Observer.On_Next (V);
-      This.Debug_Count := This.Debug_Count + 1;
    end On_Next;
 
    ---------------
