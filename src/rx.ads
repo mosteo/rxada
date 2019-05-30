@@ -26,4 +26,11 @@ package Rx with Pure is
    type    Rx_Nothing is null record;
    --  Some observables are used for notification purposes, with values of no importance
 
+   --  Other literals of general use
+
+   type Merge_Policies is
+     (Merge, 	-- Just relay as they come
+      Sequence, -- Force sequencing of observables
+      Switch);  -- Drop from any previous observable, use only last one
+
 end Rx;

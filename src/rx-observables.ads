@@ -465,7 +465,7 @@ private
 
    package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform);
    function Flat_Map (Func : Operate.Transform.Actions.Flattener1) return Operator is
-     (RxFlatMap.Create (Func, RxFlatMap.Merge));
+     (RxFlatMap.Create (Func));
 
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable
