@@ -55,9 +55,8 @@ package Rx.Impl.Transformers with Preelaborate is
 
    overriding procedure Unsubscribe (This : in out Operator);
 
-   not overriding function Get_Observer (This : in out Operator) return Into.Holders.Observers.Reference;
-
---     not overriding function Get_Observer (This : in out Operator) return access Into.Observer'Class;
+   not overriding function Get_Observer (This : in out Operator) 
+                                         return Into.Holders.Observers.Reference;
 
    ---------------------
    --  Chain building --
@@ -91,17 +90,5 @@ private
    end record;
 
    overriding function Is_Subscribed (This : Operator) return Boolean is (This.Downstream.Is_Valid);
-
-   not overriding function Get_Observer (This : in out Operator) return Into.Holders.Observers.Reference is
-     (if This.Is_Subscribed then
-         This.Downstream.Ref
-      else
-         raise No_Longer_Subscribed);
-
---     not overriding function Get_Observer (This : in out Operator) return access Into.Observer'Class is
---       (if This.Is_Subscribed then
---           This.Downstream.Get_Access
---        else
---           raise No_Longer_Subscribed);
 
 end Rx.Impl.Transformers;

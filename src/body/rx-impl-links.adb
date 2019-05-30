@@ -17,13 +17,12 @@ package body Rx.Impl.Links is
       if This.Parent.Is_Empty then
          This.Parent.Hold (Parent);
       else
-         --  Untested...
-         if This.Parent.CRef.Actual.all in Downstream then
+         if This.Parent.CRef.Actual.all in Downstream'Class then
             declare
                Current_Parent : Downstream'Class Renames
                                   Downstream'Class (This.Parent.Ref.Actual.all);
             begin
-               Debug.Put_Line ("Parenting upstream");
+               Debug.Trace ("Parenting upstream");
                Current_Parent.Set_Parent (Parent);
             end;
          else
