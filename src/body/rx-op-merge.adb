@@ -5,7 +5,7 @@ with Rx.Op.Serialize;
 
 package body Rx.Op.Merge is
 
-   package RxSerialize is new Rx.Op.Serialize (Preserver);
+   package RxSerialize is new Rx.Op.Serialize  (Preserver);
 
    package Shared_Observers is new Impl.Shared_Observer (Preserver.Typed);
 
@@ -33,6 +33,7 @@ package body Rx.Op.Merge is
    type Fake_Merger is new Preserver.Operator with record
       Merge_With : Preserver.Typed.Definite_Observables.Observable;
       Shared     : Shared_Merger;
+      Scheduler  : Schedulers.Scheduler;
    end record;
    --  Used as a front, during chaining
 
@@ -52,10 +53,13 @@ package body Rx.Op.Merge is
    -- Create --
    ------------
 
-   function Create (Merge_With : Preserver.Observable'Class) return Preserver.Operator'Class is
+   function Create (Merge_With : Preserver.Observable'Class;
+                    Observe_On : Schedulers.Scheduler := Schedulers.Immediate)
+                    return Preserver.Operator'Class is
    begin
       return M : Fake_Merger do
          M.Merge_With.From (Merge_With);
+         M.Scheduler := Observe_On;
       end return;
    end Create;
 
@@ -109,19 +113,29 @@ package body Rx.Op.Merge is
    procedure Subscribe (This     : in out Fake_Merger;
                         Consumer : in out Preserver.Observer'Class)
    is
-      Real      : Real_Merger;
-      Serialize : Preserver.Operator'Class := RxSerialize.Create;
+      Real       : Real_Merger;
+      Serialize  : Preserver.Operator'Class := RxSerialize.Create;
+      Observe_On : Preserver.Operator'Class := RxObserve.Create (This.Scheduler);
    begin
       Real                .Set_Observer (Consumer);    -- Stores a downstream copy
       This.Shared.Observer.Set_Observer (Real);        -- Create a shared front
       Serialize           .Set_Observer (This.Shared); -- Serialize calls to downstream
+      Observe_On          .Set_Observer (Serialize);   -- Switch to given scheduler
 
       --  Set_Observer is the poor man's way of setting chains during
       --    implementation, before all operators and "&" are available.
       --  Also, at this time we do not know if Consumer is Operator or Sink
 
-      This.Merge_With.Subscribe (Serialize);           -- Subscribe to Obs 2
-      Preserver.Operator (This).Subscribe (Serialize); -- Subscribe to Obs 1
+      declare
+         use all type Schedulers.Scheduler;
+         Head : Preserver.Operator'Class :=
+                  (if   This.Scheduler = Schedulers.Immediate
+                   then Serialize
+                   else Observe_On);
+      begin
+         This.Merge_With.Subscribe (Head);                -- Subscribe to Obs 2
+         Preserver.Operator (This).Subscribe (Serialize); -- Subscribe to Obs 1
+      end;
    end Subscribe;
 
 end Rx.Op.Merge;

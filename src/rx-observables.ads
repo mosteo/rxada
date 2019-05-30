@@ -211,7 +211,16 @@ package Rx.Observables is
    -- Merge --
    -----------
 
-   function Merge (Merge_With : Observable) return Operator;
+   function Merge (One, Two   : Observable;
+                   Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
+                   return Observable;
+   --  Merges two observables using the same scheduler
+
+   function Merge_With (Merge_With : Observable;
+                        Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
+                        return Operator;
+   --  Merges observable in current stream, using scheduler only for the
+   --  new observable
 
    -----------
    -- Never --
@@ -496,7 +505,13 @@ private
                  Consumer : Operate.Transform.Actions.Func1) return Observable renames RxMap."&";
 
    package RxMerge is new Rx.Op.Merge (Operate);
-   function Merge (Merge_With : Observable) return Operator renames RxMerge.Create;
+   function Merge_With (Merge_With : Observable;
+                        Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
+                        return Operator renames RxMerge.Create;
+
+   function Merge (One, Two   : Observable;
+                   Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
+                   return Observable renames RxMerge.Create;
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;

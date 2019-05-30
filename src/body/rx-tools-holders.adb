@@ -45,9 +45,9 @@ package body Rx.Tools.Holders is
       end if;
    end Hold;
 
-----------------
--- Initialize --
-----------------
+   ----------------
+   -- Initialize --
+   ----------------
 
    overriding procedure Initialize (D : in out Definite) is
    begin

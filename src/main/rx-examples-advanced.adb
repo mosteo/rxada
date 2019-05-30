@@ -14,14 +14,14 @@ begin
    Debug.Put_Line ("Merge example 1 (merged items)");
    Sub :=
      From ((1, 2, 3))
-     & Merge (From ((4, 5, 6)))
+     & Merge_With (From ((4, 5, 6)))
      & Std.Casts.To_String
      & Subscribe (Debug.Put_Line'Access);
 
    Debug.Put_Line ("Merge example (merged count)");
    Sub :=
      From ((1, 2, 3))
-     & Merge (From ((4, 5, 6)))
+     & Merge_With (From ((4, 5, 6)))
      & Numeric.Integers.Count
      & Std.Casts.To_String
      & Subscribe (Debug.Put_Line'Access);
@@ -30,9 +30,9 @@ begin
    Sub := Interval (First => 1000, Period => 0.001)
      & Observe_On (Schedulers.New_Thread)
      & Limit (100)
-     & Merge (Interval (First => 2000, Period => 0.001)
-              & Limit (100)
-              & Observe_On (Schedulers.New_Thread))
+     & Merge_With (Interval (First => 2000, Period => 0.001)
+                   & Limit (100)
+                   & Observe_On (Schedulers.New_Thread))
      & Std.Casts.To_String
      & Subscribe (Debug.Put_Line'Access);
 

@@ -31,6 +31,6 @@ private
 
    function Has_Parent (This : Downstream) return Boolean is (not This.Parent.Is_Empty);
 
-   function Get_Parent (This : Downstream) return Typed.Contracts.Observable'Class is (This.Parent.Cref);
+   function Get_Parent (This : Downstream) return Typed.Contracts.Observable'Class is (This.Parent.Get);
 
 end Rx.Impl.Links;
