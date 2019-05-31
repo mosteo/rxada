@@ -20,7 +20,7 @@ package body Rx.Src.Timer is
       Scheduler : Schedulers.Scheduler := Schedulers.Computation)
       return Typed.Observable
    is
-      use Operate.Transform;
+      use Operate.Linkers;
    begin
       return
         RxInterval.Create (First       => V,
