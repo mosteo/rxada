@@ -20,7 +20,14 @@ abstract project RxAda_Common is
    package Compiler is
       case Build is
          when "debug" =>
-            for Default_Switches ("ada") use ("-gnatwal.f", "-gnatVa", "-g", "-O2", "-gnato", "-fstack-check", "-gnata", "-gnatf", "-gnat12", "-gnatyO");
+            for Default_Switches ("ada") use ("-gnatwal.f",
+                                              "-gnatVd", -- use Va for even more checks
+
+                                              "-g", "-O2",
+                                              "-gnato", "-fstack-check", "-gnata",
+                                              "-gnatf", "-gnat12",
+
+                                              "-gnatyO");
          when "release" =>
             for Default_Switches ("ada") use ("-O3", "-gnatn", "-gnat12");
       end case;

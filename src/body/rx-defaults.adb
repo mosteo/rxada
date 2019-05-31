@@ -10,11 +10,22 @@ package body Rx.Defaults is
      (This   : in out Contracts.Observer'Class;
       Except :        Ada.Exceptions.Exception_Occurrence)
    is
+      use Ada.Exceptions;
    begin
-      This.On_Error (Errors.Create (Except));
-   exception
-      when E : others =>
-         Debug.Report (E, "Exception during error handling:", Debug.Warn, Reraise => True);
+      if Exception_Identity (Except) = Unimplemented'Identity or else
+         Exception_Identity (Except) = Program_Error'Identity or else
+         Exception_Identity (Except) = Storage_Error'Identity
+      then
+         Reraise_Occurrence (Except);
+         -- Those are normally not regular exceptions to be dealt by clients
+      else
+         begin
+            This.On_Error (Errors.Create (Except));
+         exception
+            when E : others =>
+               Debug.Report (E, "Exception during error handling:", Debug.Warn, Reraise => True);
+         end;
+      end if;
    end Default_Error_Handler;
 
    ----------------------

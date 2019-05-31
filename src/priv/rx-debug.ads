@@ -23,8 +23,8 @@ package Rx.Debug is
 
    procedure Log (S : String; Level : Levels); -- Prints S if above configured level
 
-   procedure Trace (S : String; Prefix : String := GNAT.Source_Info.Source_Location) -- Log at Impl level
-     with Inline;
+   procedure Trace (S : String; Prefix : String := GNAT.Source_Info.Source_Location);
+   --  Log at Impl level
 
    procedure Put_Line (I : Rx_Integer);
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;

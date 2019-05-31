@@ -552,7 +552,7 @@ private
    function Split return From_List_Transformer renames RxSplit.Create;
 
    package RxStrip is new Rx.Op.Map (Into_Valueless);
-   function Strip (Dummy : T) return Rx_Nothing is (null record) with Inline;
+   function Strip (Dummy : T) return Rx_Nothing is (null record);
    function Strip return Into_Valueless.Operator is (Into_Valueless.Operator (RxStrip.Create (Strip'Access)));
 
    package RxSubscribe is new Rx.Subscribe (Typed);

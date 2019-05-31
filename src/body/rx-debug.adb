@@ -1,4 +1,25 @@
+with Ada.Command_Line;
+
 package body Rx.Debug is
+
+   type Tracing_States is (Off, Unknown, On);
+
+   Tracing : Tracing_States := Unknown with Atomic;
+
+   -------------------
+   -- Check_Tracing --
+   -------------------
+
+   procedure Check_Tracing is
+      use Ada.Command_Line;
+   begin
+      Tracing := Off;
+      for I in 1 .. Argument_Count loop
+         if Argument (I) = "-vvv" then
+            Tracing := On;
+         end if;
+      end loop;
+   end Check_Tracing;
 
    ----------
    -- Head --
@@ -21,8 +42,18 @@ package body Rx.Debug is
 
    procedure Trace (S : String; Prefix : String := GNAT.Source_Info.Source_Location) is
    begin
+      if Tracing = Unknown then
+         Check_Tracing;
+      end if;
+
+      --  Trace when either log level demands it, or command-line -vvv given
+
       pragma Warnings (Off);
-      if Level = Impl then -- To allow dead code removal when inlining
+      if Level > Impl and then Tracing = On then
+         Put_Line ("trace: " & S & " @ " & Head (Prefix));
+      end if;
+
+      if Level = Impl then
          Log (S & " @ " & Head (Prefix), Impl);
       end if;
       pragma Warnings (On);

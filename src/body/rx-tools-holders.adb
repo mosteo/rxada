@@ -8,6 +8,10 @@ package body Rx.Tools.Holders is
 
    Debug : constant Boolean := False;
 
+   -------------
+   -- Counter --
+   -------------
+
    protected Counter is
       procedure Add (I : Integer; Msg : String);
    private
@@ -95,5 +99,20 @@ package body Rx.Tools.Holders is
 --           Rx.Debug.Print (E);
          raise;
    end Finalize;
+
+   ---------
+   -- Ref --
+   ---------
+
+   function Ref  (D : in out Definite) return Indef_Access is
+   begin
+      return D.Actual;
+   end Ref;
+
+   ----------
+   -- CRef --
+   ----------
+
+   function CRef (D : Definite) return Const_Ref is (Actual => D.Actual);
 
 end Rx.Tools.Holders;

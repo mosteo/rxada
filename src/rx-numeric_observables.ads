@@ -60,7 +60,8 @@ package Rx.Numeric_Observables is
 
 private
 
-   function List_Length (L : Observables.T_List) return T is (To_Numeric (Rx_Integer (L.Length))) with Inline;
+   function List_Length (L : Observables.T_List) return T is
+     (To_Numeric (Rx_Integer (L.Length)));
 
    package RxCount      is new Rx.Op.Count (Observables.Operate.Transform, Succ, To_Numeric (0));
    package RxCountLists is new Rx.Op.Count (From_List_Transformers, Succ, To_Numeric (0));

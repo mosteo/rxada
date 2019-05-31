@@ -10,40 +10,37 @@ generic
    Id : String := ""; -- Debug purposes only
 package Rx.Tools.Holders with Preelaborate is
 
+   type Indef_Access is access Indef;
+   --     for Indef_Access'Storage_Pool use Debug.Debug_Pool;
+
    type Definite is tagged private;
 
-   type Reference (Actual : access Indef) is limited private
+   type Reference (Actual : access Indef) is limited null record
    	with Implicit_Dereference => Actual;
-   type Const_Ref (Actual : access constant Indef) is limited private
+   type Const_Ref (Actual : access constant Indef) is limited null record
    	with Implicit_Dereference => Actual;
 
-   function "+" (I : Indef)    return Definite with Inline;
-   function "+" (D : Definite) return Indef    with Inline;
+   function "+" (I : Indef)    return Definite;
+   function "+" (D : Definite) return Indef;
 
    function Get (D : Definite) return Indef renames "+";
 
    procedure Hold (D : in out Definite; I : Indef);
    function Hold (I : Indef) return Definite renames "+";
 
-   function Ref  (D : in out Definite) return Reference with Inline;
-   function CRef (D :        Definite) return Const_Ref with Inline;
+   function Ref  (D : in out Definite) return Indef_Access; -- bug workaround
+   function CRef (D :        Definite) return Const_Ref;
 
-   function Is_Empty (D : Definite) return Boolean with Inline;
+   function Is_Empty (D : Definite) return Boolean;
 
-   function Is_Valid (D : Definite) return Boolean is (not Is_Empty (D)) with Inline;
+   function Is_Valid (D : Definite) return Boolean is (not Is_Empty (D));
 
    procedure Clear (D : in out Definite);
    --  Dispose of the stored definite
 
-   function Get_Access (D : in out Definite) return access Indef;
-   --  TEMPORARY REFERENCE BUG WORKAROUND
-
 private
 
    use Ada.Finalization;
-
-   type Indef_Access is access Indef;
---     for Indef_Access'Storage_Pool use Debug.Debug_Pool;
 
    type Definite is new Ada.Finalization.Controlled with record
       Actual : Indef_Access;
@@ -55,16 +52,8 @@ private
 
    procedure Clear (D : in out Definite) renames Finalize;
 
-   type Reference (Actual : access Indef) is limited null record;
-   type Const_Ref (Actual : access constant Indef) is limited null record;
-
    function "+" (D : Definite) return Indef is (D.Actual.all);
 
-   function Ref  (D : in out Definite) return Reference is (Actual => D.Actual);
-   function CRef (D :        Definite) return Const_Ref is (Actual => D.Actual);
-
    function Is_Empty (D : Definite) return Boolean is (D.Actual = null);
-
-   function Get_Access (D : in out Definite) return access Indef is (D.Actual);
 
 end Rx.Tools.Holders;

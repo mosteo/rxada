@@ -126,7 +126,7 @@ private
    function Printable_Succ (S : Rx_String) return Rx_String is
      (Succ (S, "", True));
 
-   function Succ (I : Rx_Integer) return Rx_Integer is (Rx_Integer'Succ (I)) with Inline;
+   function Succ (I : Rx_Integer) return Rx_Integer is (Rx_Integer'Succ (I));
 
    function All_Integers (Initial : Rx_Integer := Rx_Integer'First;
                           Count   : Rx_Integer := Rx_Integer'Last) return Integers.Observable is

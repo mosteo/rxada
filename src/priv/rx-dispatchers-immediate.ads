@@ -8,9 +8,8 @@ package Rx.Dispatchers.Immediate is
    overriding
    procedure Schedule (Where : in out Dispatcher;
                        What  : Runnable'Class;
-                       Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
-     with Pre => Time <= Ada.Calendar.Clock or
-                 raise Constraint_Error with "Future scheduling in immediate scheduler not allowed";
+                       Time  : Ada.Calendar.Time := Ada.Calendar.Clock);
+   --  Providing a future time in this scheduler will result in Constraint_Error
 
 private
 

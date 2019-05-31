@@ -3,6 +3,7 @@ with Rx.Debug;
 with Rx.Debug.Observers;
 with Rx.Errors;
 with Rx.Indefinites;
+with Rx.Schedulers;
 with Rx.Std;
 with Rx.Subscriptions;
 
@@ -306,20 +307,27 @@ package body Rx.Tests is
       Subs :=
         Ints.From ((1, 2, 3))
         & Ints.Merge_With (From ((4, 5, 6)))
-        & Subscribe_Checker (Name     => "two-way merge",
+        & Subscribe_Checker (Name     => "merge-with",
                              Do_Count => True, Ok_Count => 6);
 
       Subs :=
         From ((1, 2, 3))
-        & Merge_With (From ((4, 5, 6)))
+        & Merge_With (From ((4, 5, 6)), Schedulers.Computation)
         & Numeric.Integers.Count
-        & Subscribe_Checker (Name     => "merge & count",
+        & Subscribe_Checker (Name     => "merge-with & count w scheduler",
                              Do_Count => True, Ok_Count => 1,
                              Do_Last  => True, Ok_Last  => 6);
 
       Subs :=
+        From ((1, 2, 3))
+        & Observe_On (Schedulers.Immediate)
+        & Ints.Merge_With (From ((4, 5, 6)), Schedulers.Immediate)
+        & Subscribe_Checker (Name     => "two-way merge, explicit",
+                             Do_Count => True, Ok_Count => 6);
+
+      Subs := -- This is implemented with as previous one internally
         Ints.Merge (From ((1, 2, 3)), From ((4, 5, 6)))
-        & Subscribe_Checker (Name     => "two-way merge, alternate syntax",
+        & Subscribe_Checker (Name     => "two-way merge, implicit",
                              Do_Count => True, Ok_Count => 6);
 
       -- No_Op
@@ -387,6 +395,19 @@ package body Rx.Tests is
                                       Do_Last  => True,  Ok_Last  => 4,
                                       Do_Count => True,  Ok_Count => 3));
       end;
+
+      -- Observe_On
+      Subs :=
+        From ((1, 2, 3))
+        & Ints.Observe_On (Schedulers.Immediate)
+        & Subscribe_Checker (Name     => "scheduler immediate",
+                             Do_Count => True, Ok_Count => 3);
+
+      Subs :=
+        From ((1, 2, 3))
+        & Ints.Observe_On (Schedulers.Computation)
+        & Subscribe_Checker (Name     => "scheduler computation",
+                             Do_Count => True, Ok_Count => 3);
 
       return True;
    exception

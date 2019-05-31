@@ -23,18 +23,21 @@ package Rx.Tools.Shared_Data with Preelaborate is
    function Wrap (I : not null Item_Access) return Proxy;
 
    procedure Forget (P : in out Proxy)
-     with Pre => P.Is_Valid or else raise Constraint_Error;
+     with Pre => P.Is_Valid or else raise Program_Error;
    --  Invalidate this proxy and decrease refcount
 
-   procedure Apply (P : in out Proxy; CB : access procedure (I : in out Item));
+   procedure Apply (P : in out Proxy; CB : access procedure (I : in out Item))
+     with Pre => P.Is_Valid or else raise Program_Error;
    --  This takes place inside a protected object! So no blocking calls in procedure...
 
-   function Get (P : Proxy) return Const_Ref;
+   function Get (P : Proxy) return Const_Ref
+     with Pre => P.Is_Valid or else raise Program_Error;
    --  Safe because it cannot outlive the Proxy from which it is retrieved
 
    generic
       --  WATCH WHATCHA DOIN'!!
-   function Tamper (P : Proxy) return Ref;
+   function Tamper (P : Proxy) return Ref
+     with Pre => P.Is_Valid or else raise Program_Error;
    --  This is only safe if Item is in itself thread-safe, otherwise we are
    --  breaking the purpose of the container itself!
    --  Might probably have a specific refcounter for that so it didn't depend on the client well-behavedness
