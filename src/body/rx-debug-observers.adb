@@ -127,7 +127,7 @@ package body Rx.Debug.Observers is
    -----------------
 
    function Subscribe_Checker
-     (Name     : String  := "";
+     (Name     : String;
       Do_Count : Boolean := False;
       Ok_Count : Natural := 0;
       Do_First : Boolean := False;
