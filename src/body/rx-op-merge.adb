@@ -37,10 +37,6 @@ package body Rx.Op.Merge is
                       Scheduler  => Observe_On)
          & RxFunnel.Create
          & Real_Merger'(Preserver.Operator with others => <>));
---        return M : Fake_Merger do
---           M.Merge_With.From (Merge_With);
---           M.Scheduler := Observe_On;
---        end return;
    end Create;
 
    -----------------
@@ -88,8 +84,8 @@ package body Rx.Op.Merge is
                         Consumer : in out Preserver.Observer'Class)
    is
    begin
-      This.Merge_With.Subscribe (Consumer);
       Preserver.Operator (This).Subscribe (Consumer);
+      This.Merge_With.Subscribe (Consumer);
    end Subscribe;
 
 end Rx.Op.Merge;
