@@ -28,14 +28,12 @@ package Rx.Impl.Transformers with Preelaborate is
    --  Override the Observer/Subscriber inherited methods in new operators
 
    overriding procedure On_Next (This : in out Operator; V : From.T) is null;
---     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
+   --  Must be overriden to transform From.T --> Into.T
 
    overriding procedure On_Complete  (This : in out Operator);
---     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
    --  By default calls downstream On_Complete 
 
    overriding procedure On_Error (This : in out Operator; Error : Errors.Occurrence);
---     with Pre'Class => This.Is_Subscribed or else raise No_Longer_Subscribed;
    --  By default calls downstream On_Error
 
    overriding function Is_Subscribed (This : Operator) return Boolean;
@@ -45,18 +43,12 @@ package Rx.Impl.Transformers with Preelaborate is
    --  Can be overriden to modify the actual consumer that will be stored.
    --  In that case, the parent implementation should be called  
    
-   --  Typically, there won't be a need to override these:
-   
-   procedure Set_Observer (This : in out Operator; Consumer : Into.Observer'Class);
-   --  This allows patching a custom downstream without triggering a subscrition,
-   --    and without requiring that downstream is a full operator.
-   --  Usually needed by complex operators that override Subscribe   
-   --  See Rx.Op.Merge for example
+   --  Typically, there won't be a need to override these:   
 
    overriding procedure Unsubscribe (This : in out Operator);
 
    not overriding function Get_Observer (This : in out Operator) 
-                                         return Into.Holders.Observers.Reference;
+                                         return Into.Holders.Observers.Indef_Access;
 
    ---------------------
    --  Chain building --
@@ -88,7 +80,15 @@ private
    with record
       Downstream : Into.Holders.Observer;
    end record;
-
-   overriding function Is_Subscribed (This : Operator) return Boolean is (This.Downstream.Is_Valid);
+   
+   procedure Set_Observer (This : in out Operator; Consumer : Into.Observer'Class);
+   --  To be used internally here. Not to be used as a way to bypass Subscribe,
+   --    since this can cause missing initializations in operators that override
+   --    Subscribe.
+   --  When needing custom chaining in an operator (e.g. Merge), do it with
+   --    Concatenate or Set_Parent, and subscribe normally
+   
+   overriding function Is_Subscribed (This : Operator) return Boolean is 
+     (This.Downstream.Is_Valid);
 
 end Rx.Impl.Transformers;

@@ -13,37 +13,20 @@ package Rx.Impl.Shared_Observer with Preelaborate is
    --  This way, both threads using it access the same actual Observer.
    --  Deallocation is properly done in On_Complete /On_Error
 
-   --  This expects proper serialization of calls, hence is not thread-safe.
-   --  See Operator Serialize for a safeguard for cases where this is not true
+   --  Thread-safe
 
-   function Create (Held : Typed.Observer) return Observer;
-   procedure Set_Observer (This : in out Observer; Held : Typed.Observer);
-   --  For naming consistency with Operator.Set_Observer
-
-   function Is_Completed (This : Observer) return Boolean;
-
-   procedure Mark_Completed (This : in out Observer);
-   --  In some rare cases, an overriding impl may need this (see Rx.Op.Merge)
+   function Create (Held    : Typed.Observer;
+                    Checked : Boolean := True) return Observer;
+   --  If checked, then only On_Complete/On_Error is allowed
+   --  No check is performed otherwise (useful in e.g. Merge/Funnel)
 
    overriding procedure On_Next      (This : in out Observer; V : Typed.Type_Traits.T);
    overriding procedure On_Complete  (This : in out Observer);
    overriding procedure On_Error     (This : in out Observer; Error : Errors.Occurrence);
 
-   procedure On_Complete_Without_Completion (This : in out Observer);
-   --  Call On_Complete on downstream, without actually marking it as completed.
-   --  Needed for observers that override On_Complete
+   function Is_Completed (This : Observer) return Boolean;
 
---
---     type Const_Ref (Actual : access constant Typed.Observer) is limited null record with
---       Implicit_Dereference => Actual;
---
---     type Reference (Actual : access Typed.Observer) is limited null record with
---       Implicit_Dereference => Actual;
---
---     function CRef (This : Observer) return Const_Ref;
---
---     function Ref (This : in out Observer) return Reference;
---     --  Should be used only in thread-safe (i.e., within Rx contract) circumstances
+   procedure Mark_Completed (This : in out Observer);
 
 private
 
@@ -58,8 +41,9 @@ private
    package Definite_Observers is new Impl.Definite_Observers (Typed.Contracts);
 
    type Inner_Observer is limited record
-      Actual : Definite_Observers.Observer;
-      Ended  : Boolean := False;
+      Actual  : Definite_Observers.Observer;
+      Checked : Boolean := True;
+      Ended   : Boolean := False;
    end record;
 
    type Inner_Observer_Access is access Inner_Observer;
@@ -71,10 +55,5 @@ private
    with null record;
 
    function Ref (This : in out Observer) return Safe_Observers.Ref;
---
---     function CRef (This : Observer) return Const_Ref is
---        (Actual => This.Get.Actual.CRef.Actual);
---
---     function Ref (This : in out Observer) return Reference;
 
 end Rx.Impl.Shared_Observer;

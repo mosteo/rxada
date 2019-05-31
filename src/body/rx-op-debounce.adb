@@ -90,7 +90,7 @@ package body Rx.Op.Debounce is
                when No_Longer_Subscribed =>
                   Debug.Log ("Debounce.Flush: Seen No_Longer_Subscribed", Debug.Note);
                when E : others =>
-                  Operate.Typed.Defaults.Default_Error_Handler (Child.Ref, E);
+                  Operate.Typed.Defaults.Default_Error_Handler (Child.Ref.all, E);
             end;
             Next.Clear;
          end if;

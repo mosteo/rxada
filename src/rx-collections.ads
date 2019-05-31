@@ -25,7 +25,7 @@ package Rx.Collections is
    package Lists is new Ada.Containers.Indefinite_Doubly_Linked_Lists (Typed.T, Typed.Type_Traits."=");
    subtype List is Lists.List;
 
-   function Identity (L : List) return List is (L) with Inline;
+   function Identity (L : List) return List is (L);
 
    package List_Traits is new Rx.Traits.Types (List, List, Identity, Identity);
    package Typed_Lists is new Rx.Impl.Typed (List_Traits);

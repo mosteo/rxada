@@ -17,3 +17,4 @@ build:
         pull: true
     ci:
         - gprbuild -j0 -p -P rxada_dev.gpr
+        - bin/rx-examples-tests

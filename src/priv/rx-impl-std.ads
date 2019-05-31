@@ -21,9 +21,9 @@ package Rx.Impl.Std is
    package Float_To_String is new Rx.Operators (Floats.Observables,   Strings.Observables);
    package Integer_To_String is new Rx.Operators (Integers.Observables, Strings.Observables);
 
-   function To_Integer (I : Rx_Integer) return Rx_Integer is (I) with Inline;
-   function To_Float   (I : Rx_Integer) return Rx_Float   is (Rx_Float (I)) with Inline;
-   function Succ       (F : Rx_Float)   return Rx_Float   is (F + 1.0) with Inline;
+   function To_Integer (I : Rx_Integer) return Rx_Integer is (I);
+   function To_Float   (I : Rx_Integer) return Rx_Float   is (Rx_Float (I));
+   function Succ       (F : Rx_Float)   return Rx_Float   is (F + 1.0);
 
    package Numeric is
 

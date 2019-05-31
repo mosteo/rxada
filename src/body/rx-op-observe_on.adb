@@ -10,6 +10,7 @@ package body Rx.Op.Observe_On is
 
    type Op is new Operate.Operator with record
       Scheduler  : Schedulers.Scheduler;
+      Subscriber : Shared.Observer;
    end record;
 
    overriding procedure On_Next      (This : in out Op; V : Operate.T);
@@ -18,19 +19,13 @@ package body Rx.Op.Observe_On is
 
    overriding procedure Subscribe    (This : in out Op; Observer : in out Operate.Into.Observer'Class);
 
-   function Get_Downstream (This : in out Op'Class) return Shared.Observer is
-     (if This.Is_Subscribed then -- There's a bug here on creation of the reference
-         Shared.Observer (This.Get_Observer.Actual.all)
-      else
-         raise No_Longer_Subscribed);
-
    -------------
    -- On_Next --
    -------------
 
    overriding procedure On_Next (This : in out Op; V : Operate.T) is
    begin
-      Remote.On_Next (This.Scheduler.all, Get_Downstream (This), V);
+      Remote.On_Next (This.Scheduler.all, This.Subscriber, V);
    end On_Next;
 
    ------------------
@@ -39,7 +34,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure On_Complete  (This : in out Op) is
    begin
-      Remote.On_Complete  (This.Scheduler.all, Get_Downstream (This));
+      Remote.On_Complete  (This.Scheduler.all, This.Subscriber);
    end On_Complete ;
 
    --------------
@@ -48,7 +43,7 @@ package body Rx.Op.Observe_On is
 
    overriding procedure On_Error (This : in out Op; Error : Errors.Occurrence) is
    begin
-      Remote.On_Error (This.Scheduler.all, Get_Downstream (This), Error);
+      Remote.On_Error (This.Scheduler.all, This.Subscriber, Error);
    end On_Error;
 
    ---------------
@@ -56,10 +51,9 @@ package body Rx.Op.Observe_On is
    ---------------
 
    overriding procedure Subscribe (This : in out Op; Observer : in out Operate.Into.Observer'Class) is
-      Actual : Shared.Observer := Shared.Create (Observer);
    begin
-      Operate.Operator (This).Subscribe (Actual);
-      --  Get_Observer not to be used directly, so this subscription could use an always failing observer
+      This.Subscriber := Shared.Create (Observer);
+      Operate.Operator (This).Subscribe (This.Subscriber);
    end Subscribe;
 
    ------------
@@ -69,7 +63,8 @@ package body Rx.Op.Observe_On is
    function Create (Scheduler : Schedulers.Scheduler) return Operate.Operator'Class is
    begin
       return Op'(Operate.Operator with
-                                 Scheduler  => Scheduler);
+                   Scheduler  => Scheduler,
+                   Subscriber => <>); -- To be set during subscription
    end Create;
 
 end Rx.Op.Observe_On;
