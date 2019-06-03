@@ -40,7 +40,7 @@ package body Rx.Devel is
         Std.Numeric.Integers.Range_Slice (1, 5)
         & Ints.Flat_Map (Repeat (4)
                          & Hold (Fixed => 0.0, Random => 0.1),
-                         Scheduler => Schedulers.Computation)
+                         Scheduler => Schedulers.New_Thread)
         & Std.Images.Integers.Print
         & Subscribe_Checker (Name     => "flatmap w pipeline & scheduler",
                              Do_Count => True, Ok_Count => 25);

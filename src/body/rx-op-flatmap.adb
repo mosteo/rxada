@@ -179,7 +179,10 @@ package body Rx.Op.Flatmap is
    overriding procedure On_Next (This     : in out Front;
                                  V        :        Transformer.From.T)
    is
-      Observable : Transformer.Into.Observable'Class := This.Func.Cref.Evaluate (V);
+      use Preserver.Linkers;
+      Observable : Transformer.Into.Observable'Class :=
+                     This.Func.Cref.Evaluate (V)
+                     & RxObserve_On.Create (This.Sched);
    begin
       Debug.Trace ("front on_next");
       This.Control.Apply (Add_Sub'Access);
@@ -222,7 +225,8 @@ package body Rx.Op.Flatmap is
             Downstream : Preserver.Operator'Class :=
                            Preserver.Operator'Class
                              (RxFunnel.Create
-                              & RxObserve_On.Create (This.Sched)
+                              -- & RxObserve_On.Create (This.Sched)
+                              -- Inserted on actual subscription in On_Next
                               & Back'(Preserver.Operator with
                                 Pending => <>,
                                 Control => This.Control));
