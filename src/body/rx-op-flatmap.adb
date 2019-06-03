@@ -68,7 +68,7 @@ package body Rx.Op.Flatmap is
       Observable : Transformer.Into.Observable'Class := This.Func (V);
    begin
       Debug.Trace ("front on_next");
-      Observable.Subscribe (This.Get_Observer.all);
+      Observable.Subscribe (This.Get_Observer);
    end On_Next;
 
    overriding procedure On_Next (This     : in out Back;

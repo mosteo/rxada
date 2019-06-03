@@ -4,7 +4,7 @@ package body Rx.Impl.Transformers is
    -- Get_Observer --
    ------------------
 
-   not overriding function Get_Observer (This : in out Operator) return Into.Holders.Observers.Indef_Access is
+   not overriding function Get_Observer (This : in out Operator) return Into.Holders.Observers.Reference is
       --  This same function, as expression in the spec, bugs out with access checks (???) in 7.3
    begin
       if This.Is_Subscribed then

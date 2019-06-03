@@ -28,7 +28,7 @@ package Rx.Tools.Holders with Preelaborate is
    procedure Hold (D : in out Definite; I : Indef);
    function Hold (I : Indef) return Definite renames "+";
 
-   function Ref  (D : in out Definite) return Indef_Access; -- bug workaround
+   function Ref  (D : in out Definite) return Reference; -- bug workaround
    function CRef (D :        Definite) return Const_Ref;
 
    function Is_Empty (D : Definite) return Boolean;
