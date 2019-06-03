@@ -49,6 +49,8 @@ package body Rx.Tests is
    function Is_Zero (V : Rx_Integer) return Boolean is (V = 0);
    function Is_One  (V : Rx_Integer) return Boolean is (V = 1);
 
+   function Swallow (Unused : Rx.Rx_Integer) return Ints.Observable is (Ints.Empty);
+
    -------------
    -- Sources --
    -------------
@@ -362,13 +364,30 @@ package body Rx.Tests is
         & Subscribe_Checker (Name     => "two-way merge, implicit",
                              Do_Count => True, Ok_Count => 6);
 
-      -- Flat_Map
---        Subs :=
---          From ((1, 2, 3))
---          & Ints.Flat_Map (Std.All_Positives'Access)
---          & Ints.Print
---          & Subscribe_Checker (Name     => "flatmap",
---                               Do_Count => True, Ok_Count => 6);
+      --------------
+      -- Flat_Map --
+      --------------
+
+      Subs :=
+        Ints.Empty
+        & Ints.Flat_Map (Std.All_Positives'Access)
+        & Std.Images.Integers.Print
+        & Subscribe_Checker (Name     => "flatmap empty master",
+                             Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Ints.From ((1, 2, 3))
+        & Ints.Flat_Map (Swallow'Access)
+        & Std.Images.Integers.Print
+        & Subscribe_Checker (Name     => "flatmap empty subs",
+                             Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Std.Numeric.Integers.Range_Slice (1, 4)
+        & Ints.Flat_Map (Std.All_Positives'Access)
+        & Std.Images.Integers.Print
+        & Subscribe_Checker (Name     => "flatmap immediate",
+                             Do_Count => True, Ok_Count => 10);
 
       -- No_Op
       Subs :=

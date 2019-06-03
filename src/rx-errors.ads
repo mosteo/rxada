@@ -5,7 +5,7 @@ package Rx.Errors is
 
    pragma Preelaborate;
 
-   type Occurrence is new Ada.Finalization.Controlled with private;
+   type Occurrence is tagged private;
 
    procedure Fill (Error : out Occurrence;
                    From  :     Ada.Exceptions.Exception_Occurrence);

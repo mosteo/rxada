@@ -16,7 +16,7 @@ package body Rx.Op.Repeat is
       First_Seen : Boolean := False;
 
       case Kind is
-         when Counter => Repeats : Positive;
+         when Counter => Repeats : Rx_Integer range 0 .. Rx_Integer'Last;
          when others  => Filter  : Actions.HTFilter0;
       end case;
    end record;
@@ -92,7 +92,7 @@ package body Rx.Op.Repeat is
    -- Repeat --
    ------------
 
-   function Repeat (Times : Positive) return Operate.Operator'Class is
+   function Repeat (Times : Rx_Integer) return Operate.Operator'Class is
    begin
       return Operator'(Operate.Operator with
                        Kind    => Counter,

@@ -1,4 +1,5 @@
 with Rx.Debug;
+with Rx.Errors;
 with Rx.Op.Funnel;
 
 package body Rx.Op.Merge is
@@ -21,6 +22,7 @@ package body Rx.Op.Merge is
    --  Used as a shared observer, during subscription
 
    overriding procedure On_Complete  (This : in out Real_Merger);
+   overriding procedure On_Error (This : in out Real_Merger; E : Errors.Occurrence);
    overriding procedure On_Next (This : in out Real_Merger; V : Preserver.T);
 
    ------------
@@ -50,7 +52,7 @@ package body Rx.Op.Merge is
 
    overriding procedure On_Complete  (This : in out Real_Merger) is
    begin
-      Debug.Trace ("real_merger no_complete");
+      Debug.Trace ("real_merger on_complete");
       if This.Is_Subscribed then
          This.Completed := This.Completed + 1;
 
@@ -64,20 +66,45 @@ package body Rx.Op.Merge is
       end if;
    end On_Complete;
 
+   --------------
+   -- On_Error --
+   --------------
+
+   overriding procedure On_Error (This : in out Real_Merger; E : Errors.Occurrence) is
+   begin
+      Debug.Trace ("real_merger on_error");
+      if This.Is_Subscribed then
+         This.Completed := 2;
+         This.Get_Observer.On_Error (E);
+         This.Unsubscribe;
+      else
+         raise No_Longer_Subscribed;
+         --  Might happen due to racing observables upstream
+      end if;
+   end On_Error;
+
    -------------
    -- On_Next --
    -------------
 
    overriding procedure On_Next (This : in out Fake_Merger; V : Preserver.T) is
    begin
-      Debug.Trace ("fake_merger on_next");
-      This.Get_Observer.On_Next (V);
+      if This.Is_Subscribed then
+         Debug.Trace ("fake_merger on_next");
+         This.Get_Observer.On_Next (V);
+      else
+         raise No_Longer_Subscribed; -- On_Error may cause this normally
+      end if;
    end On_Next;
 
    overriding procedure On_Next (This : in out Real_Merger; V : Preserver.T) is
    begin
-      Debug.Trace ("real_merger on_next");
-      This.Get_Observer.On_Next (V);
+      if This.Is_Subscribed then
+         Debug.Trace ("real_merger on_next");
+         This.Get_Observer.On_Next (V);
+      else
+         raise No_Longer_Subscribed; -- On error might cause this
+      end if;
    end On_Next;
 
    ---------------
