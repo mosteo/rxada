@@ -8,7 +8,6 @@ package body Rx.Op.Merge is
 
    type Fake_Merger is new Preserver.Operator with record
       Merge_With : Preserver.Typed.Definite_Observables.Observable;
-      Scheduler  : Schedulers.Scheduler;
    end record;
    --  Used as a front, during chaining
 
@@ -30,7 +29,6 @@ package body Rx.Op.Merge is
    ------------
 
    function Create (Merge_With : Preserver.Observable'Class;
-                    Observe_On : Schedulers.Scheduler := Schedulers.Immediate;
                     Policy     : Merge_Policies := Rx.Merge)
                     return Preserver.Operator'Class is
    begin
@@ -40,8 +38,7 @@ package body Rx.Op.Merge is
 
       return Preserver.Operator'Class
         (Fake_Merger'(Preserver.Operator with
-                      Merge_With => Preserver.Typed.Definite_Observables.From (Merge_With),
-                      Scheduler  => Observe_On)
+                      Merge_With => Preserver.Typed.Definite_Observables.From (Merge_With))
          & RxFunnel.Create
          & Real_Merger'(Preserver.Operator with others => <>));
    end Create;
@@ -55,12 +52,13 @@ package body Rx.Op.Merge is
       Debug.Trace ("real_merger on_complete");
       if This.Is_Subscribed then
          This.Completed := This.Completed + 1;
+         Debug.Trace ("real_merger on_complete [count]" & This.Completed'Img);
 
          if This.Completed = 2 then
             This.Get_Observer.On_Complete;
             This.Unsubscribe;
+            Debug.Trace ("real_merger on_complete [unsubscribing]" & This.Completed'Img);
          end if;
-         Debug.Trace ("real_merger on_complete count" & This.Completed'Img);
       else
          raise No_Longer_Subscribed;
       end if;

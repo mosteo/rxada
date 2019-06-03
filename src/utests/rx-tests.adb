@@ -346,7 +346,8 @@ package body Rx.Tests is
 
       Subs :=
         From ((1, 2, 3))
-        & Merge_With (From ((4, 5, 6)), Schedulers.Computation)
+        & Merge_With (From ((4, 5, 6))
+                      & Observe_On (Schedulers.Computation))
         & Numeric.Integers.Count
         & Subscribe_Checker (Name     => "merge-with & count w scheduler",
                              Do_Count => True, Ok_Count => 1,
@@ -355,7 +356,7 @@ package body Rx.Tests is
       Subs :=
         From ((1, 2, 3))
         & Observe_On (Schedulers.Immediate)
-        & Ints.Merge_With (From ((4, 5, 6)), Schedulers.Immediate)
+        & Ints.Merge_With (From ((4, 5, 6)))
         & Subscribe_Checker (Name     => "two-way merge, explicit",
                              Do_Count => True, Ok_Count => 6);
 

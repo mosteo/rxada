@@ -151,12 +151,11 @@ package Rx.Observables is
    -- Flat_Map --
    --------------
 
-   function Flat_Map (Func      : Operate.Transform.Actions.Inflater1;
-                      Scheduler : Schedulers.Scheduler   := Schedulers.Immediate) return Operator;
+   function Flat_Map (Func      : Operate.Transform.Actions.Inflater1) return Operator;
    --  Regular flatmap
 
-   function Flat_Map (Pipeline  : Observable; -- NOTE: it must actually be an operator, but since & returns Observables
-                      Scheduler : Schedulers.Scheduler   := Schedulers.Immediate) return Operator;
+   function Flat_Map (Pipeline  : Observable) return Operator;
+    -- NOTE: it must actually be an operator, but since "&" returns Observables...
    --  Applies Just & Pipeline to incoming values
 
    --------------
@@ -224,14 +223,10 @@ package Rx.Observables is
    -- Merge --
    -----------
 
-   function Merge (One, Two   : Observable;
-                   Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                   return Observable;
+   function Merge (One, Two : Observable) return Observable;
    --  Merges two observables using the same scheduler
 
-   function Merge_With (Merge_With : Observable;
-                        Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                        return Operator;
+   function Merge_With (Merge_With : Observable) return Operator;
    --  Merges observable in current stream, using scheduler only for the
    --  new observable
 
@@ -486,8 +481,7 @@ private
    function Filter (Check : Typed.Actions.TFilter1'Class) return Operator renames RxFilter.Create;
 
    package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform);
-   function Flat_Map (Func : Operate.Transform.Actions.Inflater1;
-                      Scheduler : Schedulers.Scheduler   := Schedulers.Immediate) return Operator
+   function Flat_Map (Func : Operate.Transform.Actions.Inflater1) return Operator
    renames RxFlatMap.Create;
 
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
@@ -523,15 +517,11 @@ private
                  Consumer : Operate.Transform.Actions.Func1) return Observable renames RxMap."&";
 
    package RxMerge is new Rx.Op.Merge (Operate);
-   function Merge_With (Merge_With : Observable;
-                        Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                        return Operator is
-     (RxMerge.Create (Merge_With, Scheduler, Rx.Merge));
+   function Merge_With (Merge_With : Observable) return Operator is
+     (RxMerge.Create (Merge_With, Rx.Merge));
 
-   function Merge (One, Two   : Observable;
-                   Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                   return Observable is
-     (RxMerge.Create (One, Two, Scheduler, Rx.Merge));
+   function Merge (One, Two : Observable) return Observable is
+     (RxMerge.Create (One, Two, Rx.Merge));
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;

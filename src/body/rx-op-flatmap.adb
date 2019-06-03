@@ -1,16 +1,14 @@
 with Rx.Debug;
 with Rx.Errors;
-with Rx.Op.Funnel;
-with Rx.Op.Observe_On;
 with Rx.Impl.Preservers;
+with Rx.Op.Funnel;
 with Rx.Tools.Shared_Data;
 
 package body Rx.Op.Flatmap is
 
    package Preserver is new Rx.Impl.Preservers (Transformer.Into);
 
-   package RxFunnel     is new Rx.Op.Funnel (Preserver);
-   package RxObserve_On is new Rx.Op.Observe_On (Preserver);
+   package RxFunnel is new Rx.Op.Funnel (Preserver);
 
    type Unsafe_Controller is record
       Master_Finished    : Boolean := False;
@@ -51,9 +49,8 @@ package body Rx.Op.Flatmap is
 
    type Front is new Transformer.Operator with record
       Func    : Transformer.Actions.HInflater1;
-      Substep : Natural := 0; -- To distinguish 1st & 2nd subscription calls
+      Sub2nd  : Boolean := False;
       Control : Controller;
-      Sched   : Schedulers.Scheduler := Schedulers.Immediate;
    end record;
 
    overriding procedure On_Complete (This : in out Front);
@@ -81,15 +78,13 @@ package body Rx.Op.Flatmap is
    -- Create --
    ------------
 
-   function Create (Func      : Transformer.Actions.TInflater1'Class;
-                    Scheduler : Schedulers.Scheduler := Schedulers.Immediate)
+   function Create (Func      : Transformer.Actions.TInflater1'Class)
                     return Transformer.Operator'Class
    is
    begin
       return Front'(Transformer.Operator with
                     Func    => Transformer.Actions.Hold (Func),
-                    Substep => <>,
-                    Sched   => Scheduler,
+                    Sub2nd  => <>,
                     Control => <>);
    end Create;
 
@@ -152,7 +147,7 @@ package body Rx.Op.Flatmap is
          elsif Done_Subs then
             Debug.Trace ("back on_complete [subs pending]");
          else
-            raise Program_Error with "Should be logically unreachable";
+            Debug.Trace ("back on_complete [master+subs pending]");
          end if;
       end if;
    end On_Complete;
@@ -179,10 +174,8 @@ package body Rx.Op.Flatmap is
    overriding procedure On_Next (This     : in out Front;
                                  V        :        Transformer.From.T)
    is
-      use Preserver.Linkers;
-      Observable : Transformer.Into.Observable'Class :=
-                     This.Func.Cref.Evaluate (V)
-                     & RxObserve_On.Create (This.Sched);
+      Observable : Transformer.Into.Observable'Class := This.Func.Cref.Evaluate (V);
+      --  Writable copy
    begin
       Debug.Trace ("front on_next");
       This.Control.Apply (Add_Sub'Access);
@@ -210,32 +203,27 @@ package body Rx.Op.Flatmap is
                                    Consumer : in out Transformer.Into.Observer'Class)
    is
    begin
-      --  Gets called twice: first with the real downstream, next with our MitM
-      if This.Substep /= 0 then
-         --  Second subscription call, do nothing
-         Debug.Trace ("flatmap 2nd subscribe");
-         Transformer.Operator (This).Subscribe (Consumer);
-      else
-         --  First subscription call with actual downstream
+      if This.Sub2nd = False then
+         Debug.Trace ("flatmap subscribe [1st]");
          This.Control := Wrap (new Unsafe_Controller'
-                                    (Master_Finished    => <>,
-                                     Live_Subscriptions => <>));
+                                 (Master_Finished    => <>,
+                                  Live_Subscriptions => <>));
          declare
             use Preserver.Linkers;
             Downstream : Preserver.Operator'Class :=
                            Preserver.Operator'Class
                              (RxFunnel.Create
-                              -- & RxObserve_On.Create (This.Sched)
-                              -- Inserted on actual subscription in On_Next
                               & Back'(Preserver.Operator with
                                 Pending => <>,
                                 Control => This.Control));
          begin
-            Debug.Trace ("flatmap 1st subscribe");
-            This.Substep := This.Substep + 1;
+            This.Sub2nd := True;
             Downstream.Set_Parent (This);
             Downstream.Subscribe (Consumer);
          end;
+      else
+         Debug.Trace ("flatmap subscribe [2nd]");
+         Transformer.Operator (This).Subscribe (Consumer);
       end if;
    end Subscribe;
 
