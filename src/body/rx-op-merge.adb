@@ -28,9 +28,14 @@ package body Rx.Op.Merge is
    ------------
 
    function Create (Merge_With : Preserver.Observable'Class;
-                    Observe_On : Schedulers.Scheduler := Schedulers.Immediate)
+                    Observe_On : Schedulers.Scheduler := Schedulers.Immediate;
+                    Policy     : Merge_Policies := Rx.Merge)
                     return Preserver.Operator'Class is
    begin
+      if Policy /= Rx.Merge then
+         raise Unimplemented;
+      end if;
+
       return Preserver.Operator'Class
         (Fake_Merger'(Preserver.Operator with
                       Merge_With => Preserver.Typed.Definite_Observables.From (Merge_With),

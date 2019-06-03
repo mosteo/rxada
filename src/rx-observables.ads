@@ -507,11 +507,13 @@ private
    package RxMerge is new Rx.Op.Merge (Operate);
    function Merge_With (Merge_With : Observable;
                         Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                        return Operator renames RxMerge.Create;
+                        return Operator is
+     (RxMerge.Create (Merge_With, Scheduler, Rx.Merge));
 
    function Merge (One, Two   : Observable;
                    Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                   return Observable renames RxMerge.Create;
+                   return Observable is
+     (RxMerge.Create (One, Two, Scheduler, Rx.Merge));
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
