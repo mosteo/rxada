@@ -362,6 +362,14 @@ package body Rx.Tests is
         & Subscribe_Checker (Name     => "two-way merge, implicit",
                              Do_Count => True, Ok_Count => 6);
 
+      -- Flat_Map
+      Subs :=
+        From ((1, 2, 3))
+        & Ints.Flat_Map (Std.All_Positives'Access)
+        & Ints.Print
+        & Subscribe_Checker (Name     => "flatmap",
+                             Do_Count => True, Ok_Count => 6);
+
       -- No_Op
       Subs :=
         Just (1) &

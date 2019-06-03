@@ -1,3 +1,5 @@
+with GNAT.OS_Lib;
+
 with Rx.Errors;
 with Rx.Tools.Shared_Data;
 with Rx.Subscribe;
@@ -21,6 +23,7 @@ package body Rx.Debug.Observers is
       or
          delay Duration (Period_Millis) / 1000.0;
          Log ("Watchdog triggered after" & Period_Millis'Img & " ms", Error);
+         GNAT.OS_Lib.OS_Abort;
 
          select
             accept Finished;

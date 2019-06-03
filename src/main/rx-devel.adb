@@ -1,18 +1,23 @@
-with Rx.Std; use Rx.Std;
+with Rx.Debug.Observers;
+with Rx.Std; use Rx.Std; use Rx.Std.Integers;
+with Rx.Subscriptions;
 
-use Rx.Std.Integers;
+package body Rx.Devel is
 
-procedure Rx.Devel is
+   package Ints renames Std.Integers;
+   package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Rx_Integer'Image); use IntChecker;
 
-   function Inc (X : Rx_Integer) return Rx_Integer is (X + 1);
+   procedure Run is
+      Subs : Rx.Subscriptions.Subscription with Unreferenced;
+   begin
+      Debug.Trace ("starting");
 
-   S : constant Subscription :=
-         Integers.From ((1, 2, 3, 4)) &
-         Integers.Map (Inc'Unrestricted_Access) & -- Testing that this can't be done with checked access
-         Inc'Unrestricted_Access &                -- Alternate Map with &
-         Images.Integers.Print &
-         Integers.Subscribe
-   with Unreferenced;
-begin
-   Integers.subscribe (Integers.Just (1) & Images.Integers.Print);
+      Subs :=
+        From ((1, 2, 3))
+        & Ints.Flat_Map (Std.All_Positives'Access)
+        & Std.Images.Integers.Print
+        & Subscribe_Checker (Name     => "flatmap",
+                             Do_Count => True, Ok_Count => 6);
+   end Run;
+
 end Rx.Devel;
