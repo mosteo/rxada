@@ -4,6 +4,7 @@ with Rx.Debug.Observers;
 with Rx.Errors;
 with Rx.Indefinites;
 with Rx.Schedulers;
+with Rx.Schedulers.Pools;
 with Rx.Std;
 with Rx.Subscriptions;
 
@@ -50,6 +51,15 @@ package body Rx.Tests is
    function Is_One  (V : Rx_Integer) return Boolean is (V = 1);
 
    function Swallow (Unused : Rx.Rx_Integer) return Ints.Observable is (Ints.Empty);
+
+   -----------------
+   -- Custom Pool --
+   -----------------
+
+   Custom_Pool : Schedulers.Pools.Pool := Schedulers.Pools.Create (Size => 2, Name => "Custom");
+
+   function Custom_Idle return Schedulers.Thread is (Custom_Pool.Get_Idle);
+   function Custom_Next return Schedulers.Thread is (Custom_Pool.Get_Next);
 
    -------------
    -- Sources --
@@ -466,14 +476,24 @@ package body Rx.Tests is
       Subs :=
         From ((1, 2, 3))
         & Ints.Observe_On (Schedulers.Immediate)
-        & Subscribe_Checker (Name     => "scheduler immediate",
+        & Subscribe_Checker (Name     => "observer_on immediate",
                              Do_Count => True, Ok_Count => 3);
 
       Subs :=
         From ((1, 2, 3))
         & Ints.Observe_On (Schedulers.Computation)
-        & Subscribe_Checker (Name     => "scheduler computation",
+        & Subscribe_Checker (Name     => "observe_on computation",
                              Do_Count => True, Ok_Count => 3);
+
+      --  This checks a bug detected perviously in Examples.Threading
+      Subs :=
+        Ints.From ((1, 2, 3, 4, 5, 6))
+        & Limit (5)
+        & Observe_On (Schedulers.To_Scheduler (Custom_Next'Unrestricted_Access))
+        & Observe_On (Schedulers.To_Scheduler (Custom_Next'Unrestricted_Access))
+        & Observe_On (Schedulers.To_Scheduler (Custom_Idle'Unrestricted_Access))
+        & Subscribe_Checker (Name     => "custom pool",
+                             Do_Count => True, Ok_Count => 5);
 
       return True;
    exception

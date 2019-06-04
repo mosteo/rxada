@@ -5,6 +5,24 @@ with Rx.Debug; use Rx.Debug;
 package body Rx.Dispatchers.Single is
 
    --------------
+   -- Sequence --
+   --------------
+
+   protected Sequence is
+      procedure Next (Id : out Long_Long_Integer);
+   private
+      Curr : Long_Long_Integer := 1;
+   end Sequence;
+
+   protected body Sequence is
+      procedure Next (Id : out Long_Long_Integer) is
+      begin
+         Id := Curr;
+         Curr := Curr + 1;
+      end Next;
+   end Sequence;
+
+   --------------
    -- Schedule --
    --------------
 
@@ -19,7 +37,11 @@ package body Rx.Dispatchers.Single is
    begin
       Where.Queue.Enqueue (What, Time, Must_Notify);
       if Must_Notify and then Current_Task /= Where.Thread'Identity then
+         Debug.Trace ("schedule: notifying");
          Where.Thread.Notify;
+         Debug.Trace ("schedule: notified");
+      else
+         Debug.Trace ("schedule: not notifying");
       end if;
    end Schedule;
 
@@ -28,7 +50,10 @@ package body Rx.Dispatchers.Single is
    ------------
 
    task body Runner is
+      Runner_Id : Long_Long_Integer := -1;
+      function Runner_Addr return String is ("#" & Runner_Id'Img);
    begin
+      Sequence.Next (Runner_Id);
       loop
          declare
             use Ada.Calendar;
@@ -42,6 +67,7 @@ package body Rx.Dispatchers.Single is
                   Parent.Queue.Set_Idle (True);
                end if;
 
+               Debug.Trace ("runner [waiting] " & Runner_Addr);
                select
                   -- An earlier event has arrived, so requeue
                   accept Notify;
@@ -50,9 +76,12 @@ package body Rx.Dispatchers.Single is
                   delay until Ev.Time; -- This wait may perfectly well be 0
 
                   Parent.Queue.Set_Idle (False);
+                  Debug.Trace ("runner [running] " & Runner_Addr);
                   Ev.Code.Ref.Run;
+                  Debug.Trace ("runner [ran] " & Runner_Addr);
                end select;
             else
+               Debug.Trace ("runner [idling] " & Runner_Addr);
                Parent.Queue.Set_Idle (True);
                select
                   accept Notify;
@@ -88,8 +117,8 @@ package body Rx.Dispatchers.Single is
          if Queue.Is_Empty or else Queue.Constant_Reference (Queue.First).Time > Time then
             Notify := True;
          end if;
-         Debug.Trace ("enqueue:" & Seq'Img);
          Queue.Insert ((Seq, Time, +R));
+         Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") #" & Parent.Addr_Img);
          Seq := Seq + 1;
       end Enqueue;
 
@@ -112,7 +141,9 @@ package body Rx.Dispatchers.Single is
          if Exists then
             E := Queue.First_Element;
             Queue.Delete_First;
-            Debug.Trace ("dequeue:" & E.Id'Img);
+            Debug.Trace ("dequeue:" & E.Id'Img & " (" & Queue.Length'Img & ") #" & Parent.Addr_Img);
+         else
+            Debug.Trace ("dequeue [empty]" & " (" & Queue.Length'Img & ") #" & Parent.Addr_Img);
          end if;
       end Dequeue;
 

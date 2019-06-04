@@ -21,6 +21,9 @@ package Rx.Debug is
    Level : constant Levels := Info;
    --  Minimum level a message has to have for it to be printed
 
+   Serialize_Trace : constant Boolean := True;
+   --  This introduces a protected call, so use only for debugging purposes!
+
    procedure Log (S : String; Level : Levels); -- Prints S if above configured level
 
    procedure Trace (S : String; Prefix : String := GNAT.Source_Info.Source_Location);

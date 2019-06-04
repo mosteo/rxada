@@ -17,27 +17,28 @@ procedure Rx.Examples.Threading is
    procedure Finish is
    begin
       Debug.Put_Line ("Shutting down...");
-      Schedulers.Shutdown;
+--        Schedulers.Shutdown;
    end Finish;
 
 begin
    Sub :=
-     Std.Interval
+--      Std.Interval
+     From ((1, 2, 3, 4, 5, 6))
      & Limit (5)
-     & Print
-     & Subscribe_On (Schedulers.IO)
-     & Observe_On (Schedulers.Idle_Thread)
-     & Print
-     & Observe_On (Schedulers.New_Thread)
-     & Print
-     & Observe_On (Schedulers.Computation)
-     & Print
+--       & Print
+--       & Subscribe_On (Schedulers.IO)
+--       & Observe_On (Schedulers.Idle_Thread)
+--       & Print
+--       & Observe_On (Schedulers.New_Thread)
+--       & Print
+--       & Observe_On (Schedulers.Computation)
+--       & Print
      & Observe_On (Schedulers.To_Scheduler (Custom_Next'Unrestricted_Access))
-     & Print
+--       & Print
      & Observe_On (Schedulers.To_Scheduler (Custom_Next'Unrestricted_Access))
-     & Print
+--       & Print
      & Observe_On (Schedulers.To_Scheduler (Custom_Idle'Unrestricted_Access))
-     & Print
+--       & Print
      & Subscribe (On_Next     => Put_Line'Access,
                   On_Complete => Finish'Unrestricted_Access);
    --  Regular accesses would suffice at library level

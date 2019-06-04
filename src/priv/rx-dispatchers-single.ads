@@ -1,5 +1,6 @@
 private with Ada.Containers.Ordered_Multisets;
 private with Rx.Tools.Holders;
+private with System.Address_Image;
 
 package Rx.Dispatchers.Single is
 
@@ -67,6 +68,9 @@ private
       Seq   : Event_Id := 0;
       Idle  : Boolean  := True;
    end Safe;
+
+   function Addr_Img (This : in out Dispatcher) return String is
+     (System.Address_Image (This'Address));
 
    type Dispatcher is limited new Dispatchers.Dispatcher with record
       Thread  : Runner (Dispatcher'Access);
