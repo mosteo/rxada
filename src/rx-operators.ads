@@ -40,7 +40,7 @@ package Rx.Operators is
                       return Typed.Operator'Class;
 
    function Flat_Map (Func     : Typed.Actions.Inflater1;
-                      Pipeline : Into.Operator'Class)
+                      Pipeline : Into.Observable'Class) -- Operator in truth
                       return Typed.Operator'Class;
    --  Subscribes to Func'Result & Pipeline
    --  This cannot be given as a single argument, alas, because any chain

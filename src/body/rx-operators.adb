@@ -23,10 +23,11 @@ package body Rx.Operators is
    end Evaluate;
 
    function Flat_Map (Func     : Typed.Actions.Inflater1;
-                      Pipeline : Into.Operator'Class)
+                      Pipeline : Into.Observable'Class)
                       return Typed.Operator'Class is
      (RxFlatMap.Create (Inflater'(Func     => Func,
-                                  Operator => Definite_Operators.Hold (Pipeline))));
+                                  Operator => Definite_Operators.Hold
+                                    (Into.Operator'Class (Pipeline)))));
 
    ------------
    -- Length --
