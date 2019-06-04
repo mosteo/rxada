@@ -48,7 +48,7 @@ package Rx.Impl.Transformers with Preelaborate is
    overriding procedure Unsubscribe (This : in out Operator);
 
    not overriding function Get_Observer (This : in out Operator) 
-                                         return Into.Holders.Observers.Indef_Access;
+                                         return Into.Holders.Observers.Reference;
 
    ---------------------
    --  Chain building --

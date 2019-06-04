@@ -20,6 +20,8 @@ package Rx.Subscriptions is
 
    function "-" (S : Subscription) return No_Subscription is (null record);
 
+   procedure Subscribe (S : Subscription) is null;
+
 private
 
    type State is (Subscribed, Unsubscribed);

@@ -56,7 +56,7 @@ private
         (Wrap (new Reentrant)));
 
    function Image (This : Shared) return String is
-      (System.Address_Image (This.Get.Actual.all'Address));
+      ("#" & System.Address_Image (This.Get.Actual.all'Address));
 
    type Critical_Section (Mutex : not null access Shared) is new Ada.Finalization.Limited_Controlled
    with record

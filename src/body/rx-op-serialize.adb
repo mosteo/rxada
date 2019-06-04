@@ -10,11 +10,6 @@ package body Rx.Op.Serialize is
       Mutex : aliased Tools.Semaphores.Shared;
    end record;
 
-   overriding procedure Unsubscribe (This : in out Serializer);
-
-   overriding procedure Subscribe (Producer : in out Serializer;
-                                   Consumer : in out Operate.Into.Observer'Class);
-
    overriding procedure On_Next (This : in out Serializer; V : Operate.T);
 
    overriding procedure On_Complete  (This : in out Serializer);
@@ -53,28 +48,6 @@ package body Rx.Op.Serialize is
       Debug.Trace ("serialize on_error");
       This.Get_Observer.On_Error (Error);
    end On_Error;
-
-   -----------------
-   -- Unsubscribe --
-   -----------------
-
-   overriding procedure Unsubscribe (This : in out Serializer) is
-      CS : Critical_Section (This.Mutex'Access) with Unreferenced;
-   begin
-      Operate.Operator (This).Unsubscribe;
-   end Unsubscribe;
-
-   ---------------
-   -- Subscribe --
-   ---------------
-
-   overriding procedure Subscribe (Producer : in out Serializer;
-                                   Consumer : in out Operate.Into.Observer'Class)
-   is
-      CS : Critical_Section (Producer.Mutex'Access) with Unreferenced;
-   begin
-      Operate.Operator (Producer).Subscribe (Consumer);    -- Normal subscription
-   end Subscribe;
 
    ------------
    -- Create --

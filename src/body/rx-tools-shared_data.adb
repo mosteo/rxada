@@ -7,12 +7,9 @@ package body Rx.Tools.Shared_Data is
    ----------
 
    function Wrap (I : not null Item_Access) return Proxy is
-   begin
-      return P : Proxy do
-         P.Safe := new Safe_Item;
-         P.Safe.Set (I);
-      end return;
-   end Wrap;
+     (Proxy'(Ada.Finalization.Controlled with
+                 Safe => new Safe_Item,
+                 Item => I));
 
    -----------
    -- Apply --
@@ -20,7 +17,7 @@ package body Rx.Tools.Shared_Data is
 
    procedure Apply (P : in out Proxy; CB : access procedure (I : in out Item)) is
    begin
-      P.Safe.Apply (CB);
+      P.Safe.Apply (P.Item, CB);
    end Apply;
 
    ------------
@@ -34,6 +31,7 @@ package body Rx.Tools.Shared_Data is
       if Is_Last then
          P.Finalize;
       else
+         P.Item := null;
          P.Safe := null;
       end if;
    end Forget;
@@ -42,7 +40,11 @@ package body Rx.Tools.Shared_Data is
    -- Tamper --
    ------------
 
-   function Tamper (P : Proxy) return Ref       is (P.Safe.Tamper);
+   function Tamper (P : Proxy) return Ref is
+   begin
+      return (Actual => P.Item,
+              Self   => P);
+   end Tamper;
 
    ---------------
    -- Safe_Item --
@@ -54,19 +56,10 @@ package body Rx.Tools.Shared_Data is
       -- Apply --
       -----------
 
-      procedure Apply (CB : not null access procedure (I : in out Item)) is
+      procedure Apply (Elem : Item_Access; CB : not null access procedure (I : in out Item)) is
       begin
          CB (Elem.all);
       end Apply;
-
-      ---------
-      -- Set --
-      ---------
-
-      procedure Set (I : Item_Access) is
-      begin
-         Elem := I;
-      end Set;
 
       ------------
       -- Forget --
@@ -81,15 +74,6 @@ package body Rx.Tools.Shared_Data is
             raise Constraint_Error;
          end if;
       end Forget;
-
-      ---------
-      -- Get --
-      ---------
-
-      function Get return Const_Ref is
-      begin
-         return Const_Ref'(Actual => Elem);
-      end Get;
 
       ---------------
       -- Get_Count --
@@ -114,22 +98,9 @@ package body Rx.Tools.Shared_Data is
       --------------
 
       procedure Finalize is
-         procedure Free is new Ada.Unchecked_Deallocation (Item, Item_Access);
       begin
          Count := Count - 1;
-         if Count = 0 then
-            Free (Elem);
-         end if;
       end Finalize;
-
-      ------------
-      -- Tamper --
-      ------------
-
-      function Tamper return Ref is
-      begin
-         return Ref'(Actual => Elem);
-      end Tamper;
 
    end Safe_Item;
 
@@ -149,11 +120,13 @@ package body Rx.Tools.Shared_Data is
    --------------
 
    overriding procedure Finalize (P : in out Proxy) is
+      procedure Free is new Ada.Unchecked_Deallocation (Item, Item_Access);
       procedure Free is new Ada.Unchecked_Deallocation (Safe_Item, Safe_Access);
    begin
       if P.Safe /= null then
          P.Safe.Finalize;
          if P.Safe.Get_Count = 0 then
+            Free (P.Item);
             Free (P.Safe);
          end if;
       end if;

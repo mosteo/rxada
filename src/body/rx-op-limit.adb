@@ -25,7 +25,7 @@ package body Rx.Op.Limit is
          This.Get_Observer.On_Complete ;
          This.Unsubscribe;
       else
-         raise Constraint_Error with "Doubly completed";
+         raise Program_Error with "Doubly completed";
       end if;
    end On_Complete ;
 

@@ -96,7 +96,7 @@ package Rx.Std is
 
    end Images;
 
-   function Interval (First       : Rx_Integer := 0;
+   function Interval (First       : Rx_Integer := 1;
                       Period      : Duration := 1.0;
                       First_Pause : Duration := 0.0;
                       Scheduler   : Schedulers.Scheduler := Schedulers.Computation)

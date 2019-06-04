@@ -4,6 +4,7 @@ with Rx.Debug.Observers;
 with Rx.Errors;
 with Rx.Indefinites;
 with Rx.Schedulers;
+with Rx.Schedulers.Pools;
 with Rx.Std;
 with Rx.Subscriptions;
 
@@ -48,6 +49,20 @@ package body Rx.Tests is
 
    function Is_Zero (V : Rx_Integer) return Boolean is (V = 0);
    function Is_One  (V : Rx_Integer) return Boolean is (V = 1);
+
+   function Swallow (Unused : Rx.Rx_Integer) return Ints.Observable is (Ints.Empty);
+
+   function AAA (I : Rx_Integer) return Strings.Observable'Class is
+     (Strings.Just (String'(1 .. Integer (I) => 'a')));
+
+   -----------------
+   -- Custom Pool --
+   -----------------
+
+   Custom_Pool : Schedulers.Pools.Pool := Schedulers.Pools.Create (Size => 2, Name => "Custom");
+
+   function Custom_Idle return Schedulers.Thread is (Custom_Pool.Get_Idle);
+   function Custom_Next return Schedulers.Thread is (Custom_Pool.Get_Next);
 
    -------------
    -- Sources --
@@ -344,7 +359,8 @@ package body Rx.Tests is
 
       Subs :=
         From ((1, 2, 3))
-        & Merge_With (From ((4, 5, 6)), Schedulers.Computation)
+        & Merge_With (From ((4, 5, 6))
+                      & Observe_On (Schedulers.Computation))
         & Numeric.Integers.Count
         & Subscribe_Checker (Name     => "merge-with & count w scheduler",
                              Do_Count => True, Ok_Count => 1,
@@ -353,7 +369,7 @@ package body Rx.Tests is
       Subs :=
         From ((1, 2, 3))
         & Observe_On (Schedulers.Immediate)
-        & Ints.Merge_With (From ((4, 5, 6)), Schedulers.Immediate)
+        & Ints.Merge_With (From ((4, 5, 6)))
         & Subscribe_Checker (Name     => "two-way merge, explicit",
                              Do_Count => True, Ok_Count => 6);
 
@@ -361,6 +377,50 @@ package body Rx.Tests is
         Ints.Merge (From ((1, 2, 3)), From ((4, 5, 6)))
         & Subscribe_Checker (Name     => "two-way merge, implicit",
                              Do_Count => True, Ok_Count => 6);
+
+      --------------
+      -- Flat_Map --
+      --------------
+
+      Subs :=
+        Ints.Empty
+        & Ints.Flat_Map (Std.All_Positives'Access)
+        & Std.Images.Integers.Print
+        & Subscribe_Checker (Name     => "flatmap empty master",
+                             Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Ints.From ((1, 2, 3))
+        & Ints.Flat_Map (Swallow'Access)
+        & Std.Images.Integers.Print
+        & Subscribe_Checker (Name     => "flatmap empty subs",
+                             Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Std.Numeric.Integers.Range_Slice (1, 4)
+        & Ints.Flat_Map (Std.All_Positives'Access)
+        & Subscribe_Checker (Name     => "flatmap immediate",
+                             Do_Count => True, Ok_Count => 10);
+
+      Subs :=
+        Std.Numeric.Integers.Range_Slice (1, 5)
+        & Ints.Flat_Map (Repeat (9)
+                         & Observe_On (Schedulers.Computation)
+                         & Hold (Fixed => 0.0, Random => 0.1))
+        & Subscribe_Checker (Name     => "flatmap w pipeline, interleaving & scheduler",
+                             Do_Count => True, Ok_Count => 50,
+                             Period   => 2.0);
+
+      Subs :=
+        From ((1, 2, 3, 4, 5))
+        & Integer_To_String.Flat_Map (AAA'Access,
+                                      Observe_On (Schedulers.Immediate)
+                                      & Std.String_Succ'Access -- <-- implicit map
+                                      & No_Op)
+        & Subscribe_Checker (Name     => "flatmap int -> str w pipeline",
+                             Do_Count => True, Ok_Count => 5,
+                             Do_First => True, Ok_First => "b",
+                             Do_Last  => True, Ok_Last  => "aaaab");
 
       -- No_Op
       Subs :=
@@ -438,14 +498,24 @@ package body Rx.Tests is
       Subs :=
         From ((1, 2, 3))
         & Ints.Observe_On (Schedulers.Immediate)
-        & Subscribe_Checker (Name     => "scheduler immediate",
+        & Subscribe_Checker (Name     => "observer_on immediate",
                              Do_Count => True, Ok_Count => 3);
 
       Subs :=
         From ((1, 2, 3))
         & Ints.Observe_On (Schedulers.Computation)
-        & Subscribe_Checker (Name     => "scheduler computation",
+        & Subscribe_Checker (Name     => "observe_on computation",
                              Do_Count => True, Ok_Count => 3);
+
+      --  This checks a bug detected perviously in Examples.Threading
+      Subs :=
+        Ints.From ((1, 2, 3, 4, 5, 6))
+        & Limit (5)
+        & Observe_On (Schedulers.To_Scheduler (Custom_Next'Unrestricted_Access))
+        & Observe_On (Schedulers.To_Scheduler (Custom_Next'Unrestricted_Access))
+        & Observe_On (Schedulers.To_Scheduler (Custom_Idle'Unrestricted_Access))
+        & Subscribe_Checker (Name     => "custom pool",
+                             Do_Count => True, Ok_Count => 5);
 
       return True;
    exception

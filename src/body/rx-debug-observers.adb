@@ -1,3 +1,5 @@
+with GNAT.OS_Lib;
+
 with Rx.Errors;
 with Rx.Tools.Shared_Data;
 with Rx.Subscribe;
@@ -8,7 +10,8 @@ package body Rx.Debug.Observers is
 
    package RxSubscribe is new Rx.Subscribe (Typed);
 
-   task type Watchdog (Period_Millis : Integer) is
+   task type Watchdog (Period_Millis : Integer;
+                       Name : not null access String) is
       entry Finished;
    end Watchdog;
 
@@ -20,7 +23,8 @@ package body Rx.Debug.Observers is
          accept Finished;
       or
          delay Duration (Period_Millis) / 1000.0;
-         Log ("Watchdog triggered after" & Period_Millis'Img & " ms", Error);
+         Log (Name.all & ": watchdog triggered after" & Period_Millis'Img & " ms", Error);
+         GNAT.OS_Lib.OS_Abort;
 
          select
             accept Finished;
@@ -139,6 +143,7 @@ package body Rx.Debug.Observers is
       return Typed.Contracts.Sink'Class
    is
    begin
+      pragma Warnings (Off); -- Anon allocator in watchdog name
       return RxSubscribe.Create (Checker'(Checker_Parent with
                                  Name_Len => Name'Length,
                                  Name     => Name,
@@ -149,8 +154,9 @@ package body Rx.Debug.Observers is
                                  Do_Last  => Do_Last,
                                  Ok_Last  => +Ok_Last,
                                  Do_Watch => Do_Watch,
-                                 Watcher  => (if Do_Watch then new Watchdog (Integer (Period * 1000)) else null),
+                                 Watcher  => (if Do_Watch then new Watchdog (Integer (Period * 1000), new String'(Name)) else null),
                                  others   => <>));
+      pragma Warnings (On);
    end Subscribe_Checker;
 
    ---------------

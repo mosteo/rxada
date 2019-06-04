@@ -7,10 +7,10 @@ package Rx.Tools.Shared_Data with Preelaborate is
 
    --  Your typical refcounted thread-safe access type
 
-   type Const_Ref (Actual : access constant Item) is limited null record
+   type Const_Ref (Actual : access constant Item) is limited private
      with Implicit_Dereference => Actual;
 
-   type Ref (Actual : access Item) is limited null record
+   type Ref (Actual : access Item) is limited private
      with Implicit_Dereference => Actual;
    --  UNSAFE unless Item is actually synchronized itself
    --  This should ideally be moved to a separate package with a synchronized interface
@@ -46,24 +46,20 @@ package Rx.Tools.Shared_Data with Preelaborate is
 private
 
    protected type Safe_Item is
-      procedure Apply (CB : not null access procedure (I : in out Item));
-      function  Get return Const_Ref;
-      procedure Set (I : Item_Access);
+      procedure Apply (Elem : Item_Access; CB : not null access procedure (I : in out Item));
       function  Get_Count return Natural;
-      function  Tamper return Ref; -- Only for synchronized views of Elem.all
       procedure Forget (Is_Last : out Boolean);
-
       procedure Adjust;
       procedure Finalize;
    private
       Count : Natural := 1;
-      Elem  : Item_Access;
    end Safe_Item;
 
    type Safe_Access is access Safe_Item;
 
    type Proxy is new Ada.Finalization.Controlled with record
       Safe : Safe_Access;
+      Item : Item_Access;
    end record;
 
    overriding procedure Adjust   (P : in out Proxy);
@@ -71,6 +67,22 @@ private
 
    function Is_Valid (P : Proxy) return Boolean is (P.Safe /= null);
 
-   function Get    (P : Proxy) return Const_Ref is (P.Safe.Get);
+   ---------------
+   -- References -
+   ---------------
+
+   type Const_Ref (Actual : access constant Item) is limited record
+      Self : Proxy; -- Taken to ensure Item is not freed as long as refs remain
+                    --  See Ada Gem #107
+   end record;
+
+   type Ref (Actual : access Item) is limited record
+      Self : Proxy; -- Taken to ensure Item is not freed as long as refs remain
+                    --  See Ada Gem #107
+   end record;
+
+   function Get (P : Proxy) return Const_Ref is
+     (Actual => P.Item,
+      Self   => P);
 
 end Rx.Tools.Shared_Data;

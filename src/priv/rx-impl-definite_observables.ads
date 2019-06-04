@@ -20,6 +20,8 @@ package Rx.Impl.Definite_Observables is
 
    function To_Indef (This : Observable) return Contracts.Observable'Class;
 
+   function Is_Valid (This : Observable) return Boolean;
+
 private
 
    package Obs_Holders is new Rx.Tools.Holders (Contracts.Observable'Class);
@@ -27,5 +29,9 @@ private
    type Observable is new Obs_Holders.Definite and Contracts.Observable with null record;
 
    function To_Indef (This : Observable) return Contracts.Observable'Class is (This.Get);
+
+   overriding
+   function Is_Valid (This : Observable) return Boolean is
+      (Obs_Holders.Definite (This).Is_Valid);
 
 end Rx.Impl.Definite_Observables;

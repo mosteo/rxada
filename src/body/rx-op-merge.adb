@@ -1,4 +1,5 @@
 with Rx.Debug;
+with Rx.Errors;
 with Rx.Op.Funnel;
 
 package body Rx.Op.Merge is
@@ -7,7 +8,6 @@ package body Rx.Op.Merge is
 
    type Fake_Merger is new Preserver.Operator with record
       Merge_With : Preserver.Typed.Definite_Observables.Observable;
-      Scheduler  : Schedulers.Scheduler;
    end record;
    --  Used as a front, during chaining
 
@@ -21,6 +21,7 @@ package body Rx.Op.Merge is
    --  Used as a shared observer, during subscription
 
    overriding procedure On_Complete  (This : in out Real_Merger);
+   overriding procedure On_Error (This : in out Real_Merger; E : Errors.Occurrence);
    overriding procedure On_Next (This : in out Real_Merger; V : Preserver.T);
 
    ------------
@@ -28,19 +29,18 @@ package body Rx.Op.Merge is
    ------------
 
    function Create (Merge_With : Preserver.Observable'Class;
-                    Observe_On : Schedulers.Scheduler := Schedulers.Immediate)
+                    Policy     : Merge_Policies := Rx.Merge)
                     return Preserver.Operator'Class is
    begin
+      if Policy /= Rx.Merge then
+         raise Unimplemented;
+      end if;
+
       return Preserver.Operator'Class
         (Fake_Merger'(Preserver.Operator with
-                      Merge_With => Preserver.Typed.Definite_Observables.From (Merge_With),
-                      Scheduler  => Observe_On)
+                      Merge_With => Preserver.Typed.Definite_Observables.From (Merge_With))
          & RxFunnel.Create
          & Real_Merger'(Preserver.Operator with others => <>));
---        return M : Fake_Merger do
---           M.Merge_With.From (Merge_With);
---           M.Scheduler := Observe_On;
---        end return;
    end Create;
 
    -----------------
@@ -49,19 +49,37 @@ package body Rx.Op.Merge is
 
    overriding procedure On_Complete  (This : in out Real_Merger) is
    begin
-      Debug.Trace ("real_merger no_complete");
+      Debug.Trace ("real_merger on_complete");
       if This.Is_Subscribed then
          This.Completed := This.Completed + 1;
+         Debug.Trace ("real_merger on_complete [count]" & This.Completed'Img);
 
          if This.Completed = 2 then
             This.Get_Observer.On_Complete;
             This.Unsubscribe;
+            Debug.Trace ("real_merger on_complete [unsubscribing]" & This.Completed'Img);
          end if;
-         Debug.Trace ("real_merger on_complete count" & This.Completed'Img);
       else
          raise No_Longer_Subscribed;
       end if;
    end On_Complete;
+
+   --------------
+   -- On_Error --
+   --------------
+
+   overriding procedure On_Error (This : in out Real_Merger; E : Errors.Occurrence) is
+   begin
+      Debug.Trace ("real_merger on_error");
+      if This.Is_Subscribed then
+         This.Completed := 2;
+         This.Get_Observer.On_Error (E);
+         This.Unsubscribe;
+      else
+         raise No_Longer_Subscribed;
+         --  Might happen due to racing observables upstream
+      end if;
+   end On_Error;
 
    -------------
    -- On_Next --
@@ -69,14 +87,22 @@ package body Rx.Op.Merge is
 
    overriding procedure On_Next (This : in out Fake_Merger; V : Preserver.T) is
    begin
-      Debug.Trace ("fake_merger on_next");
-      This.Get_Observer.On_Next (V);
+      if This.Is_Subscribed then
+         Debug.Trace ("fake_merger on_next");
+         This.Get_Observer.On_Next (V);
+      else
+         raise No_Longer_Subscribed; -- On_Error may cause this normally
+      end if;
    end On_Next;
 
    overriding procedure On_Next (This : in out Real_Merger; V : Preserver.T) is
    begin
-      Debug.Trace ("real_merger on_next");
-      This.Get_Observer.On_Next (V);
+      if This.Is_Subscribed then
+         Debug.Trace ("real_merger on_next");
+         This.Get_Observer.On_Next (V);
+      else
+         raise No_Longer_Subscribed; -- On error might cause this
+      end if;
    end On_Next;
 
    ---------------
@@ -88,8 +114,8 @@ package body Rx.Op.Merge is
                         Consumer : in out Preserver.Observer'Class)
    is
    begin
-      This.Merge_With.Subscribe (Consumer);
       Preserver.Operator (This).Subscribe (Consumer);
+      This.Merge_With.Subscribe (Consumer);
    end Subscribe;
 
 end Rx.Op.Merge;

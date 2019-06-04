@@ -2,6 +2,22 @@ with Ada.Command_Line;
 
 package body Rx.Debug is
 
+   ------------
+   -- Tracer --
+   ------------
+
+   protected Tracer is
+      procedure Put_Line (S : String);
+   end Tracer;
+
+   protected body Tracer is
+      procedure Put_Line (S : String) is
+      begin
+         Gnat.IO.Put_Line (S);
+      end Put_Line;
+   end Tracer;
+
+
    type Tracing_States is (Off, Unknown, On);
 
    Tracing : Tracing_States := Unknown with Atomic;
@@ -50,7 +66,15 @@ package body Rx.Debug is
 
       pragma Warnings (Off);
       if Level > Impl and then Tracing = On then
-         Put_Line ("trace: " & S & " @ " & Head (Prefix));
+         declare
+            Line : constant String := "trace: " & S & " @ " & Head (Prefix);
+         begin
+            if Serialize_Trace then
+               Tracer.Put_Line (Line);
+            else
+               Put_Line (Line);
+            end if;
+         end;
       end if;
 
       if Level = Impl then

@@ -13,7 +13,7 @@ package body Rx.Src.Interval is
    use Typed.Conversions;
 
    type Runner is new Dispatchers.Runnable with record
-      Sched  : Schedulers.Scheduler;
+      Thread : Schedulers.Thread;
       Pause  : Duration;		 -- Repetitive period
       Value  : Typed.D;	   	 	 -- Next value to emit
       Next   : Ada.Calendar.Time;	 -- Reference for next deadline
@@ -32,7 +32,7 @@ package body Rx.Src.Interval is
       RW.Child.On_Next (+R.Value);
       RW.Value := +Succ (+R.Value);
       RW.Next  := R.Next + R.Pause;
-      RW.Sched.Schedule (RW, RW.Next);
+      RW.Thread.Schedule (RW, RW.Next);
    exception
       when No_Longer_Subscribed =>
          Debug.Log ("Interval runner: caught No_Longer_Subscribed", Debug.Note);
@@ -53,13 +53,13 @@ package body Rx.Src.Interval is
 
    procedure On_Subscribe (S : State; Observer : in out Typed.Observer) is
       use Ada.Calendar;
-      R : constant Runner := (S.Scheduler,
-                              S.Pause,
-                              S.First,
-                              Clock + S.First_Pause,
-                              Shared.Create (Observer));
+      R : constant Runner := Runner'(Thread => S.Scheduler.Get_Thread,
+                                     Pause  => S.Pause,
+                                     Value  => S.First,
+                                     Next   => Clock + S.First_Pause,
+                                     Child  => Shared.Create (Observer));
    begin
-      S.Scheduler.Schedule (R, Clock + S.First_Pause);
+      R.Thread.Schedule (R, Clock + S.First_Pause);
    end On_Subscribe;
 
    package Pre is new Src.Create (Typed);
@@ -77,7 +77,10 @@ package body Rx.Src.Interval is
                     return Typed.Observable
    is
    begin
-      return Source.Create (State'(+First, Period, First_Pause, Scheduler));
+      return Source.Create (State'(First       => +First,
+                                   Pause       => Period,
+                                   First_Pause => First_Pause,
+                                   Scheduler   => Scheduler));
    end Create;
 
 end Rx.Src.Interval;

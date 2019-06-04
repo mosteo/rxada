@@ -14,8 +14,8 @@ package body Rx.Tools.Semaphores is
 
       procedure Release is
       begin
-         Debug.Trace ("Releasing");
          Count := Count - 1;
+         Debug.Trace ("Releasing [count]" & Count'Img);
       end Release;
 
       -----------
@@ -26,10 +26,10 @@ package body Rx.Tools.Semaphores is
          use Ada.Task_Identification;
       begin
          if Reentrant.Seize'Caller = Owner then
-            Debug.Trace ("Seizing @ " & Image (Owner));
             Count := Count + 1;
+            Debug.Trace ("Seizing [count]" & Count'Img & " @ " & Image (Owner));
          else
-            Debug.Trace ("Waiting @ " & Image (Reentrant.Seize'Caller));
+            Debug.Trace ("Waiting [count]" & Count'Img & " @ " & Image (Reentrant.Seize'Caller));
             requeue Wait with abort;
          end if;
       end Seize;
@@ -59,6 +59,7 @@ package body Rx.Tools.Semaphores is
    not overriding procedure Seize (This : in out Shared) is
    begin
       if not This.Fake then
+         Debug.Trace ("outer seize " & This.Image);
          Tamper (Proxy (This)).Seize;
       end if;
    end Seize;
@@ -70,6 +71,7 @@ package body Rx.Tools.Semaphores is
    not overriding procedure Release (This : in out Shared) is
    begin
       if not This.Fake then
+         Debug.Trace ("outer release " & This.Image);
          Tamper (Proxy (This)).Release;
       end if;
    end Release;

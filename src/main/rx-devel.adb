@@ -1,18 +1,35 @@
+with Rx.Debug;
+--  with Rx.Debug.Observers;
+with Rx.Schedulers;
 with Rx.Std; use Rx.Std;
+with Rx.Subscriptions;
 
-use Rx.Std.Integers;
+package body Rx.Devel is
 
-procedure Rx.Devel is
+   use Rx.Std.Integers;
+   use Rx.Std.Integer_To_String;
+   use Rx.Std.Strings;
 
-   function Inc (X : Rx_Integer) return Rx_Integer is (X + 1);
+--     package Ints renames Std.Integers;
+--     package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Rx_Integer'Image); use IntChecker;
 
-   S : constant Subscription :=
-         Integers.From ((1, 2, 3, 4)) &
-         Integers.Map (Inc'Unrestricted_Access) & -- Testing that this can't be done with checked access
-         Inc'Unrestricted_Access &                -- Alternate Map with &
-         Images.Integers.Print &
-         Integers.Subscribe
-   with Unreferenced;
-begin
-   Integers.subscribe (Integers.Just (1) & Images.Integers.Print);
+   function AAA (I : Rx_Integer) return Strings.Observable'Class is
+     (Strings.Just (String'(1 .. Integer (I) => 'a')));
+
+--     Inf : Integer_To_String.Typed.Actions.Inflater1 := AAA'Access;
+
+   procedure Run is
+      Subs : Rx.Subscriptions.Subscription with Unreferenced;
+   begin
+      Debug.Trace ("starting");
+
+      Subs :=
+        From ((1, 2, 3, 4, 5))
+        & Integer_To_String.Flat_Map (AAA'Access,
+                                      Observe_On (Schedulers.Computation)
+                                      & Map (Std.String_Succ'Access))
+        & Std.Images.Strings.Print
+        & Subscribe;
+   end Run;
+
 end Rx.Devel;

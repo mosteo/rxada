@@ -104,9 +104,9 @@ package body Rx.Tools.Holders is
    -- Ref --
    ---------
 
-   function Ref  (D : in out Definite) return Indef_Access is
+   function Ref  (D : in out Definite) return Reference is
    begin
-      return D.Actual;
+      return Reference'(Actual => D.Actual);
    end Ref;
 
    ----------

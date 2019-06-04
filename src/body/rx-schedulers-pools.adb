@@ -9,7 +9,7 @@ package body Rx.Schedulers.Pools is
       if Name = "" then
          return Create (Size, "anon of size" & Size'Img);
       else
-         return This : Pool (Size, new String'(Name));
+         return Unused : Pool (Size, new String'(Name));
       end if;
    end Create;
 

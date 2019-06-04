@@ -21,7 +21,7 @@ package body Rx.Op.Subscribe_On is
    overriding procedure Subscribe (This : in out Op; Observer : in out Operate.Into.Observer) is
    begin
       -- Relay subscription to the actual thread:
-      Remote.On_Subscribe (This.Sched.all, This.Get_Parent, Observer);
+      Remote.On_Subscribe (This.Sched.Get_Thread.all, This.Get_Parent, Observer);
    end Subscribe;
 
    ------------

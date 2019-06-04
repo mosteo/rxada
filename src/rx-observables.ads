@@ -17,6 +17,7 @@ private with Rx.Op.Distinct;
 private with Rx.Op.Element_At;
 private with Rx.Op.Filter;
 private with Rx.Op.Flatmap;
+private with Rx.Op.Hold;
 private with Rx.Op.Last;
 private with Rx.Op.Limit;
 private with Rx.Op.Map;
@@ -150,7 +151,12 @@ package Rx.Observables is
    -- Flat_Map --
    --------------
 
-   function Flat_Map (Func : Operate.Transform.Actions.Flattener1) return Operator;
+   function Flat_Map (Func      : Operate.Transform.Actions.Inflater1) return Operator;
+   --  Regular flatmap
+
+   function Flat_Map (Pipeline  : Observable) return Operator;
+    -- NOTE: it must actually be an operator, but since "&" returns Observables...
+   --  Applies Just & Pipeline to incoming values
 
    --------------
    -- For_Each --
@@ -173,6 +179,12 @@ package Rx.Observables is
 
    -- Observable from an array of values, useful for literal arrays
    function From (A : Default_Arrays.Typed_Array) return Observable;
+
+   ----------
+   -- Hold --
+   ----------
+
+   function Hold (Fixed  : Duration; Random : Duration := 0.0) return Operator;
 
    ----------
    -- Just --
@@ -211,14 +223,10 @@ package Rx.Observables is
    -- Merge --
    -----------
 
-   function Merge (One, Two   : Observable;
-                   Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                   return Observable;
+   function Merge (One, Two : Observable) return Observable;
    --  Merges two observables using the same scheduler
 
-   function Merge_With (Merge_With : Observable;
-                        Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                        return Operator;
+   function Merge_With (Merge_With : Observable) return Operator;
    --  Merges observable in current stream, using scheduler only for the
    --  new observable
 
@@ -250,7 +258,7 @@ package Rx.Observables is
    -- Repeat --
    ------------
 
-   function Repeat (Times : Positive) return Operator;
+   function Repeat (Times : Rx_Integer) return Operator;
 
    function Repeat_Forever return Operator;
 
@@ -473,12 +481,16 @@ private
    function Filter (Check : Typed.Actions.TFilter1'Class) return Operator renames RxFilter.Create;
 
    package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform);
-   function Flat_Map (Func : Operate.Transform.Actions.Flattener1) return Operator is
-     (RxFlatMap.Create (Func));
+   function Flat_Map (Func : Operate.Transform.Actions.Inflater1) return Operator
+   renames RxFlatMap.Create;
 
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable
                   renames From_Arrays.From;
+
+   package RxHold is new Rx.Op.Hold (Operate);
+   function Hold (Fixed  : Duration; Random : Duration := 0.0) return Operator
+     renames RxHold.Create;
 
    package RxJust is new Rx.Src.Just (Typed);
    function Just (V : T) return Observable renames RxJust.Create;
@@ -505,13 +517,11 @@ private
                  Consumer : Operate.Transform.Actions.Func1) return Observable renames RxMap."&";
 
    package RxMerge is new Rx.Op.Merge (Operate);
-   function Merge_With (Merge_With : Observable;
-                        Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                        return Operator renames RxMerge.Create;
+   function Merge_With (Merge_With : Observable) return Operator is
+     (RxMerge.Create (Merge_With, Rx.Merge));
 
-   function Merge (One, Two   : Observable;
-                   Scheduler  : Schedulers.Scheduler := Schedulers.Immediate)
-                   return Observable renames RxMerge.Create;
+   function Merge (One, Two : Observable) return Observable is
+     (RxMerge.Create (One, Two, Rx.Merge));
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
@@ -525,7 +535,7 @@ private
 
    package RxRepeat is new Rx.Op.Repeat (Operate);
 
-   function Repeat (Times : Positive) return Operator renames RxRepeat.Repeat;
+   function Repeat (Times : Rx_Integer) return Operator renames RxRepeat.Repeat;
 
    function Repeat_Forever return Operator renames RxRepeat.Repeat_Forever;
 

@@ -2,6 +2,7 @@ with Rx.Observables;
 with Rx.Op.Count;
 with Rx.Impl.Transformers;
 
+private with Rx.Op.Flatmap;
 private with Rx.Op.Map;
 private with Rx.Op.Scan;
 
@@ -30,6 +31,21 @@ package Rx.Operators is
       package Pkg_Count is new Rx.Op.Count (Typed, Succ, Default_Initial_Count);
       function Count (First : Into.T) return Operator renames Pkg_Count.Count;
    end Counters;
+
+   --------------
+   -- Flat_Map --
+   --------------
+
+   function Flat_Map (Func : Typed.Actions.Inflater1)
+                      return Typed.Operator'Class;
+
+   function Flat_Map (Func     : Typed.Actions.Inflater1;
+                      Pipeline : Into.Observable'Class) -- Operator in truth
+                      return Typed.Operator'Class;
+   --  Subscribes to Func'Result & Pipeline
+   --  This cannot be given as a single argument, alas, because any chain
+   --    will return in the end a Into.Operator'Class, which cannot be directly
+   --    applied to Func
 
    ------------
    -- Length --
@@ -84,6 +100,11 @@ package Rx.Operators is
    end Linkers;
 
 private
+
+   package RxFlatMap is new Rx.Op.Flatmap (Typed);
+
+      function Flat_Map (Func : Typed.Actions.Inflater1)
+                         return Typed.Operator'Class renames RxFlatMap.Create;
 
    package RxMap is new Rx.Op.Map (Typed);
    function Map (F : Typed.Actions.Func1) return Operator renames RxMap.Create;
