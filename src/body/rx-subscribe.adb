@@ -59,6 +59,8 @@ package body Rx.Subscribe is
       if This.Is_Subscribed then
          if This.Func_On_Error /= null then
             This.Func_On_Error (Error);
+         elsif This.Func_On_Error = null then
+            Errors.Reraise (Error);
          elsif This.Observer.Is_Valid then
             This.Observer.Ref.On_Error (Error);
          end if;

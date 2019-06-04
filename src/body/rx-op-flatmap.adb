@@ -2,13 +2,19 @@ with Rx.Debug;
 with Rx.Errors;
 with Rx.Impl.Preservers;
 with Rx.Op.Funnel;
+--  with Rx.Op.Map;
+--  with Rx.Op.No_Op;
+--  with Rx.Src.Just;
 with Rx.Tools.Shared_Data;
 
 package body Rx.Op.Flatmap is
 
-   package Preserver is new Rx.Impl.Preservers (Transformer.Into);
+ package Preserver is new Rx.Impl.Preservers (Transformer.Into);
 
    package RxFunnel is new Rx.Op.Funnel (Preserver);
+--     package RxJust   is new Rx.Src.Just (Transformer.From);
+--     package RxMap    is new Rx.Op.Map (Transformer);
+--     package RxNoop   is new Rx.Op.No_Op (Preserver);
 
    type Unsafe_Controller is record
       Master_Finished    : Boolean := False;
@@ -176,9 +182,18 @@ package body Rx.Op.Flatmap is
    is
       Observable : Transformer.Into.Observable'Class := This.Func.Cref.Evaluate (V);
       --  Writable copy
+
+--        --  Failed experiments
+--        Nop : Preserver.Operator'Class := RxNoop.Create;
+--        Map : Transformer.Operator'Class := RxMap.Create (null);
    begin
       Debug.Trace ("front on_next");
       This.Control.Apply (Add_Sub'Access);
+
+--        --  Failed experiments
+--        Map.Set_Parent (RxJust.Create (V));
+--        Nop.Set_Parent (Map);
+--        Nop.Subscribe (This.Get_Observer);
 
       Observable.Subscribe (This.Get_Observer);
    end On_Next;

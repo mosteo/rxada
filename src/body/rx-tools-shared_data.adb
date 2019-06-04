@@ -36,6 +36,16 @@ package body Rx.Tools.Shared_Data is
       end if;
    end Forget;
 
+   ------------
+   -- Tamper --
+   ------------
+
+   function Tamper (P : Proxy) return Ref is
+   begin
+      return (Actual => P.Item,
+              Self   => P);
+   end Tamper;
+
    ---------------
    -- Safe_Item --
    ---------------

@@ -85,8 +85,4 @@ private
      (Actual => P.Item,
       Self   => P);
 
-   function Tamper (P : Proxy) return Ref is
-     (Actual => P.Item,
-      Self   => P);
-
 end Rx.Tools.Shared_Data;
