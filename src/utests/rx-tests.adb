@@ -399,6 +399,15 @@ package body Rx.Tests is
         & Subscribe_Checker (Name     => "flatmap immediate",
                              Do_Count => True, Ok_Count => 10);
 
+      Subs :=
+        Std.Numeric.Integers.Range_Slice (1, 5)
+        & Ints.Flat_Map (Repeat (9)
+                         & Observe_On (Schedulers.Computation)
+                         & Hold (Fixed => 0.0, Random => 0.1))
+        & Subscribe_Checker (Name     => "flatmap w pipeline, interleaving & scheduler",
+                             Do_Count => True, Ok_Count => 50,
+                             Period   => 2.0);
+
       -- No_Op
       Subs :=
         Just (1) &
