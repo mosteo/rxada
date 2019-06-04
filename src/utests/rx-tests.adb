@@ -396,7 +396,6 @@ package body Rx.Tests is
       Subs :=
         Std.Numeric.Integers.Range_Slice (1, 4)
         & Ints.Flat_Map (Std.All_Positives'Access)
-        & Std.Images.Integers.Print
         & Subscribe_Checker (Name     => "flatmap immediate",
                              Do_Count => True, Ok_Count => 10);
 

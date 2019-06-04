@@ -31,13 +31,14 @@ private
    type Dispatcher_Access is access all Dispatcher;
 
    package Runnable_Holders is new Rx.Tools.Holders (Runnable'Class);
+   subtype Runnable_Def is Runnable_Holders.Definite;
 
    type Event_Id is new Long_Long_Integer;
 
    type Event is record -- Needed To Hold It in The Ordered_Multiset
       Id   : Event_Id; -- Used to break time ties
       Time : Ada.Calendar.Time;
-      Code : Runnable_Holders.Definite;
+      Code : Runnable_Def;
    end record;
 
    function "<" (L, R : Event) return Boolean is
@@ -45,39 +46,32 @@ private
 
    package Event_Queues is new Ordered_Multisets (Event);
 
+   --  To avoid any remaining possibility of race condition, and simultaneously
+   --  allow automatic termination, we use a double-thread solution.
+   --  It is heavier on the number of threads, but has all the desired
+   --    advantages.
+   --  The Queuer (or frontend) task is always accepting new events. While it
+   --    has pending events, it tries continuously to pass one of these to the
+   --    Runner (or backend) task, which is the one effectively taking care of
+   --    the job.
+   --  Thus, no block can happen since a Runner can always call its own Queuer
+
+   task type Queuer (Parent : access Dispatcher) is
+      entry Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time);
+      entry Is_Idle (Idle : out Boolean);
+      entry Length  (Len  : out Natural);
+   end Queuer;
+
    task type Runner (Parent : access Dispatcher) is
-      entry Notify; -- Tell the runner there are events to run, or a new more recent one
+      entry Run (R : Runnable_Def);
    end Runner;
 
-   protected type Safe (Parent : access Dispatcher) is
-      procedure Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time);
-      --  Add a runnable to be run at a certain time
-
-      procedure Enqueue (E : Event);
-      --  For internal use
-
-      procedure Dequeue (E : out Event; Exists : out Boolean);
-
-      procedure Set_Idle (Idle : Boolean);
-
-      function Is_Idle return Boolean;
-
-      function Length return Natural;
-
-   private
-      Queue : Event_Queues.Set;
-      Seq   : Event_Id := 0;
-      Idle  : Boolean  := True;
-   end Safe;
-
    function Addr_Img (This : in out Dispatcher) return String is
-     (System.Address_Image (This'Address));
+     ("#" & System.Address_Image (This'Address));
 
    type Dispatcher is limited new Dispatchers.Dispatcher with record
+      Queue   : Queuer (Dispatcher'Access);
       Thread  : Runner (Dispatcher'Access);
-      Queue   : Safe (Dispatcher'Access);
    end record;
-
-   function Is_Idle (This : in out Dispatcher) return Boolean is (This.Queue.Is_Idle);
 
 end Rx.Dispatchers.Single;

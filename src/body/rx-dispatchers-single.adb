@@ -4,23 +4,16 @@ with Rx.Debug; use Rx.Debug;
 
 package body Rx.Dispatchers.Single is
 
-   --------------
-   -- Sequence --
-   --------------
+   -------------
+   -- Is_Idle --
+   -------------
 
-   protected Sequence is
-      procedure Next (Id : out Long_Long_Integer);
-   private
-      Curr : Long_Long_Integer := 1;
-   end Sequence;
-
-   protected body Sequence is
-      procedure Next (Id : out Long_Long_Integer) is
-      begin
-         Id := Curr;
-         Curr := Curr + 1;
-      end Next;
-   end Sequence;
+   function Is_Idle (This : in out Dispatcher) return Boolean is
+      Idle : Boolean;
+   begin
+      This.Queue.Is_Idle (Idle);
+      return Idle;
+   end Is_Idle;
 
    --------------
    -- Schedule --
@@ -31,151 +24,129 @@ package body Rx.Dispatchers.Single is
       What  : Runnable'Class;
       Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
    is
-      use Ada.Task_Identification;
    begin
       Where.Queue.Enqueue (What, Time);
-      if Current_Task /= Where.Thread'Identity then
-         select
-            Where.Thread.Notify;
-            Debug.Trace ("schedule: notified");
-         else
-            Debug.Trace ("schedule: could not notify");
-         end select;
-      else
-         Debug.Trace ("schedule: not notifying");
-      end if;
+      --  This must succeed sooner than later
    end Schedule;
+
+   ------------
+   -- Queuer --
+   ------------
+
+   task body Queuer is
+      use Ada.Calendar;
+      use Ada.Task_Identification;
+      function Addr return String is ("@" & Image (Current_Task) & " ");
+
+      function Min (L, R : Time) return Time is (if L < R
+                                                 then L
+                                                 else R);
+
+      use Runnable_Holders;
+      Queue : Event_Queues.Set;
+      Seq   : Event_Id := 1;
+   begin
+      loop
+         begin
+            --  Block when idle or forced shutdown
+            if Queue.Is_Empty or else Dispatchers.Terminating then
+               Debug.Trace ("queuer [terminable] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+               select
+                  accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
+                     Queue.Insert ((Seq, Time, +R));
+                  end Enqueue;
+                  Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                  Seq := Seq + 1;
+               or
+                  accept Is_Idle (Idle : out Boolean) do
+                     Idle := True;
+                  end Is_Idle;
+               or
+                  accept Length  (Len  : out Natural) do
+                     Len := Natural (Queue.Length);
+                  end Length;
+               or
+                  terminate;
+               end select;
+            end if;
+
+            if not Queue.Is_Empty and not Dispatchers.Terminating then
+               declare
+                  Ev : constant Event := Queue.First_Element;
+               begin
+                  Queue.Delete_First;
+                  if Ev.Time <= Clock then
+                     --  Try execution
+                     select
+                        Parent.Thread.Run (Ev.Code);
+                        Debug.Trace ("queuer [dequeued]" & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                     else
+                        Queue.Insert (Ev); -- Requeue failed run
+                        Debug.Trace ("queuer [busy] ev" & Ev.Id'Img);
+                     end select;
+                  else
+                     Queue.Insert (Ev); -- Requeue future event
+                  end if;
+
+                  --  Block when idle but event incoming
+                  Debug.Trace ("queuer [pending] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                  select
+                     accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
+                        Queue.Insert ((Seq, Time, +R));
+                     end Enqueue;
+                     Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                     Seq := Seq + 1;
+                  or
+                     accept Is_Idle (Idle : out Boolean) do
+                        Idle := Ev.Time > Clock;
+                     end Is_Idle;
+                  or
+                     accept Length  (Len  : out Natural) do
+                        Len := Natural (Queue.Length);
+                     end Length;
+                  or
+                     delay until Min (Ev.Time, Clock + 1.0);
+                     --  Periodically break to check for global termination
+                     --  Note that when we are past deadline this task will be
+                     --    100% busy
+                  end select;
+               end;
+            end if;
+         exception
+            when E : others =>
+               Debug.Report (E, "Dispatchers.Single.Queuer: ", Debug.Warn, Reraise => False);
+         end;
+      end loop;
+   end Queuer;
 
    ------------
    -- Runner --
    ------------
 
    task body Runner is
-      Runner_Id : Long_Long_Integer := -1;
-      function Runner_Addr return String is ("#" & Runner_Id'Img);
+      use Ada.Task_Identification;
+      function Addr return String is ("@" & Image (Current_Task) & " ");
    begin
-      Sequence.Next (Runner_Id);
       loop
          declare
-            use Ada.Calendar;
-            use Runnable_Holders;
-            Exists  : Boolean;
-            Ev      : Event;
+            RW : Runnable_Def;
          begin
-            Parent.Queue.Dequeue (Ev, Exists);
-            if Exists and not Dispatchers.Terminating then
-               if Ev.Time > Clock then
-                  Parent.Queue.Set_Idle (True);
-               end if;
+            Debug.Trace ("runner [ready] " & Addr & Parent.Addr_Img);
+            select
+               accept Run (R : Runnable_Def) do
+                  RW := R;
+               end Run;
+            or
+               terminate;
+            end select;
 
-               Debug.Trace ("runner [waiting] " & Runner_Addr);
-               select
-                  -- New event queued that might be sooner, go around
-                  accept Notify;
-                  Parent.Queue.Enqueue (Ev);
-               or
-                  delay until Ev.Time; -- This might be in the past, OK
-
-                  Parent.Queue.Set_Idle (False);
-                  Debug.Trace ("runner [running] " & Runner_Addr);
-                  Ev.Code.Ref.Run;
-                  Debug.Trace ("runner [ran] " & Runner_Addr);
-               end select;
-            else
-
-               --  [RETHINK]
-               --  This is the only race condition: they try to notify us after
-               --  queuing, while we are sure no reamining events exist.
-               --  To minimize chances, we close the queue between
-
-               Parent.Queue.Set_Idle (True);
-               Debug.Trace ("runner [idling] (" & Parent.Queue.Length'Img & ") " & Runner_Addr);
-               select
-                  accept Notify;
-               or
-                  terminate;
-               end select;
-            end if;
+            Debug.Trace ("runner [running] " & Addr & Parent.Addr_Img);
+            RW.Ref.Run;
          exception
             when E : others =>
-               Debug.Report (E, "At Dispatchers.Single.Runner: ", Debug.Warn, Reraise => False);
+               Debug.Report (E, "Dispatchers.Single.Runner: ", Debug.Warn, Reraise => False);
          end;
       end loop;
    end Runner;
-
-   ----------
-   -- Safe --
-   ----------
-
-   protected body Safe is
-
-      -------------
-      -- Enqueue --
-      -------------
-
-      procedure Enqueue
-        (R : Runnable'Class;
-         Time : Ada.Calendar.Time)
-      is
-         use Runnable_Holders;
-      begin
-         Queue.Insert ((Seq, Time, +R));
-         Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") #" & Parent.Addr_Img);
-         Seq := Seq + 1;
-      end Enqueue;
-
-      -------------
-      -- Enqueue --
-      -------------
-
-      procedure Enqueue (E : Event) is
-      begin
-         Queue.Insert (E);
-      end Enqueue;
-
-      -------------
-      -- Dequeue --
-      -------------
-
-      procedure Dequeue (E : out Event; Exists : out Boolean) is
-      begin
-         Exists := not Queue.Is_Empty;
-         if Exists then
-            E := Queue.First_Element;
-            Queue.Delete_First;
-            Debug.Trace ("dequeue:" & E.Id'Img & " (" & Queue.Length'Img & ") #" & Parent.Addr_Img);
-         else
-            Debug.Trace ("dequeue [empty]" & " (" & Queue.Length'Img & ") #" & Parent.Addr_Img);
-         end if;
-      end Dequeue;
-
-      --------------
-      -- Set_Idle --
-      --------------
-
-      procedure Set_Idle (Idle : Boolean) is
-      begin
-         Safe.Idle := Idle;
-      end Set_Idle;
-
-      -------------
-      -- Is_Idle --
-      -------------
-
-      function Is_Idle return Boolean is
-      begin
-         return Idle;
-      end Is_Idle;
-
-      ------------
-      -- Length --
-      ------------
-
-      function Length return Natural is
-      begin
-         return Natural (Queue.Length);
-      end Length;
-
-   end Safe;
 
 end Rx.Dispatchers.Single;
