@@ -50,18 +50,19 @@ private
    end Runner;
 
    protected type Safe (Parent : access Dispatcher) is
-      procedure Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time; Notify : out Boolean);
+      procedure Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time);
       --  Add a runnable to be run at a certain time
 
       procedure Enqueue (E : Event);
       --  For internal use
 
       procedure Dequeue (E : out Event; Exists : out Boolean);
-      --  Dequeue next event, if it exists
 
       procedure Set_Idle (Idle : Boolean);
 
       function Is_Idle return Boolean;
+
+      function Length return Natural;
 
    private
       Queue : Event_Queues.Set;

@@ -32,14 +32,15 @@ package body Rx.Dispatchers.Single is
       Time  : Ada.Calendar.Time := Ada.Calendar.Clock)
    is
       use Ada.Task_Identification;
-
-      Must_Notify : Boolean;
    begin
-      Where.Queue.Enqueue (What, Time, Must_Notify);
-      if Must_Notify and then Current_Task /= Where.Thread'Identity then
-         Debug.Trace ("schedule: notifying");
-         Where.Thread.Notify;
-         Debug.Trace ("schedule: notified");
+      Where.Queue.Enqueue (What, Time);
+      if Current_Task /= Where.Thread'Identity then
+         select
+            Where.Thread.Notify;
+            Debug.Trace ("schedule: notified");
+         else
+            Debug.Trace ("schedule: could not notify");
+         end select;
       else
          Debug.Trace ("schedule: not notifying");
       end if;
@@ -69,11 +70,11 @@ package body Rx.Dispatchers.Single is
 
                Debug.Trace ("runner [waiting] " & Runner_Addr);
                select
-                  -- An earlier event has arrived, so requeue
+                  -- New event queued that might be sooner, go around
                   accept Notify;
                   Parent.Queue.Enqueue (Ev);
                or
-                  delay until Ev.Time; -- This wait may perfectly well be 0
+                  delay until Ev.Time; -- This might be in the past, OK
 
                   Parent.Queue.Set_Idle (False);
                   Debug.Trace ("runner [running] " & Runner_Addr);
@@ -81,8 +82,14 @@ package body Rx.Dispatchers.Single is
                   Debug.Trace ("runner [ran] " & Runner_Addr);
                end select;
             else
-               Debug.Trace ("runner [idling] " & Runner_Addr);
+
+               --  [RETHINK]
+               --  This is the only race condition: they try to notify us after
+               --  queuing, while we are sure no reamining events exist.
+               --  To minimize chances, we close the queue between
+
                Parent.Queue.Set_Idle (True);
+               Debug.Trace ("runner [idling] (" & Parent.Queue.Length'Img & ") " & Runner_Addr);
                select
                   accept Notify;
                or
@@ -108,15 +115,10 @@ package body Rx.Dispatchers.Single is
 
       procedure Enqueue
         (R : Runnable'Class;
-         Time : Ada.Calendar.Time;
-         Notify : out Boolean)
+         Time : Ada.Calendar.Time)
       is
-         use Ada.Calendar;
          use Runnable_Holders;
       begin
-         if Queue.Is_Empty or else Queue.Constant_Reference (Queue.First).Time > Time then
-            Notify := True;
-         end if;
          Queue.Insert ((Seq, Time, +R));
          Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") #" & Parent.Addr_Img);
          Seq := Seq + 1;
@@ -164,6 +166,15 @@ package body Rx.Dispatchers.Single is
       begin
          return Idle;
       end Is_Idle;
+
+      ------------
+      -- Length --
+      ------------
+
+      function Length return Natural is
+      begin
+         return Natural (Queue.Length);
+      end Length;
 
    end Safe;
 
