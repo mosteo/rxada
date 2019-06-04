@@ -11,6 +11,7 @@ package body Rx.Op.Observe_On is
 
    type Op is new Operate.Operator with record
       Scheduler  : Schedulers.Scheduler;
+      Thread     : Schedulers.Thread;
       Subscriber : Shared.Observer;
    end record;
 
@@ -27,7 +28,7 @@ package body Rx.Op.Observe_On is
    overriding procedure On_Next (This : in out Op; V : Operate.T) is
    begin
       Debug.Trace ("on_next");
-      Remote.On_Next (This.Scheduler.all, This.Subscriber, V);
+      Remote.On_Next (This.Thread.all, This.Subscriber, V);
    end On_Next;
 
    ------------------
@@ -37,7 +38,7 @@ package body Rx.Op.Observe_On is
    overriding procedure On_Complete  (This : in out Op) is
    begin
       Debug.Trace ("on_complete");
-      Remote.On_Complete  (This.Scheduler.all, This.Subscriber);
+      Remote.On_Complete  (This.Thread.all, This.Subscriber);
    end On_Complete ;
 
    --------------
@@ -47,7 +48,7 @@ package body Rx.Op.Observe_On is
    overriding procedure On_Error (This : in out Op; Error : Errors.Occurrence) is
    begin
       Debug.Trace ("on_error");
-      Remote.On_Error (This.Scheduler.all, This.Subscriber, Error);
+      Remote.On_Error (This.Thread.all, This.Subscriber, Error);
    end On_Error;
 
    ---------------
@@ -60,6 +61,8 @@ package body Rx.Op.Observe_On is
       --  Not our business to check integrity, there are plenty others doing it,
       --  and this one is heavily used by merge/flatmap, which rely on uncheckedness
 
+      This.Thread := This.Scheduler.Get_Thread;
+
       Operate.Operator (This).Subscribe (This.Subscriber);
    end Subscribe;
 
@@ -71,6 +74,7 @@ package body Rx.Op.Observe_On is
    begin
       return Op'(Operate.Operator with
                    Scheduler  => Scheduler,
+                   Thread     => <>,
                    Subscriber => <>); -- To be set during subscription
    end Create;
 

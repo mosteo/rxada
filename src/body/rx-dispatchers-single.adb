@@ -88,7 +88,7 @@ package body Rx.Dispatchers.Single is
          if Queue.Is_Empty or else Queue.Constant_Reference (Queue.First).Time > Time then
             Notify := True;
          end if;
---         Put_Line ("enqueue:" & Seq'Img);
+         Debug.Trace ("enqueue:" & Seq'Img);
          Queue.Insert ((Seq, Time, +R));
          Seq := Seq + 1;
       end Enqueue;
@@ -112,7 +112,7 @@ package body Rx.Dispatchers.Single is
          if Exists then
             E := Queue.First_Element;
             Queue.Delete_First;
---            Put_Line ("dequeue:" & E.Id'Img);
+            Debug.Trace ("dequeue:" & E.Id'Img);
          end if;
       end Dequeue;
 

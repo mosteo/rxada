@@ -11,9 +11,19 @@ procedure Rx.Examples.Threading is
 
    Custom_Pool : Schedulers.Pools.Pool := Schedulers.Pools.Create (Size => 2, Name => "Custom");
 
+   function Custom_Idle return Schedulers.Thread is (Custom_Pool.Get_Idle);
+   function Custom_Next return Schedulers.Thread is (Custom_Pool.Get_Next);
+
+   procedure Finish is
+   begin
+      Debug.Put_Line ("Shutting down...");
+      Schedulers.Shutdown;
+   end Finish;
+
 begin
    Sub :=
      Std.Interval
+     & Limit (5)
      & Print
      & Subscribe_On (Schedulers.IO)
      & Observe_On (Schedulers.Idle_Thread)
@@ -22,16 +32,16 @@ begin
      & Print
      & Observe_On (Schedulers.Computation)
      & Print
-     & Observe_On (Custom_Pool.Get_Next)
+     & Observe_On (Schedulers.To_Scheduler (Custom_Next'Unrestricted_Access))
      & Print
-     & Observe_On (Custom_Pool.Get_Next)
+     & Observe_On (Schedulers.To_Scheduler (Custom_Next'Unrestricted_Access))
      & Print
-     & Observe_On (Custom_Pool.Get_Idle)
+     & Observe_On (Schedulers.To_Scheduler (Custom_Idle'Unrestricted_Access))
      & Print
-     & Subscribe (Put_Line'Access);
+     & Subscribe (On_Next     => Put_Line'Access,
+                  On_Complete => Finish'Unrestricted_Access);
+   --  Regular accesses would suffice at library level
 
-   delay 5.0;
-   Schedulers.Shutdown;
 exception
    when E : others =>
       Debug.Print (E);

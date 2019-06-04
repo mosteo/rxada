@@ -36,28 +36,29 @@ package body Rx.Devel is
 --          & Subscribe_Checker (Name     => "flatmap immediate",
 --                               Do_Count => True, Ok_Count => 10);
 
---        Subs :=
---          Std.Numeric.Integers.Range_Slice (1, 5)
---          & Ints.Flat_Map (Repeat (9)
---                           & Observe_On (Schedulers.Computation)
---                           & Hold (Fixed => 0.0, Random => 0.1))
---          & Print
---          & Std.Images.Integers.Print
---          & Subscribe_Checker (Name     => "flatmap w pipeline & scheduler",
---                               Do_Count => True, Ok_Count => 50,
---                               Period   => 2.0);
-
       Subs :=
-        From ((1, 2, 3))
-        & Observe_On (Schedulers.New_Thread)
-        & Merge_With (From ((4, 5, 6))
-                      & Observe_On (Schedulers.New_Thread))
+        Std.Numeric.Integers.Range_Slice (1, 5)
+        & Ints.Flat_Map (Repeat (9)
+                        -- & Observe_On (Schedulers.Computation)
+                        -- & Hold (Fixed => 0.0, Random => 0.1)
+                        )
         & Print
         & Std.Images.Integers.Print
-        & Numeric.Integers.Count
-        & Subscribe_Checker (Name     => "merge-with & count w scheduler",
-                             Do_Count => True, Ok_Count => 1,
-                             Do_Last  => True, Ok_Last  => 6);
+        & Subscribe_Checker (Name     => "flatmap w pipeline & scheduler",
+                             Do_Count => True, Ok_Count => 50,
+                             Period   => 5.0);
+--
+--        Subs :=
+--          From ((1, 2, 3))
+--          & Observe_On (Schedulers.New_Thread)
+--          & Merge_With (From ((4, 5, 6))
+--                        & Observe_On (Schedulers.New_Thread))
+--          & Print
+--          & Std.Images.Integers.Print
+--          & Numeric.Integers.Count
+--          & Subscribe_Checker (Name     => "merge-with & count w scheduler",
+--                               Do_Count => True, Ok_Count => 1,
+--                               Do_Last  => True, Ok_Last  => 6);
    end Run;
 
 end Rx.Devel;
