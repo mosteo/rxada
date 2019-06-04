@@ -143,6 +143,7 @@ package body Rx.Debug.Observers is
       return Typed.Contracts.Sink'Class
    is
    begin
+      pragma Warnings (Off); -- Anon allocator in watchdog name
       return RxSubscribe.Create (Checker'(Checker_Parent with
                                  Name_Len => Name'Length,
                                  Name     => Name,
@@ -155,6 +156,7 @@ package body Rx.Debug.Observers is
                                  Do_Watch => Do_Watch,
                                  Watcher  => (if Do_Watch then new Watchdog (Integer (Period * 1000), new String'(Name)) else null),
                                  others   => <>));
+      pragma Warnings (On);
    end Subscribe_Checker;
 
    ---------------

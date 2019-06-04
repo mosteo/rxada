@@ -52,6 +52,9 @@ package body Rx.Tests is
 
    function Swallow (Unused : Rx.Rx_Integer) return Ints.Observable is (Ints.Empty);
 
+   function AAA (I : Rx_Integer) return Strings.Observable'Class is
+     (Strings.Just (String'(1 .. Integer (I) => 'a')));
+
    -----------------
    -- Custom Pool --
    -----------------
@@ -407,6 +410,17 @@ package body Rx.Tests is
         & Subscribe_Checker (Name     => "flatmap w pipeline, interleaving & scheduler",
                              Do_Count => True, Ok_Count => 50,
                              Period   => 2.0);
+
+      Subs :=
+        From ((1, 2, 3, 4, 5))
+        & Integer_To_String.Flat_Map (AAA'Access,
+                                      Observe_On (Schedulers.Immediate)
+                                      & Std.String_Succ'Access -- <-- implicit map
+                                      & No_Op)
+        & Subscribe_Checker (Name     => "flatmap int -> str w pipeline",
+                             Do_Count => True, Ok_Count => 5,
+                             Do_First => True, Ok_First => "b",
+                             Do_Last  => True, Ok_Last  => "aaaab");
 
       -- No_Op
       Subs :=
