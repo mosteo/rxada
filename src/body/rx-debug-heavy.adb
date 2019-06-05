@@ -29,9 +29,15 @@ package body Rx.Debug.Heavy is
    -----------------------
 
    procedure Current_Backtrace (Bailout   : Boolean := False;
-                                Exit_Code : Integer := 1) is
+                                Exit_Code : Integer := 1)
+   is
+      Max   : constant := 20;
+      Used  : Natural;
+      Calls : GNAT.Traceback.Tracebacks_Array (1 .. Max);
    begin
-      Put_Line (Gnat.Traceback.Symbolic.Symbolic_Traceback (Gnat.Traceback.Call_Chain (Max_Len => 20)));
+      GNAT.Traceback.Call_Chain (Calls, Used);
+
+      Put_Line (Gnat.Traceback.Symbolic.Symbolic_Traceback (Calls (1 .. Used)));
       if Bailout then
          GNAT.OS_Lib.OS_Exit (Exit_Code);
       end if;
