@@ -22,10 +22,16 @@ package body Rx.Devel is
    begin
       Debug.Trace ("starting");
 
+--        Subs :=
+--          Just (1)
+--          & Expand (Selfsum'Access)
+--          & Limit (16)
+--          & Images.Integers.Print
+--          & Subscribe;
+
       Subs :=
-        Just (1)
-        & Expand (Selfsum'Access)
---          & Limit (8)
+        Std.Numeric.Integers.Range_Slice (1, 2)
+        & Integers.Flat_Map (Std.All_Positives'Access)
         & Images.Integers.Print
         & Subscribe;
    end Run;

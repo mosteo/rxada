@@ -55,6 +55,8 @@ package body Rx.Tests is
    function AAA (I : Rx_Integer) return Strings.Observable'Class is
      (Strings.Just (String'(1 .. Integer (I) => 'a')));
 
+   function Selfsum (I : Rx_Integer) return Integers.Observable'Class is (Just (I + I));
+
    -----------------
    -- Custom Pool --
    -----------------
@@ -421,6 +423,19 @@ package body Rx.Tests is
                              Do_Count => True, Ok_Count => 5,
                              Do_First => True, Ok_First => "b",
                              Do_Last  => True, Ok_Last  => "aaaab");
+
+      ------------
+      -- Expand --
+      ------------
+
+      Subs :=
+        Just (1)
+        & Expand (Selfsum'Access)
+        & Limit (16)
+        & Subscribe_Checker (Name     => "expand",
+                             Do_Count => True, Ok_Count => 8,
+                             Do_First => True, Ok_First => 1,
+                             Do_Last  => True, Ok_Last  => 32768);
 
       -- No_Op
       Subs :=

@@ -60,6 +60,7 @@ private
       entry Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time);
       entry Is_Idle (Idle : out Boolean);
       entry Length  (Len  : out Natural);
+      entry Reap; -- Used by Runner to notify runnable completion
    end Queuer;
 
    task type Runner (Parent : access Dispatcher) is

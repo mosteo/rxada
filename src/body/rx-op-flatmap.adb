@@ -34,12 +34,11 @@ package body Rx.Op.Flatmap is
       Debug.Trace ("flatmap subs--: " & Ctrl.Live_Subscriptions'Img);
    end Del_Sub;
 
-   procedure Mark_Completed (Ctrl : in out Unsafe_Controller) is
+   procedure Mark_Front_Completed (Ctrl : in out Unsafe_Controller) is
    begin
-      Ctrl.Subscribed      := False;
       Ctrl.Master_Finished := True;
       Debug.Trace ("flatmap master sub finished");
-   end Mark_Completed;
+   end Mark_Front_Completed;
 
    procedure Mark_Errored (Ctrl : in out Unsafe_Controller) is
    begin
@@ -140,7 +139,7 @@ package body Rx.Op.Flatmap is
          raise No_Longer_Subscribed;
       end if;
 
-      This.Control.Apply (Mark_Completed'Access);
+      This.Control.Apply (Mark_Front_Completed'Access);
       This.Control.Apply (Check_Done'Access);
       if Done then
          Debug.Trace ("front on_complete [for real]");

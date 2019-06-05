@@ -45,11 +45,12 @@ package body Rx.Dispatchers.Single is
       use Runnable_Holders;
       Queue : Event_Queues.Set;
       Seq   : Event_Id := 1;
+      Await : Boolean  := False;
    begin
       loop
          begin
-            --  Block when idle or forced shutdown
-            if Queue.Is_Empty or else Dispatchers.Terminating then
+            --  Block when idle, task already running, or forced shutdown
+            if Await or else Queue.Is_Empty or else Dispatchers.Terminating then
                Debug.Trace ("queuer [terminable] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                select
                   accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
@@ -66,11 +67,16 @@ package body Rx.Dispatchers.Single is
                      Len := Natural (Queue.Length);
                   end Length;
                or
+                  accept Reap;
+                  Await := False;
+                  Debug.Trace ("queuer [reaped] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+               or
                   terminate;
                end select;
             end if;
 
-            if not Queue.Is_Empty and not Dispatchers.Terminating then
+            --  If idle and pending tasks, try to run one
+            if not Await and then not Queue.Is_Empty and then not Dispatchers.Terminating then
                declare
                   Ev : constant Event := Queue.First_Element;
                begin
@@ -79,6 +85,7 @@ package body Rx.Dispatchers.Single is
                      --  Try execution
                      select
                         Parent.Thread.Run (Ev.Code);
+                        Await := True;
                         Debug.Trace ("queuer [dequeued]" & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                      else
                         Queue.Insert (Ev); -- Requeue failed run
@@ -141,7 +148,13 @@ package body Rx.Dispatchers.Single is
             end select;
 
             Debug.Trace ("runner [running] " & Addr & Parent.Addr_Img);
-            RW.Ref.Run;
+            begin
+               RW.Ref.Run;
+            exception
+               when E : others =>
+                  Debug.Report (E, "Dispatchers.Single.Runner.Run: ", Debug.Warn);
+            end;
+            Parent.Queue.Reap;
          exception
             when E : others =>
                Debug.Report (E, "Dispatchers.Single.Runner: ", Debug.Warn, Reraise => False);
