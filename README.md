@@ -1,4 +1,4 @@
-[![Run Status](https://api.shippable.com/projects/5cab2d66b875100006518dd4/badge?branch=master)]() 
+[![Run Status](https://api.shippable.com/projects/5cab2d66b875100006518dd4/badge?branch=master)](https://app.shippable.com/github/mosteo/rxada/dashboard) 
 
 # README #
 

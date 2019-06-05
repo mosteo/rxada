@@ -16,5 +16,7 @@ build:
         image_tag: $IMAGE_TAG
         pull: true
     ci:
+        - apt-get update
+        - apt-get install -y valgrind
         - gprbuild -j0 -p -P rxada_dev.gpr
-        - bin/rx-examples-tests
+        - valgrind --error-exitcode=1 bin/rx-examples-tests
