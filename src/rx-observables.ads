@@ -141,6 +141,14 @@ package Rx.Observables is
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Observable;
 
    ------------
+   -- Expand --
+   ------------
+
+   function Expand (Func     : Operate.Transform.Actions.Inflater1) return Operator;
+   function Expand (Pipeline : Observable) return Operator;
+   --  See Flat_Map notes below
+
+   ------------
    -- Filter --
    ------------
 
@@ -151,10 +159,12 @@ package Rx.Observables is
    -- Flat_Map --
    --------------
 
-   function Flat_Map (Func      : Operate.Transform.Actions.Inflater1) return Operator;
-   --  Regular flatmap
+   function Flat_Map (Func      : Operate.Transform.Actions.Inflater1;
+                      Recursive : Boolean := False) return Operator;
+   --  Regular flatmap (or recursive, which is simply Expand)
 
-   function Flat_Map (Pipeline  : Observable) return Operator;
+   function Flat_Map (Pipeline  : Observable;
+                      Recursive : Boolean := False) return Operator;
     -- NOTE: it must actually be an operator, but since "&" returns Observables...
    --  Applies Just & Pipeline to incoming values
 
@@ -476,13 +486,20 @@ private
    function Error (E : Rx.Errors.Occurrence)                return Observable renames RxEmpty.Error;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Observable renames RxEmpty.Error;
 
+   function Expand (Func     : Operate.Transform.Actions.Inflater1) return Operator is
+      (Flat_Map (Func, Recursive => True));
+   function Expand (Pipeline : Observable) return Operator is
+      (Flat_Map (Pipeline, Recursive => True));
+
    package RxFilter is new Rx.Op.Filter (Operate);
    function Filter (Check : not null Typed.Actions.Filter1) return Operator renames RxFilter.Create;
    function Filter (Check : Typed.Actions.TFilter1'Class) return Operator renames RxFilter.Create;
 
-   package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform);
-   function Flat_Map (Func : Operate.Transform.Actions.Inflater1) return Operator
-   renames RxFlatMap.Create;
+   function Identity (This : Operate.From.Observer'Class) return Operate.Into.Observer'Class is (This);
+
+   package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform, Identity, Operate.Identity);
+   function Flat_Map (Func : Operate.Transform.Actions.Inflater1;
+                      Recursive : Boolean := False) return Operator renames RxFlatMap.Create;
 
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable

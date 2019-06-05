@@ -29,6 +29,9 @@ package Rx.Debug is
    procedure Trace (S : String; Prefix : String := GNAT.Source_Info.Source_Location);
    --  Log at Impl level
 
+   procedure Trace (E       : Ada.Exceptions.Exception_Occurrence;
+                    Msg     : String);
+
    procedure Put_Line (I : Rx_Integer);
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;
 

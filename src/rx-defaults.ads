@@ -11,8 +11,11 @@ package Rx.Defaults with Preelaborate is
 
    procedure Default_Error_Handler (This   : in out Contracts.Observer'Class;
                                     Except :        Ada.Exceptions.Exception_Occurrence);
+   --  Calls down On_Error for non-critical exceptions, otherwise raises
+   --  If no downstream, just report
 
    procedure Default_On_Error (E : Errors.Occurrence);
+   --  Dump error to console and re-raise
 
    type Observer is new Contracts.Observer with null record;
    --  Does nothing but properly reporting in On_Error

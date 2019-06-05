@@ -23,6 +23,8 @@ package Rx.Impl.Preservers with Preelaborate is
    package From renames Transform.From;
    package Into renames Transform.Into;
 
+   function Identity (V : From.T) return Into.T is (V);
+
    function Concatenate (Producer : Typed.Contracts.Observable'Class;
                           Consumer : Transform.Operator'Class)
                           return Typed.Observable renames Transform.Concatenate;
