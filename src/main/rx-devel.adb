@@ -30,8 +30,10 @@ package body Rx.Devel is
 --          & Subscribe;
 
       Subs :=
-        Std.Numeric.Integers.Range_Slice (1, 2)
-        & Integers.Flat_Map (Std.All_Positives'Access)
+        Numeric.Integers.Range_Slice (1, 5)
+        & Flat_Map (Repeat (4)
+                    & Observe_On (Schedulers.Computation)
+                    & Hold (Fixed => 0.0, Random => 0.01))
         & Images.Integers.Print
         & Subscribe;
    end Run;

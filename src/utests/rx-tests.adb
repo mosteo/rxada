@@ -186,10 +186,16 @@ package body Rx.Tests is
                            Do_Last  => True, Ok_Last  => 1);
       Subs :=
         Timer (0.1) &
-        Subscribe_Checker (Name     => "timer ???",
+        Subscribe_Checker (Name     => "timer default value",
                            Do_Count => True, Ok_Count => 1,
                            Do_First => True, Ok_First => 0,
                            Do_Last  => True, Ok_Last  => 0);
+
+      --  Must wait or otherwise next texts may push those events
+      --  too much in the future (see imprudent use of Hold in computation thread)
+      while Subs.Is_Subscribed loop
+         delay 0.1;
+      end loop;
 
       return True;
    exception
@@ -207,6 +213,7 @@ package body Rx.Tests is
    function Operators return Boolean is
       use Actions;
    begin
+
       -- Test counting reset
       declare
          Ob : constant Integers.Observable := Ints.From ((1, 2, 3, 4)) & Numeric.Integers.Count;
@@ -406,12 +413,16 @@ package body Rx.Tests is
 
       Subs :=
         Std.Numeric.Integers.Range_Slice (1, 5)
-        & Ints.Flat_Map (Repeat (9)
+        & Ints.Flat_Map (Repeat (4)
                          & Observe_On (Schedulers.Computation)
-                         & Hold (Fixed => 0.0, Random => 0.1))
+                         & Hold (Fixed => 0.0, Random => 0.01))
         & Subscribe_Checker (Name     => "flatmap w pipeline, interleaving & scheduler",
-                             Do_Count => True, Ok_Count => 50,
+                             Do_Count => True, Ok_Count => 25,
                              Period   => 2.0);
+      while Subs.Is_Subscribed loop
+         --  Wait for Schedulers.Computation to empty
+         delay 0.1;
+      end loop;
 
       Subs :=
         From ((1, 2, 3, 4, 5))
@@ -433,7 +444,7 @@ package body Rx.Tests is
         & Expand (Selfsum'Access)
         & Limit (16)
         & Subscribe_Checker (Name     => "expand",
-                             Do_Count => True, Ok_Count => 8,
+                             Do_Count => True, Ok_Count => 16,
                              Do_First => True, Ok_First => 1,
                              Do_Last  => True, Ok_Last  => 32768);
 

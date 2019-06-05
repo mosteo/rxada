@@ -1,6 +1,17 @@
 with Ada.Command_Line;
 
+with GNAT.OS_Lib;
+
 package body Rx.Debug is
+
+   -------------
+   -- Bailout --
+   -------------
+
+   procedure Bailout (Exit_Code : Integer := 0) is
+   begin
+      GNAT.OS_Lib.OS_Exit (Exit_Code);
+   end Bailout;
 
    ------------
    -- Tracer --

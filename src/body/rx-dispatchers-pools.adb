@@ -31,7 +31,7 @@ package body Rx.Dispatchers.Pools is
    -- Get --
    ---------
 
-   function Get (From : in out Pool; Reuse : Boolean := True) return Single.Ptr is
+   function Get (From : in out Pool; Reuse : Boolean := False) return Single.Ptr is
       Result : Single.Ptr;
    begin
       Result := From.Ensure_Exists;

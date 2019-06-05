@@ -195,6 +195,7 @@ package Rx.Observables is
    ----------
 
    function Hold (Fixed  : Duration; Random : Duration := 0.0) return Operator;
+   --  Busy delay; this hogs the thread it is running on!
 
    ----------
    -- Just --

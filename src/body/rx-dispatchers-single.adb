@@ -56,7 +56,7 @@ package body Rx.Dispatchers.Single is
                   accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
                      Queue.Insert ((Seq, Time, +R));
                   end Enqueue;
-                  Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                  Debug.Trace ("queuer [enqueue]:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                   Seq := Seq + 1;
                or
                   accept Is_Idle (Idle : out Boolean) do
@@ -86,37 +86,45 @@ package body Rx.Dispatchers.Single is
                      select
                         Parent.Thread.Run (Ev.Code);
                         Await := True;
-                        Debug.Trace ("queuer [dequeued]" & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                        Debug.Trace ("queuer [dequeued] delta:" & Duration'Image (Ev.Time - Clock) & " id:"
+                                     & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                      else
                         Queue.Insert (Ev); -- Requeue failed run
                         Debug.Trace ("queuer [busy] ev" & Ev.Id'Img);
                      end select;
                   else
+                     Debug.Trace ("queuer [future] delta:" & Duration'Image (Ev.Time - Clock) & " id:"
+                                  & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                      Queue.Insert (Ev); -- Requeue future event
                   end if;
 
                   --  Block when idle but event incoming
-                  Debug.Trace ("queuer [pending] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
-                  select
-                     accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
-                        Queue.Insert ((Seq, Time, +R));
-                     end Enqueue;
-                     Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
-                     Seq := Seq + 1;
-                  or
-                     accept Is_Idle (Idle : out Boolean) do
-                        Idle := Ev.Time > Clock;
-                     end Is_Idle;
-                  or
-                     accept Length  (Len  : out Natural) do
-                        Len := Natural (Queue.Length);
-                     end Length;
-                  or
-                     delay until Min (Ev.Time, Clock + 1.0);
-                     --  Periodically break to check for global termination
-                     --  Note that when we are past deadline this task will be
-                     --    100% busy
-                  end select;
+                  if not Await then -- Otherwise we just ran the event!
+                     Debug.Trace ("queuer [pending] delta:" & Duration'Image (Ev.Time - Clock)
+                                  & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                     select
+                        accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
+                           Queue.Insert ((Seq, Time, +R));
+                        end Enqueue;
+                        Debug.Trace ("queuer [enqueue]:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                        Seq := Seq + 1;
+                     or
+                        accept Is_Idle (Idle : out Boolean) do
+                           Idle := Ev.Time > Clock;
+                        end Is_Idle;
+                     or
+                        accept Length  (Len  : out Natural) do
+                           Len := Natural (Queue.Length);
+                        end Length;
+                     or
+                        delay until Min (Ev.Time, Clock + 1.0);
+                        Debug.Trace ("queuer [break delta:" & Duration'Image (Ev.Time - Clock)
+                                     & "] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                        --  Periodically break to check for global termination
+                        --  Note that when we are past deadline this task will be
+                        --    100% busy
+                     end select;
+                  end if;
                end;
             end if;
          exception

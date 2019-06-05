@@ -11,7 +11,7 @@ package Rx.Dispatchers.Pools is
    type Pool (Initial_Size : Positive := 8; Name : String_Access := new String'("anonymous"))
    is tagged limited private;
 
-   function Get (From : in out Pool; Reuse : Boolean := True) return Single.Ptr;
+   function Get (From : in out Pool; Reuse : Boolean := False) return Single.Ptr;
    --  In round-robin fashion
    --  If Reuse and last returned thread is idle, return it again
 

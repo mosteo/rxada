@@ -48,6 +48,9 @@ package Rx.Debug is
                      Reraise : Boolean := False);
    --  Prints Msg at level Level, prints the exception and optionally re-raises
 
+   --  Early termination
+   procedure Bailout (Exit_Code : Integer := 0);
+
 private
 
    function Trim (S : String) return String is (Ada.Strings.Fixed.Trim (S, Ada.Strings.Both));

@@ -1,5 +1,6 @@
 with GNAT.OS_Lib;
 
+with Rx.Debug.Heavy;
 with Rx.Errors;
 with Rx.Tools.Shared_Data;
 with Rx.Subscribe;
@@ -18,13 +19,19 @@ package body Rx.Debug.Observers is
    type Watchdog_Access is access all Watchdog;
 
    task body Watchdog is
+      Name_Copy : constant String := Name.all;
    begin
+      if Name_Copy'Length < 1 then
+         Log ("Empty name in watchdog, exiting", Error);
+         GNAT.OS_Lib.OS_Exit (1);
+      end if;
+
       select
          accept Finished;
       or
          delay Duration (Period_Millis) / 1000.0;
-         Log (Name.all & ": watchdog triggered after" & Period_Millis'Img & " ms", Error);
-         GNAT.OS_Lib.OS_Abort;
+         Log (Name_Copy & ": watchdog triggered after" & Period_Millis'Img & " ms, exiting", Error);
+         GNAT.OS_Lib.OS_Exit (1);
 
          select
             accept Finished;
@@ -64,9 +71,8 @@ package body Rx.Debug.Observers is
    begin
       Log ("debug.observer on_next enter", Note);
       if This.Do_First and then This.Counter = 0 and then V /= + This.Ok_First then
-         Debug.Log ("Failed first, got [" & Image (V) & "] instead of [" & Image (+This.Ok_First) & "]", Debug.Warn);
-         raise Constraint_Error with
-           "Failed first, got [" & Image (V) & "] instead of [" & Image (+This.Ok_First) & "]";
+         Debug.Log ("Failed first, got [" & Image (V) & "] instead of [" & Image (+This.Ok_First) & "]", Debug.Error);
+         Heavy.Current_Backtrace (Bailout => True);
       end if;
 
       This.Last_Seen := +V;
@@ -90,15 +96,13 @@ package body Rx.Debug.Observers is
       end if;
 
       if This.Do_Count and then This.Counter /= This.Ok_Count then
-         Debug.Log ("Failed count, got [" & This.Counter'Img & "] instead of [" & This.Ok_Count'Img & "]", Debug.Warn);
-         raise Constraint_Error with
-           "Failed count, got [" & This.Counter'Img & "] instead of [" & This.Ok_Count'Img & "]";
+         Debug.Log ("Failed count, got [" & This.Counter'Img & "] instead of [" & This.Ok_Count'Img & "]", Debug.Error);
+         Heavy.Current_Backtrace (Bailout => True);
       end if;
 
       if This.Do_Last and then +This.Last_Seen /= +This.Ok_Last then
-         Debug.Log ("Failed last, got [" & Image (+This.Last_Seen) & "] instead of [" & Image (+This.Ok_Last) & "]", Debug.Warn);
-         raise Constraint_Error with
-           "Failed last, got [" & Image (+This.Last_Seen) & "] instead of [" & Image (+This.Ok_Last) & "]";
+         Debug.Log ("Failed last, got [" & Image (+This.Last_Seen) & "] instead of [" & Image (+This.Ok_Last) & "]", Debug.Error);
+         Heavy.Current_Backtrace (Bailout => True);
       end if;
 
       Log ("OK " &
@@ -142,8 +146,13 @@ package body Rx.Debug.Observers is
       Period   : Duration:= 1.0)
       return Typed.Contracts.Sink'Class
    is
+      pragma Warnings (Off); -- anon allocator
+      Dog : constant Watchdog_Access :=
+              (if Do_Watch
+               then new Watchdog (Integer (Period * 1000), new String'(Name))
+               else null);
+      pragma Warnings (On);
    begin
-      pragma Warnings (Off); -- Anon allocator in watchdog name
       return RxSubscribe.Create (Checker'(Checker_Parent with
                                  Name_Len => Name'Length,
                                  Name     => Name,
@@ -154,9 +163,8 @@ package body Rx.Debug.Observers is
                                  Do_Last  => Do_Last,
                                  Ok_Last  => +Ok_Last,
                                  Do_Watch => Do_Watch,
-                                 Watcher  => (if Do_Watch then new Watchdog (Integer (Period * 1000), new String'(Name)) else null),
+                                 Watcher  => Dog,
                                  others   => <>));
-      pragma Warnings (On);
    end Subscribe_Checker;
 
    ---------------
@@ -199,8 +207,7 @@ package body Rx.Debug.Observers is
       if This.Count /= This.Safe_Count.Get then
          Put_Line ("Safe count:  " & Natural'Image (This.Safe_Count.Get));
          Put_Line ("Unsafe count:" & Natural'Image (This.Count));
-         raise Constraint_Error
-           with "Count was mismatched:" & This.Count'Img & " /=" & Natural'Image (This.Safe_Count.Get);
+         Heavy.Current_Backtrace (Bailout => True);
       end if;
    end On_Complete ;
 
