@@ -23,7 +23,7 @@ abstract project RxAda_Common is
             for Default_Switches ("ada") use ("-gnatwal.f",
                                               "-gnatVd", -- use Va for even more checks
 
-                                              "-g", "-O2",
+                                              "-g", "-Og",
                                               "-gnato", "-fstack-check", "-gnata",
                                               "-gnatf", "-gnat12",
 

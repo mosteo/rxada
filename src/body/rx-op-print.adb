@@ -1,6 +1,6 @@
 with Ada.Calendar.Formatting;
 
-with Gnat.IO;
+with Ada.Text_IO;
 
 with Rx.Schedulers;
 
@@ -16,7 +16,7 @@ package body Rx.Op.Print is
    end record;
 
    overriding procedure On_Next (This : in out Op; V : Operate.T) is
-      use Gnat.IO;
+      use Ada.Text_IO;
       use Operate.Typed.Actions;
    begin
       if This.Func /= null then

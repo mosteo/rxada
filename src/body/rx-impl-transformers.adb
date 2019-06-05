@@ -1,4 +1,51 @@
+with Ada.Tags;
+with Rx.Debug;
+
 package body Rx.Impl.Transformers is
+
+   ----------------
+   -- Debug_Dump --
+   ----------------
+
+   procedure Debug_Dump (This : in out Operator'Class) is
+
+      procedure Print_Upstream (This : Operator'Class) is
+      begin
+         Debug.Trace ("upst: " & Ada.Tags.Expanded_Name (This'Tag));
+         if This.Has_Parent then
+            if This.Get_Parent in Operator'Class then
+               Print_Upstream (Operator'Class (This.Get_Parent));
+            else
+               Debug.Trace ("upst: " & Ada.Tags.Expanded_Name (This.Get_Parent'Tag));
+               Debug.Trace ("----");
+            end if;
+         else
+            Debug.Trace ("----");
+         end if;
+      end Print_Upstream;
+
+      procedure Print_Downstream (This : in out Operator'Class) is
+      begin
+         Debug.Trace ("down: " & Ada.Tags.Expanded_Name (This'Tag));
+         if This.Is_Subscribed then
+            if This.Get_Observer.Actual.all in Operator'Class then
+               Print_Downstream (Operator'Class (This.Get_Observer.Actual.all));
+            else
+               Debug.Trace ("down: " & Ada.Tags.Expanded_Name (This.Get_Observer.Actual.all'Tag));
+               Debug.Trace ("----");
+            end if;
+         else
+            Debug.Trace ("----");
+         end if;
+      end Print_Downstream;
+
+   begin
+      Debug.Trace ("SELF: " & Ada.Tags.Expanded_Name (This'Tag));
+      Debug.Trace ("UPSTREAM:");
+      Print_Upstream (This);
+      Debug.Trace ("DOWNSTREAM:");
+      Print_Downstream (This);
+   end Debug_Dump;
 
    ------------------
    -- Get_Observer --

@@ -1,6 +1,17 @@
 with Ada.Command_Line;
 
+with GNAT.OS_Lib;
+
 package body Rx.Debug is
+
+   -------------
+   -- Bailout --
+   -------------
+
+   procedure Bailout (Exit_Code : Integer := 0) is
+   begin
+      GNAT.OS_Lib.OS_Exit (Exit_Code);
+   end Bailout;
 
    ------------
    -- Tracer --
@@ -83,6 +94,17 @@ package body Rx.Debug is
       pragma Warnings (On);
    end Trace;
 
+   procedure Trace (E       : Ada.Exceptions.Exception_Occurrence;
+                    Msg     : String) is
+   begin
+      Trace ("---8<---Exception dump---8<---");
+      Trace (Msg);
+      Trace (Ada.Exceptions.Exception_Name (E));
+      Trace (Ada.Exceptions.Exception_Message (E));
+      Trace (Ada.Exceptions.Exception_Information (E));
+      Trace ("---8<---Exception end----8<---");
+   end Trace;
+
    ---------
    -- Log --
    ---------
@@ -111,9 +133,11 @@ package body Rx.Debug is
 
    procedure Print (E : Ada.Exceptions.Exception_Occurrence) is
    begin
+      Put_Line ("---8<---Exception dump---8<---");
       Put_Line (Ada.Exceptions.Exception_Name (E));
       Put_Line (Ada.Exceptions.Exception_Message (E));
       Put_Line (Ada.Exceptions.Exception_Information (E));
+      Put_Line ("---8<---Exception end----8<---");
    end Print;
 
    ------------
@@ -127,8 +151,11 @@ package body Rx.Debug is
    is
    begin
       Log (Msg, Level);
-      Print (E);
+      Log (Ada.Exceptions.Exception_Name (E), Level);
+      Log (Ada.Exceptions.Exception_Message (E), Level);
+      Log (Ada.Exceptions.Exception_Information (E), Level);
       if Reraise then
+         Log ("Reraising", Level);
          Ada.Exceptions.Reraise_Occurrence (E);
       end if;
    end Report;

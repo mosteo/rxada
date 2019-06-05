@@ -24,10 +24,11 @@ package body Rx.Observables is
    overriding function Evaluate (This : Inflater; V : Operate.T) return Operate.Observable is
       (Just (V) & This.Operator.Get);
 
-   function Flat_Map (Pipeline  : Observable) return Operator
+   function Flat_Map (Pipeline  : Observable; Recursive : Boolean := False) return Operator
    is
    begin
-      return RxFlatMap.Create (Inflater'(Operator => Definite_Operators.Hold (Operator (Pipeline))));
+      return RxFlatMap.Create (Inflater'(Operator => Definite_Operators.Hold (Operator (Pipeline))),
+                               Recursive => Recursive);
    end Flat_Map;
 
    --------------

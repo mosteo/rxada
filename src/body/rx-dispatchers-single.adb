@@ -45,17 +45,18 @@ package body Rx.Dispatchers.Single is
       use Runnable_Holders;
       Queue : Event_Queues.Set;
       Seq   : Event_Id := 1;
+      Await : Boolean  := False;
    begin
       loop
          begin
-            --  Block when idle or forced shutdown
-            if Queue.Is_Empty or else Dispatchers.Terminating then
+            --  Block when idle, task already running, or forced shutdown
+            if Await or else Queue.Is_Empty or else Dispatchers.Terminating then
                Debug.Trace ("queuer [terminable] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                select
                   accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
                      Queue.Insert ((Seq, Time, +R));
                   end Enqueue;
-                  Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                  Debug.Trace ("queuer [enqueue]:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                   Seq := Seq + 1;
                or
                   accept Is_Idle (Idle : out Boolean) do
@@ -66,11 +67,16 @@ package body Rx.Dispatchers.Single is
                      Len := Natural (Queue.Length);
                   end Length;
                or
+                  accept Reap;
+                  Await := False;
+                  Debug.Trace ("queuer [reaped] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+               or
                   terminate;
                end select;
             end if;
 
-            if not Queue.Is_Empty and not Dispatchers.Terminating then
+            --  If idle and pending tasks, try to run one
+            if not Await and then not Queue.Is_Empty and then not Dispatchers.Terminating then
                declare
                   Ev : constant Event := Queue.First_Element;
                begin
@@ -79,37 +85,46 @@ package body Rx.Dispatchers.Single is
                      --  Try execution
                      select
                         Parent.Thread.Run (Ev.Code);
-                        Debug.Trace ("queuer [dequeued]" & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                        Await := True;
+                        Debug.Trace ("queuer [dequeued] delta:" & Duration'Image (Ev.Time - Clock) & " id:"
+                                     & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                      else
                         Queue.Insert (Ev); -- Requeue failed run
                         Debug.Trace ("queuer [busy] ev" & Ev.Id'Img);
                      end select;
                   else
+                     Debug.Trace ("queuer [future] delta:" & Duration'Image (Ev.Time - Clock) & " id:"
+                                  & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                      Queue.Insert (Ev); -- Requeue future event
                   end if;
 
                   --  Block when idle but event incoming
-                  Debug.Trace ("queuer [pending] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
-                  select
-                     accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
-                        Queue.Insert ((Seq, Time, +R));
-                     end Enqueue;
-                     Debug.Trace ("enqueue:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
-                     Seq := Seq + 1;
-                  or
-                     accept Is_Idle (Idle : out Boolean) do
-                        Idle := Ev.Time > Clock;
-                     end Is_Idle;
-                  or
-                     accept Length  (Len  : out Natural) do
-                        Len := Natural (Queue.Length);
-                     end Length;
-                  or
-                     delay until Min (Ev.Time, Clock + 1.0);
-                     --  Periodically break to check for global termination
-                     --  Note that when we are past deadline this task will be
-                     --    100% busy
-                  end select;
+                  if not Await then -- Otherwise we just ran the event!
+                     Debug.Trace ("queuer [pending] delta:" & Duration'Image (Ev.Time - Clock)
+                                  & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                     select
+                        accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
+                           Queue.Insert ((Seq, Time, +R));
+                        end Enqueue;
+                        Debug.Trace ("queuer [enqueue]:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                        Seq := Seq + 1;
+                     or
+                        accept Is_Idle (Idle : out Boolean) do
+                           Idle := Ev.Time > Clock;
+                        end Is_Idle;
+                     or
+                        accept Length  (Len  : out Natural) do
+                           Len := Natural (Queue.Length);
+                        end Length;
+                     or
+                        delay until Min (Ev.Time, Clock + 1.0);
+                        Debug.Trace ("queuer [break delta:" & Duration'Image (Ev.Time - Clock)
+                                     & "] (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
+                        --  Periodically break to check for global termination
+                        --  Note that when we are past deadline this task will be
+                        --    100% busy
+                     end select;
+                  end if;
                end;
             end if;
          exception
@@ -141,7 +156,13 @@ package body Rx.Dispatchers.Single is
             end select;
 
             Debug.Trace ("runner [running] " & Addr & Parent.Addr_Img);
-            RW.Ref.Run;
+            begin
+               RW.Ref.Run;
+            exception
+               when E : others =>
+                  Debug.Report (E, "Dispatchers.Single.Runner.Run: ", Debug.Warn);
+            end;
+            Parent.Queue.Reap;
          exception
             when E : others =>
                Debug.Report (E, "Dispatchers.Single.Runner: ", Debug.Warn, Reraise => False);

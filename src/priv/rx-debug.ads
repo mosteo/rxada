@@ -29,6 +29,9 @@ package Rx.Debug is
    procedure Trace (S : String; Prefix : String := GNAT.Source_Info.Source_Location);
    --  Log at Impl level
 
+   procedure Trace (E       : Ada.Exceptions.Exception_Occurrence;
+                    Msg     : String);
+
    procedure Put_Line (I : Rx_Integer);
    procedure Put_Line (S : String) renames Gnat.IO.Put_Line;
 
@@ -44,6 +47,9 @@ package Rx.Debug is
                      Level   : Levels := Error;
                      Reraise : Boolean := False);
    --  Prints Msg at level Level, prints the exception and optionally re-raises
+
+   --  Early termination
+   procedure Bailout (Exit_Code : Integer := 0);
 
 private
 

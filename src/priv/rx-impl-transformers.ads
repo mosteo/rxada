@@ -5,10 +5,16 @@ with Rx.Subscriptions;
 with Rx.Impl.Typed;
 
 generic
-   with package From is new Rx.Impl.Typed (<>);
-   with package Into is new Rx.Impl.Typed (<>);
+   with package From2 is new Rx.Impl.Typed (<>);
+   with package Into2 is new Rx.Impl.Typed (<>);
 package Rx.Impl.Transformers with Preelaborate is
 
+   package From renames From2; -- Visibility bug workaround
+   package Into renames Into2; 
+   
+   function Broken_Identity (Unused : From.T) return Into.T is
+     (raise Program_Error with "Incompatible conversion");
+   
    --  Renamings for bug workarounds
    subtype From_Observable is From.Observable'Class;
    subtype Into_Observable is Into.Observable'Class;
@@ -58,6 +64,9 @@ package Rx.Impl.Transformers with Preelaborate is
                           Consumer : Operator'Class)
                           return Into.Observable;
    --  This does the magic of preparing a passive chain, ready for actual subscription/observation
+   
+   procedure Debug_Dump (This : in out Operator'Class);
+   --  Print upstream/downstream chains
 
    function "&" (Producer : From.Observable;
                  Consumer : Operator'Class)

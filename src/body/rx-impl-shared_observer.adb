@@ -19,6 +19,7 @@ package body Rx.Impl.Shared_Observer is
    function Create (Held    : Typed.Observer;
                     Checked : Boolean := True) return Observer is
    begin
+      Debug.Trace ("shared_observer [create]");
       return Wrap (new Inner_Observer'
                      (Actual  => Definite_Observers.Create (Held),
                       Checked => Checked,
@@ -40,6 +41,7 @@ package body Rx.Impl.Shared_Observer is
 
    procedure Mark_Completed (This : in out Observer) is
    begin
+      Debug.Trace ("shared_observer [mark_completed]");
       This.Ref.Ended := True;
    end Mark_Completed;
 
@@ -62,13 +64,12 @@ package body Rx.Impl.Shared_Observer is
 
    overriding procedure On_Complete  (This : in out Observer) is
    begin
-      Debug.Trace ("Shared_Observer.On_Complete");
-      if Ref (This).Ended then
+      if Ref (This).Ended and then Ref (This).Checked then
+         Debug.Trace ("shared_observer [double on_complete]");
          raise Program_Error with "Double On_Complete";
       else
-         if Ref (This).Checked then
-            Ref (This).Ended := True;
-         end if;
+         Debug.Trace ("shared_observer [on_complete]" & Ref (This).Checked'Img & Ref (This).Ended'Img);
+         Ref (This).Ended := True;
          Ref (This).Actual.Actual.On_Complete;
       end if;
    end On_Complete;
@@ -82,12 +83,12 @@ package body Rx.Impl.Shared_Observer is
       Error :        Errors.Occurrence)
    is
    begin
-      if Ref (This).Ended then
+      if Ref (This).Ended and then Ref (This).Checked then
+         Debug.Trace ("shared_observer [double on_error]");
          raise Program_Error with "Double On_Error";
       else
-         if Ref (This).Checked then
-            Ref (This).Ended := True;
-         end if;
+         Debug.Trace ("shared_observer [on_error]" & Ref (This).Checked'Img & Ref (This).Ended'Img);
+         Ref (This).Ended := True;
          Ref (This).Actual.Actual.On_Error (Error);
       end if;
    end On_Error;

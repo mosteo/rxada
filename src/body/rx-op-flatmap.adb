@@ -17,6 +17,7 @@ package body Rx.Op.Flatmap is
 --     package RxNoop   is new Rx.Op.No_Op (Preserver);
 
    type Unsafe_Controller is record
+      Subscribed         : Boolean := True;
       Master_Finished    : Boolean := False;
       Live_Subscriptions : Natural := 0;
    end record;
@@ -33,17 +34,18 @@ package body Rx.Op.Flatmap is
       Debug.Trace ("flatmap subs--: " & Ctrl.Live_Subscriptions'Img);
    end Del_Sub;
 
-   procedure Mark_Completed (Ctrl : in out Unsafe_Controller) is
+   procedure Mark_Front_Completed (Ctrl : in out Unsafe_Controller) is
    begin
       Ctrl.Master_Finished := True;
       Debug.Trace ("flatmap master sub finished");
-   end Mark_Completed;
+   end Mark_Front_Completed;
 
    procedure Mark_Errored (Ctrl : in out Unsafe_Controller) is
    begin
+      Ctrl.Subscribed         := False;
       Ctrl.Master_Finished    := True;
       Ctrl.Live_Subscriptions := 0;
-      Debug.Trace ("flatmap finished [on error]");
+      Debug.Trace ("flatmap mark_errored");
    end Mark_Errored;
 
    type Controller_Access is access Unsafe_Controller;
@@ -57,9 +59,14 @@ package body Rx.Op.Flatmap is
       Func    : Transformer.Actions.HInflater1;
       Sub2nd  : Boolean := False;
       Control : Controller;
+      Recurse : Boolean := False;
    end record;
 
+   overriding function Is_Subscribed (This : Front) return Boolean;
+
    overriding procedure On_Complete (This : in out Front);
+
+   overriding procedure On_Error (This : in out Front; E : Errors.Occurrence);
 
    overriding procedure On_Next (This     : in out Front;
                                  V        :        Transformer.From.T);
@@ -71,6 +78,8 @@ package body Rx.Op.Flatmap is
       Pending : Natural := 0; -- Live streams still not completed
       Control : Controller;
    end record;
+
+   overriding function Is_Subscribed (This : Back) return Boolean;
 
    overriding procedure On_Complete (This : in out Back);
 
@@ -84,15 +93,35 @@ package body Rx.Op.Flatmap is
    -- Create --
    ------------
 
-   function Create (Func      : Transformer.Actions.TInflater1'Class)
+   function Create (Func      : Transformer.Actions.TInflater1'Class;
+                    Recursive : Boolean := False)
                     return Transformer.Operator'Class
    is
    begin
       return Front'(Transformer.Operator with
                     Func    => Transformer.Actions.Hold (Func),
                     Sub2nd  => <>,
-                    Control => <>);
+                    Control => <>,
+                    Recurse => Recursive);
    end Create;
+
+   -------------------
+   -- Is_Subscribed --
+   -------------------
+
+   overriding function Is_Subscribed (This : Front) return Boolean is
+   begin
+      return
+        This.Control.Get.Subscribed and then
+        Transformer.Operator (This).Is_Subscribed;
+   end Is_Subscribed;
+
+   overriding function Is_Subscribed (This : Back) return Boolean is
+   begin
+      return
+        This.Control.Get.Subscribed and then
+        Preserver.Operator (This).Is_Subscribed;
+   end Is_Subscribed;
 
    -----------------
    -- On_Complete --
@@ -105,8 +134,12 @@ package body Rx.Op.Flatmap is
          Done := Ctrl.Master_Finished and then Ctrl.Live_Subscriptions = 0;
       end Check_Done;
    begin
-      Debug.Trace ("front on_complete");
-      This.Control.Apply (Mark_Completed'Access);
+      if not This.Is_Subscribed then
+         Debug.Trace ("front on_complete [unsubscribed]");
+         raise No_Longer_Subscribed;
+      end if;
+
+      This.Control.Apply (Mark_Front_Completed'Access);
       This.Control.Apply (Check_Done'Access);
       if Done then
          Debug.Trace ("front on_complete [for real]");
@@ -126,9 +159,8 @@ package body Rx.Op.Flatmap is
          Done_Subs   := Ctrl.Live_Subscriptions = 0;
       end Check_Done;
    begin
-      Debug.Trace ("back on_complete");
-
       if not This.Is_Subscribed then
+         Debug.Trace ("back on_complete [unsubscribed]");
          raise No_Longer_Subscribed;
       end if;
 
@@ -162,13 +194,30 @@ package body Rx.Op.Flatmap is
    -- On_Error --
    --------------
 
+   overriding procedure On_Error (This : in out Front; E : Errors.Occurrence) is
+   begin
+      if This.Is_Subscribed then
+         Debug.Trace ("flatmap front.on_error [subscribed]");
+         This.Get_Observer.On_Error (E);
+         This.Control.Apply (Mark_Errored'Access);
+         --  Mark after, so Back.On_Error doesn't panic before calling downstream
+         This.Unsubscribe;
+      else
+         Debug.Trace ("flatmap front.on_error [unsubscribed]");
+         raise No_Longer_Subscribed;
+      end if;
+   end On_Error;
+
    overriding procedure On_Error (This : in out Back; E : Errors.Occurrence) is
    begin
       if This.Is_Subscribed then
+         Debug.Trace ("flatmap back.on_error [subscribed]");
          This.Control.Apply (Mark_Errored'Access);
+         --  Mark before, so despite what happens downstream we know we finished
          This.Get_Observer.On_Error (E);
          This.Unsubscribe;
       else
+         Debug.Trace ("flatmap back.on_error [unsubscribed]");
          raise No_Longer_Subscribed;
       end if;
    end On_Error;
@@ -180,22 +229,45 @@ package body Rx.Op.Flatmap is
    overriding procedure On_Next (This     : in out Front;
                                  V        :        Transformer.From.T)
    is
-      Observable : Transformer.Into.Observable'Class := This.Func.Cref.Evaluate (V);
-      --  Writable copy
-
---        --  Failed experiments
---        Nop : Preserver.Operator'Class := RxNoop.Create;
---        Map : Transformer.Operator'Class := RxMap.Create (null);
    begin
       Debug.Trace ("front on_next");
-      This.Control.Apply (Add_Sub'Access);
 
---        --  Failed experiments
---        Map.Set_Parent (RxJust.Create (V));
---        Nop.Set_Parent (Map);
---        Nop.Subscribe (This.Get_Observer);
+      if This.Is_Subscribed then
+         declare
+            Observable : Transformer.Into.Observable'Class :=
+                           This.Func.Cref.Evaluate (V);
+            -- Observable from value
+         begin
+            This.Control.Apply (Add_Sub'Access);
 
-      Observable.Subscribe (This.Get_Observer);
+            if This.Recurse then
+               declare
+                  RW_Copy : Transformer.Into.Observer'Class := Identity (This);
+               begin
+                  --  Emit before resubscribing, or otherwise this element will never reach down
+                  This.Get_Observer.On_Next (Identity (V));
+                  Observable.Subscribe (RW_Copy);
+               end;
+            else
+               Observable.Subscribe (This.Get_Observer);
+            end if;
+         end;
+      end if;
+   exception
+      when No_Longer_Subscribed =>
+         Debug.Trace ("flatmap front.on_next [no_longer_subscribed]");
+         raise;
+      when E : others =>
+         if This.Is_Subscribed then
+            Debug.Trace ("flatmap front.on_next [catch -> on_error]");
+            Debug.Trace (E, "Caught by flatmap.front.on_next");
+            This.Debug_Dump;
+            This.On_Error (Errors.Create (E));
+            This.Control.Apply (Mark_Errored'Access);
+         else
+            Debug.Trace ("flatmap front.on_next [catch -> raise]");
+            raise;
+         end if;
    end On_Next;
 
    overriding procedure On_Next (This     : in out Back;
@@ -221,7 +293,8 @@ package body Rx.Op.Flatmap is
       if This.Sub2nd = False then
          Debug.Trace ("flatmap subscribe [1st]");
          This.Control := Wrap (new Unsafe_Controller'
-                                 (Master_Finished    => <>,
+                                 (Subscribed         => True,
+                                  Master_Finished    => <>,
                                   Live_Subscriptions => <>));
          declare
             use Preserver.Linkers;

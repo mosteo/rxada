@@ -7,14 +7,13 @@ with Rx.Subscriptions;
 package body Rx.Devel is
 
    use Rx.Std.Integers;
-   use Rx.Std.Integer_To_String;
-   use Rx.Std.Strings;
+--     use Rx.Std.Integer_To_String;
+--     use Rx.Std.Strings;
 
 --     package Ints renames Std.Integers;
 --     package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Rx_Integer'Image); use IntChecker;
 
-   function AAA (I : Rx_Integer) return Strings.Observable'Class is
-     (Strings.Just (String'(1 .. Integer (I) => 'a')));
+   function Selfsum (I : Rx_Integer) return Integers.Observable'Class is (Just (I + I));
 
 --     Inf : Integer_To_String.Typed.Actions.Inflater1 := AAA'Access;
 
@@ -23,12 +22,19 @@ package body Rx.Devel is
    begin
       Debug.Trace ("starting");
 
+--        Subs :=
+--          Just (1)
+--          & Expand (Selfsum'Access)
+--          & Limit (16)
+--          & Images.Integers.Print
+--          & Subscribe;
+
       Subs :=
-        From ((1, 2, 3, 4, 5))
-        & Integer_To_String.Flat_Map (AAA'Access,
-                                      Observe_On (Schedulers.Computation)
-                                      & Map (Std.String_Succ'Access))
-        & Std.Images.Strings.Print
+        Numeric.Integers.Range_Slice (1, 5)
+        & Flat_Map (Repeat (4)
+                    & Observe_On (Schedulers.Computation)
+                    & Hold (Fixed => 0.0, Random => 0.01))
+        & Images.Integers.Print
         & Subscribe;
    end Run;
 

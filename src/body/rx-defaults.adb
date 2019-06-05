@@ -22,6 +22,8 @@ package body Rx.Defaults is
          begin
             This.On_Error (Errors.Create (Except));
          exception
+            when E : No_Longer_Subscribed =>
+               Debug.Report (E, "On_Error rejected during error handling:", Debug.Impl, Reraise => False);
             when E : others =>
                Debug.Report (E, "Exception during error handling:", Debug.Warn, Reraise => True);
          end;
@@ -34,7 +36,9 @@ package body Rx.Defaults is
 
    procedure Default_On_Error (E : Errors.Occurrence) is
    begin
-      Debug.Report (E.Get_Exception.all, "Unhandled error", Debug.Warn, Reraise => True);
+      Debug.Trace ("defaults [on_error]");
+      Debug.Report (E.Get_Exception.all, "Unhandled error", Debug.Warn);
+      raise Program_Error with "unhandled error";
    end Default_On_Error;
 
    --------------

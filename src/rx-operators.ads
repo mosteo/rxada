@@ -101,10 +101,14 @@ package Rx.Operators is
 
 private
 
-   package RxFlatMap is new Rx.Op.Flatmap (Typed);
+   function Identity (Unused : Typed.From.Observer'Class) return Typed.Into.Observer'Class is
+     (raise Program_Error with "identity unavailable in Transformer context");
 
-      function Flat_Map (Func : Typed.Actions.Inflater1)
-                         return Typed.Operator'Class renames RxFlatMap.Create;
+   package RxFlatMap is new Rx.Op.Flatmap (Typed, Identity, Typed.Broken_Identity);
+
+   function Flat_Map (Func : Typed.Actions.Inflater1)
+                      return Typed.Operator'Class is
+     (RxFlatMap.Create (Func, Recursive => False));
 
    package RxMap is new Rx.Op.Map (Typed);
    function Map (F : Typed.Actions.Func1) return Operator renames RxMap.Create;
