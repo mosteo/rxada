@@ -24,7 +24,7 @@ procedure DirX.Ls is
 begin
    --  Ordinary listing of entries in given folder
    DirX.Observables.RxEntries.Observables.For_Each
-     (DirX.Observables.Directory_Entries (Target),
+     (DirX.Observables.Directory_Entries (Target, Recursive => False),
       On_Next => Print_Full_Name'Unrestricted_Access);
 
 end DirX.Ls;

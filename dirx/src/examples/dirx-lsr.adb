@@ -24,9 +24,7 @@ procedure DirX.Lsr is
 begin
    --  Recursive listing of files
    DirX.Observables.RxEntries.Observables.For_Each
-     (DirX.Observables.Directory_Entries_Recursive (Target,
-      Filter => (Ada.Directories.Ordinary_File => True,
-                 others                        => False)),
+     (DirX.Observables.Directory_Entries (Target, Recursive => True),
       On_Next => Print_Full_Name'Unrestricted_Access);
 
 end DirX.Lsr;
