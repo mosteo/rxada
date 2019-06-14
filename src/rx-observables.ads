@@ -14,6 +14,7 @@ with Rx.Valueless;
 private with Rx.Op.Buffer;
 private with Rx.Op.Debounce;
 private with Rx.Op.Distinct;
+private with Rx.Op.Do_On;
 private with Rx.Op.Element_At;
 private with Rx.Op.Filter;
 private with Rx.Op.Flatmap;
@@ -118,6 +119,13 @@ package Rx.Observables is
    Default_Not_Same : constant Typed.Actions.Comparator;
 
    function Distinct (Are_Distinct : Typed.Actions.Comparator := Default_Not_Same) return Operator;
+
+   -----------
+   -- Do_On --
+   -----------
+
+   function Do_On (Next : Typed.Actions.Proc1) return Operator;
+   function Do_On (Next : Typed.Actions.TProc1'Class) return Operator;
 
    ----------------
    -- Element_At --
@@ -474,6 +482,11 @@ private
    Default_Not_Same : constant Typed.Actions.Comparator := RxDistinct.Default_Not_Same'Access;
    function Distinct (Are_Distinct : Typed.Actions.Comparator := Default_Not_Same) return Operator
                       renames RxDistinct.Create;
+
+   package RxDo is new Rx.Op.Do_On (Operate);
+   function Do_On (Next : Typed.Actions.TProc1'Class) return Operator renames RxDo.Create;
+   function Do_On (Next : Typed.Actions.Proc1) return Operator is
+     (Do_On (Typed.Actions.Wrap (Next)));
 
    package RxElementAt is new Rx.Op.Element_At (Operate);
    function Element_At (Pos : Rx_Integer; First : Rx_Integer := 1) return Operator renames RxElementAt.Create;

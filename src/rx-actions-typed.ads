@@ -15,6 +15,9 @@ package Rx.Actions.Typed with Preelaborate is
    function Wrap (Func : Func1Str) return TFunc1Str'Class;
 
    type Proc1 is access procedure (V : T);
+   type TProc1 is interface;
+   procedure Call (Proc : in out TProc1; V : T) is abstract;
+   function Wrap (Proc : Proc1) return TProc1'Class;
 
    type Filter1  is access function (V : T) return Boolean;
    type TFilter1 is interface;
@@ -33,6 +36,9 @@ package Rx.Actions.Typed with Preelaborate is
 
    package Filter1_Holders is new Rx.Tools.Holders (TFilter1'Class);
    type HTFilter1 is new Filter1_Holders.Definite with null record;
+
+   package Proc1_Holders is new Rx.Tools.Holders (TProc1'Class);
+   type HTProc1 is new Proc1_Holders.Definite with null record;
 
    --  Predefined actions
 

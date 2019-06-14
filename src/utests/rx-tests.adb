@@ -34,6 +34,12 @@ package body Rx.Tests is
    use Integer_To_String;
    use String_To_Integer;
 
+   Flag_On_Next : Boolean := False;
+   procedure Test_On_Next (Unused : Rx_Integer) is
+   begin
+      Flag_On_Next := True;
+   end Test_On_Next;
+
    procedure Fail is
    begin
       raise Constraint_Error;
@@ -229,6 +235,12 @@ package body Rx.Tests is
                                          Do_Last  => True, Ok_Last  => 4);
       end;
 
+      --  Do_On
+      Subs :=
+        Ints.Just (1)
+        & Do_On (Next => Test_On_Next'Access)
+        & Subscribe;
+      pragma Assert (Flag_On_Next, "Test_On_Next wasn't called");
 
       -- Test limit
       Subs :=
