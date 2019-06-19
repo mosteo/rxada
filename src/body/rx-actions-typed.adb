@@ -1,6 +1,5 @@
 package body Rx.Actions.Typed is
 
-
    type Countdown_Filter is new TFilter1 with record
       Remaining : Rx_Natural;
    end record;
@@ -83,5 +82,16 @@ package body Rx.Actions.Typed is
       return WTFilter1'(Filter => Filter);
    end Wrap;
 
+   -------------
+   -- WTProc1 --
+   -------------
+
+   type WTProc1 (Proc : Proc1) is new TProc1 with null record;
+   overriding procedure Call (Proc : in out WTProc1; V : T) is
+   begin
+      Proc.Proc (V);
+   end Call;
+   function Wrap (Proc : Proc1) return TProc1'Class is
+      (WTProc1'(Proc => Proc));
 
 end Rx.Actions.Typed;

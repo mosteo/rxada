@@ -76,7 +76,7 @@ package body DirX.Observables is
    function Observe_Common (This    : Directory_Entry;
                             Recurse : Boolean) return Entry_Observable is
      (RxEntries.Observables.Just (This)
-      & RxEntries.Observables.Merge
+      & RxEntries.Observables.Merge_With
         (if AD.Kind (This.Get_Entry) = AD.Directory
          then (if Recurse
                then Directory_Entries_Recursive (AD.Full_Name (This.Get_Entry))
