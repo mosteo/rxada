@@ -63,6 +63,17 @@ package body Rx.Tests is
 
    function Selfsum (I : Rx_Integer) return Integers.Observable'Class is (Just (I + I));
 
+   procedure Stopwatch_Test (Event_Kind         : Rx_Event_Kinds;
+                             Unused             : Duration;
+                             Since_Subscription : Duration)
+   is
+   begin
+      if Event_Kind = On_Complete then
+         pragma Assert (Since_Subscription >= 0.5, "Not enough time elapsed");
+         pragma Assert (Since_Subscription <= 0.6, "Too much time elapsed");
+      end if;
+   end Stopwatch_Test;
+
    -----------------
    -- Custom Pool --
    -----------------
@@ -554,6 +565,13 @@ package body Rx.Tests is
         & Observe_On (Schedulers.To_Scheduler (Custom_Idle'Unrestricted_Access))
         & Subscribe_Checker (Name     => "custom pool",
                              Do_Count => True, Ok_Count => 5);
+
+      Subs :=
+        Ints.Just (1)
+        & Hold (Fixed => 0.5, Random => 0.0)
+        & Stopwatch (Stopwatch_Test'Unrestricted_Access)
+        & Subscribe_Checker (Name     => "hold & stopwatch",
+                             Do_Count => True, Ok_Count => 1);
 
       return True;
    exception

@@ -13,7 +13,7 @@ package body Rx.Devel is
 --     package Ints renames Std.Integers;
 --     package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Rx_Integer'Image); use IntChecker;
 
-   function Selfsum (I : Rx_Integer) return Integers.Observable'Class is (Just (I + I));
+--     function Selfsum (I : Rx_Integer) return Integers.Observable'Class is (Just (I + I));
 
 --     Inf : Integer_To_String.Typed.Actions.Inflater1 := AAA'Access;
 

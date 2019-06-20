@@ -33,8 +33,9 @@ package Rx.Impl.Transformers with Preelaborate is
    --  This is the fundamental type that bridges observables y observers doing something along the way
    --  Override the Observer/Subscriber inherited methods in new operators
 
-   overriding procedure On_Next (This : in out Operator; V : From.T) is null;
+   overriding procedure On_Next (This : in out Operator; V : From.T);
    --  Must be overriden to transform From.T --> Into.T
+   --  By default, it raises Program_Error
 
    overriding procedure On_Complete  (This : in out Operator);
    --  By default calls downstream On_Complete 

@@ -28,6 +28,11 @@ package Rx with Pure is
 
    --  Other literals of general use
 
+   type Rx_Event_Kinds is
+     (On_Next,
+      On_Complete,
+      On_Error);
+
    type Merge_Policies is
      (Merge, 	-- Just relay as they come
       Sequence, -- Force sequencing of observables
