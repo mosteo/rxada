@@ -18,8 +18,10 @@ package body Rx.Op.Flatmap is
 
    type Unsafe_Controller is record
       Subscribed         : Boolean := True;
-      Master_Finished    : Boolean := False;
-      Live_Subscriptions : Natural := 0;
+      Live_Subscriptions : Natural := 1;
+      --  One corresponding to the original upstream observable;
+      --  In the non-recursive case we get more via elements;
+      --  In the recursive case we get even more via the fron resubscribing.
    end record;
 
    procedure Add_Sub (Ctrl : in out Unsafe_Controller) is
@@ -34,16 +36,9 @@ package body Rx.Op.Flatmap is
       Debug.Trace ("flatmap subs--: " & Ctrl.Live_Subscriptions'Img);
    end Del_Sub;
 
-   procedure Mark_Front_Completed (Ctrl : in out Unsafe_Controller) is
-   begin
-      Ctrl.Master_Finished := True;
-      Debug.Trace ("flatmap master sub finished");
-   end Mark_Front_Completed;
-
    procedure Mark_Errored (Ctrl : in out Unsafe_Controller) is
    begin
       Ctrl.Subscribed         := False;
-      Ctrl.Master_Finished    := True;
       Ctrl.Live_Subscriptions := 0;
       Debug.Trace ("flatmap mark_errored");
    end Mark_Errored;
@@ -128,35 +123,27 @@ package body Rx.Op.Flatmap is
    -----------------
 
    overriding procedure On_Complete (This : in out Front) is
-      Done : aliased Boolean := False;
-      procedure Check_Done (Ctrl : in out Unsafe_Controller) is
-      begin
-         Done := Ctrl.Master_Finished and then Ctrl.Live_Subscriptions = 0;
-      end Check_Done;
    begin
       if not This.Is_Subscribed then
          Debug.Trace ("front on_complete [unsubscribed]");
          raise No_Longer_Subscribed;
       end if;
 
-      This.Control.Apply (Mark_Front_Completed'Access);
-      This.Control.Apply (Check_Done'Access);
-      if Done then
-         Debug.Trace ("front on_complete [for real]");
-         This.Get_Observer.On_Complete;
-         This.Unsubscribe;
-      else
-         Debug.Trace ("front on_complete [subs pending]");
-      end if;
+      Debug.Trace ("front on_complete [passing down]");
+      -- We don't do checks on completion here, since we can centralize
+      --  completion on the downstream unique Back observer
+      -- Also, since we don't know if this comes from main upstream or
+      --  secondary subscriptions (in the recursive case), we would be unable
+      --  to properly do counting.
+
+      This.Get_Observer.On_Complete;
    end On_Complete;
 
    overriding procedure On_Complete (This : in out Back) is
-      Done_Master : aliased Boolean := False;
-      Done_Subs   : aliased Boolean := False;
+      Done : aliased Boolean := False;
       procedure Check_Done (Ctrl : in out Unsafe_Controller) is
       begin
-         Done_Master := Ctrl.Master_Finished;
-         Done_Subs   := Ctrl.Live_Subscriptions = 0;
+         Done := Ctrl.Live_Subscriptions = 0;
       end Check_Done;
    begin
       if not This.Is_Subscribed then
@@ -164,29 +151,16 @@ package body Rx.Op.Flatmap is
          raise No_Longer_Subscribed;
       end if;
 
+      This.Control.Apply (Del_Sub'Access);
       This.Control.Apply (Check_Done'Access);
-      if Done_Master and then Done_Subs then
-         --  On_Complete without live subscriptions mean master flow is
-         --  complete, and we can pack out
-         Debug.Trace ("back on_complete [from front]");
+      if Done then
+         --  On_Complete without live subscriptions mean all, primary & secondary
+         --    flows, have completed
+         Debug.Trace ("back on_complete [final]");
          This.Get_Observer.On_Complete;
          This.Unsubscribe;
       else
-         -- No matter if master is complete, being here means we have live subs
-         --   and this comes from one of them
-         This.Control.Apply (Del_Sub'Access);
-         This.Control.Apply (Check_Done'Access);
-         if Done_Master and then Done_Subs then
-            Debug.Trace ("back on_complete [from subs]");
-            This.Get_Observer.On_Complete;
-            This.Unsubscribe;
-         elsif Done_Master then
-            Debug.Trace ("back on_complete [master pending]");
-         elsif Done_Subs then
-            Debug.Trace ("back on_complete [subs pending]");
-         else
-            Debug.Trace ("back on_complete [master+subs pending]");
-         end if;
+         Debug.Trace ("back on_complete [subs pending]");
       end if;
    end On_Complete;
 
@@ -294,8 +268,7 @@ package body Rx.Op.Flatmap is
          Debug.Trace ("flatmap subscribe [1st]");
          This.Control := Wrap (new Unsafe_Controller'
                                  (Subscribed         => True,
-                                  Master_Finished    => <>,
-                                  Live_Subscriptions => <>));
+                                  Live_Subscriptions => 1));
          declare
             use Preserver.Linkers;
             Downstream : Preserver.Operator'Class :=

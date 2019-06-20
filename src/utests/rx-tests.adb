@@ -63,6 +63,12 @@ package body Rx.Tests is
 
    function Selfsum (I : Rx_Integer) return Integers.Observable'Class is (Just (I + I));
 
+   function Below (I : Rx_Integer) return Integers.Observable'Class is
+     (if I <= 1
+      then Integers.Empty
+      else Numeric.Integers.Range_Slice (1, I - 1));
+   --  Recursively emit integers below given one. Used to test Expand with finite recursivity
+
    procedure Stopwatch_Test (Event_Kind         : Rx_Event_Kinds;
                              Unused             : Duration;
                              Since_Subscription : Duration)
@@ -466,10 +472,18 @@ package body Rx.Tests is
         Just (1)
         & Expand (Selfsum'Access)
         & Limit (16)
-        & Subscribe_Checker (Name     => "expand",
+        & Subscribe_Checker (Name     => "expand & limit",
                              Do_Count => True, Ok_Count => 16,
                              Do_First => True, Ok_First => 1,
                              Do_Last  => True, Ok_Last  => 32768);
+
+      Subs :=
+        From ((1, 2, 3, 4))
+        & Expand (Below'Access)
+        & Subscribe_Checker (Name     => "expand finite",
+                             Do_Count => True, Ok_Count => 15,
+                             Do_First => True, Ok_First => 1,
+                             Do_Last  => True, Ok_Last  => 1);
 
       -- No_Op
       Subs :=

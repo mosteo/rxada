@@ -1,3 +1,4 @@
+with Rx.Debug;
 with Rx.Errors;
 
 package body DirX.Observables is
@@ -104,15 +105,18 @@ package body DirX.Observables is
             Item : constant Directory_Entry := Wrap (DE);
          begin
             AD.Get_Next_Entry (Search, DE.all);
+            Rx.Debug.Trace ("dir_entry on_next");
             Consumer.On_Next (Item);
          end;
       end loop;
 
       AD.End_Search (Search);
+      Rx.Debug.Trace ("dir_entry on_complete");
       Consumer.On_Complete;
    exception
       when E : others =>
          AD.End_Search (Search);
+         Rx.Debug.Trace ("dir_entry on_error");
          Consumer.On_Error (Rx.Errors.Create (E));
    end Subscribe;
 
