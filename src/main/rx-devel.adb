@@ -15,7 +15,12 @@ package body Rx.Devel is
 
 --     function Selfsum (I : Rx_Integer) return Integers.Observable'Class is (Just (I + I));
 
---     Inf : Integer_To_String.Typed.Actions.Inflater1 := AAA'Access;
+   --     Inf : Integer_To_String.Typed.Actions.Inflater1 := AAA'Access;
+
+   function Below (I : Rx_Integer) return Integers.Observable'Class is
+     (if I <= 1
+      then Integers.Empty
+      else Numeric.Integers.Range_Slice (1, I - 1));
 
    procedure Run is
       Subs : Rx.Subscriptions.Subscription with Unreferenced;
@@ -29,13 +34,21 @@ package body Rx.Devel is
 --          & Images.Integers.Print
 --          & Subscribe;
 
+--        Subs :=
+--          From ((1, 2))
+--          & Flat_Map (No_Op)
+--          & Images.Integers.Print
+--          & Subscribe;
+
       Subs :=
-        Numeric.Integers.Range_Slice (1, 5)
-        & Flat_Map (Repeat (4)
-                    & Observe_On (Schedulers.Computation)
-                    & Hold (Fixed => 0.0, Random => 0.01))
+        From ((1, 2, 3, 4))
+        & Expand (Below'Access)
         & Images.Integers.Print
         & Subscribe;
+
+      while Subs.Is_Subscribed loop
+         delay 0.1;
+      end loop;
    end Run;
 
 end Rx.Devel;
