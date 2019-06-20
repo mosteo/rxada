@@ -19,7 +19,7 @@ package body Rx.Impl.Links is
       else
          if This.Parent.CRef.Actual.all in Downstream'Class then
             declare
-               Current_Parent : Downstream'Class Renames
+               Current_Parent : Downstream'Class renames
                                   Downstream'Class (This.Parent.Ref.Actual.all);
             begin
                Debug.Trace ("Parenting upstream");

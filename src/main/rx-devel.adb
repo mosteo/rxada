@@ -7,8 +7,8 @@ with Rx.Subscriptions;
 package body Rx.Devel is
 
    use Rx.Std.Integers;
---     use Rx.Std.Integer_To_String;
---     use Rx.Std.Strings;
+   use Rx.Std.Integer_To_String;
+   use Rx.Std.Strings;
 
 --     package Ints renames Std.Integers;
 --     package IntChecker is new Debug.Observers (Std.Integers.Typed, 0, Rx_Integer'Image); use IntChecker;
@@ -27,24 +27,23 @@ package body Rx.Devel is
    begin
       Debug.Trace ("starting");
 
---        Subs :=
---          Just (1)
---          & Expand (Selfsum'Access)
---          & Limit (16)
---          & Images.Integers.Print
---          & Subscribe;
+      declare
+         Only_Strings : constant Rx.Std.Strings.Observable'Class :=
+                          Rx.Std.Strings.No_Op
+                          & Rx.Std.Strings.No_Op
+                          & Rx.Std.Strings.No_Op;
 
---        Subs :=
---          From ((1, 2))
---          & Flat_Map (No_Op)
---          & Images.Integers.Print
---          & Subscribe;
-
-      Subs :=
-        From ((1, 2, 3, 4))
-        & Expand (Below'Access)
-        & Images.Integers.Print
-        & Subscribe;
+         Ints_And_Strings : constant Rx.Std.Strings.Observable'Class :=
+                              Rx.Std.Integers.No_Op
+                              & Rx.Std.Integers.No_Op
+                              & Rx.Std.Casts.To_String
+                              & Rx.Std.Strings.No_Op
+                              & Rx.Std.Strings.No_Op;
+      begin
+         Rx.Std.Integer_To_String.Dafuk (Only_Strings);
+         Debug.Put_Line ("---");
+         Rx.Std.Integer_To_String.Dafuk (Ints_And_Strings);
+      end;
 
       while Subs.Is_Subscribed loop
          delay 0.1;

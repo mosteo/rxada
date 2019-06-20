@@ -207,13 +207,14 @@ package body Rx.Op.Flatmap is
       Debug.Trace ("front on_next");
 
       if This.Is_Subscribed then
+         --  Track new subscription
+         This.Control.Apply (Add_Sub'Access);
+
          declare
             Observable : Transformer.Into.Observable'Class :=
                            This.Func.Cref.Evaluate (V);
             -- Observable from value
          begin
-            This.Control.Apply (Add_Sub'Access);
-
             if This.Recurse then
                declare
                   RW_Copy : Transformer.Into.Observer'Class := Identity (This);

@@ -20,6 +20,13 @@ package Rx.Operators is
 
    subtype Operator Is Typed.Operator'Class;
 
+   procedure Diagnose (This : Into.Observable'Class);
+   --  Experimental dump of This chain
+   --  The chain is expected to be formed by
+   --    From.Operator'Class, (any amount)
+   --    Typed.Operator'Class,(one)
+   --    Into.Operator'Class, (any amount)
+
    --------------
    -- Counters --
    --------------
@@ -103,6 +110,15 @@ private
 
    function Identity (Unused : Typed.From.Observer'Class) return Typed.Into.Observer'Class is
      (raise Program_Error with "identity unavailable in Transformer context");
+
+   procedure Set_Parent (This   : in out Into.Observable'Class;
+                         Parent :        From.Observable'Class);
+   --  Cross-type Concatenate: used to be able to supply AA-AA-AB-BB-BB chains
+   --  to Flat_Map. Thus, at some point in the upstream of This, an AB operator
+   --  must exist, with optional AA before it, that can observe givent Parent.
+   --  Here, we navigate upstream from This (all must be Operator'Class), and
+   --  finally set Parent as parent of the first upstream.
+   --  See also Diagnose, which does something similar (simpler) for diagnostics.
 
    package RxFlatMap is new Rx.Op.Flatmap (Typed, Identity, Typed.Broken_Identity);
 
