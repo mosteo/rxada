@@ -460,6 +460,16 @@ package body Rx.Tests is
                              Do_Count => True, Ok_Count => 3);
 
       Subs :=
+        Ints.From ((1, 2, 3))
+        & Swallow'Access
+        & Subscribe_Checker (Name     => "flatmap empty implicit",
+                             Do_Count => True, Ok_Count => 0);
+
+      -----------------
+      -- Range_Slice --
+      -----------------
+
+      Subs :=
         Std.Numeric.Integers.Range_Slice (1, 4)
         & Ints.Flat_Map (Int_Emitter)
         & Subscribe_Checker (Name     => "flatmap immediate",

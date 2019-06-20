@@ -22,6 +22,10 @@ package Rx.Op.Flatmap is
    --  by Func.
    --  For the same reason, recursive only works in Preserver cases
 
+   ------------
+   -- Create --
+   ------------
+
    function Create (Secondary : Transformer.Into.Observable'Class;
                     Recursive : Boolean := False)
                     return Transformer.Operator'Class;
@@ -41,11 +45,37 @@ package Rx.Op.Flatmap is
                     Recursive : Boolean := False)
                     return Transformer.Operator'Class;
 
+   ---------
+   -- "&" --
+   ---------
+   --  As with Map, by having those we can have implicit flatmaps:
+   --  Source
+   --  & Inflater'Access <-- same as Flat_Map (Inflater'Access)
+   --  & Sink
+
+   function "&" (Producer : Transformer.From.Observable'Class;
+                 Consumer : Transformer.Actions.Inflater1)
+                 return Transformer.Into.Observable'Class;
+
+   function "&" (Producer : Transformer.From.Observable'Class;
+                 Consumer : Transformer.Actions.TInflater1'Class)
+                    return Transformer.Into.Observable'Class;
+
 private
 
    function Create (Func      : Transformer.Actions.Inflater1;
                     Recursive : Boolean := False)
                     return Transformer.Operator'Class is
-      (Create (Transformer.Actions.Wrap (Func), Recursive));
+     (Create (Transformer.Actions.Wrap (Func), Recursive));
+
+   function "&" (Producer : Transformer.From.Observable'Class;
+                 Consumer : Transformer.Actions.Inflater1)
+                 return Transformer.Into.Observable'Class is
+     (Transformer.Concatenate (Producer, Create (Consumer)));
+
+   function "&" (Producer : Transformer.From.Observable'Class;
+                 Consumer : Transformer.Actions.TInflater1'Class)
+       return Transformer.Into.Observable'Class is
+     (Transformer.Concatenate (Producer, Create (Consumer)));
 
 end Rx.Op.Flatmap;

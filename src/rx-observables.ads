@@ -430,6 +430,17 @@ package Rx.Observables is
    function "&" (Producer : Observable'Class;
                  Consumer : Operate.Transform.Actions.Func1)
                  return Observable;
+   --  Implicit Map
+
+   function "&" (Producer : Operate.Observable'Class;
+                 Consumer : Operate.Transform.Actions.Inflater1)
+                 return Operate.Observable'Class;
+   --  Implicit Flat_Map
+
+   function "&" (Producer : Operate.Observable'Class;
+                 Consumer : Operate.Transform.Actions.TInflater1'Class)
+                 return Operate.Observable'Class;
+   --  Implicit Flat_Map
 
    package Linkers is
 
@@ -458,6 +469,14 @@ package Rx.Observables is
                     Consumer : Operate.Transform.Actions.Func1)
                     return Observable renames Observables."&";
 
+      function "&" (Producer : Operate.Observable'Class;
+                    Consumer : Operate.Transform.Actions.Inflater1)
+                    return Operate.Observable'Class renames Observables."&";
+
+      function "&" (Producer : Operate.Observable'Class;
+                    Consumer : Operate.Transform.Actions.TInflater1'Class)
+                 return Operate.Observable'Class renames Observables."&";
+
    end Linkers;
 
 
@@ -471,11 +490,18 @@ private
    procedure Set_Parent (This   : in out Observable'Class;
                          Parent :        Observable'Class);
 
+   --------------
+   -- RxBuffer --
+   --------------
+
    package RxBuffer is new Rx.Op.Buffer (Into_List_Transformers,
                                          Collections.Lists.Empty_List);
-
    function Buffer (Every : Positive; Skip : Natural := 0) return Into_List_Transformer
                     renames RxBuffer.Create;
+
+   --------------
+   -- RxCreate --
+   --------------
 
    package RxCreate is new Rx.Src.Create (Typed);
    function Create (On_Subscribe : not null access procedure (Observer : in out Typed.Observer))
@@ -484,27 +510,51 @@ private
                     Succ    : not null Typed.Actions.Func1;
                     Count   : Rx_Integer := Rx_Integer'Last) return Observable renames RxCreate.Enumerator;
 
+   ----------------
+   -- RxDebounce --
+   ----------------
+
    package RxDebounce is new Op.Debounce (Operate);
    function Debounce (Window : Duration) return Operator renames RxDebounce.Create;
+
+   -------------
+   -- RxDefer --
+   -------------
 
    package RxDefer is new Rx.Src.Defer (Typed);
    function Defer (Factory : Factories.Observable_Factory'Class) return Observable renames RxDefer.Create;
    function Defer (Factory : Factories.Observable_Factory_Func) return Observable renames RxDefer.Create;
+
+   ----------------
+   -- RxDistinct --
+   ----------------
 
    package RxDistinct is new Rx.Op.Distinct (Operate);
    Default_Not_Same : constant Typed.Actions.Comparator := RxDistinct.Default_Not_Same'Access;
    function Distinct (Are_Distinct : Typed.Actions.Comparator := Default_Not_Same) return Operator
                       renames RxDistinct.Create;
 
+   ----------
+   -- RxDo --
+   ----------
+
    package RxDo is new Rx.Op.Do_On (Operate);
    function Do_On (Next : Typed.Actions.TProc1'Class) return Operator renames RxDo.Create;
    function Do_On (Next : Typed.Actions.Proc1) return Operator is
      (Do_On (Typed.Actions.Wrap (Next)));
 
+   -----------------
+   -- RxElementAt --
+   -----------------
+
    package RxElementAt is new Rx.Op.Element_At (Operate);
    function Element_At (Pos : Rx_Integer; First : Rx_Integer := 1) return Operator renames RxElementAt.Create;
    function Element_At_Or_Default (Default : T; Pos : Rx_Integer; First : Rx_Integer := 1) return Operator
                                    renames RxElementAt.Or_Default;
+
+   -------------
+   -- RxEmpty --
+   -------------
 
    package RxEmpty is new Rx.Src.Empty (Typed);
    function Empty return Observable renames RxEmpty.Empty;
@@ -513,6 +563,10 @@ private
    function Error (E : Rx.Errors.Occurrence)                return Observable renames RxEmpty.Error;
    function Error (E : Ada.Exceptions.Exception_Occurrence) return Observable renames RxEmpty.Error;
 
+   ------------
+   -- Expand --
+   ------------
+
    function Expand (Func     : Operate.Transform.Actions.Inflater1) return Operator is
       (Flat_Map (Func, Recursive => True));
    function Expand (Func     : Operate.Transform.Actions.TInflater1'Class) return Operator is
@@ -520,9 +574,17 @@ private
    function Expand (Pipeline : Observable) return Operator is
       (Flat_Map (Pipeline, Recursive => True));
 
+   --------------
+   -- RxFilter --
+   --------------
+
    package RxFilter is new Rx.Op.Filter (Operate);
    function Filter (Check : not null Typed.Actions.Filter1) return Operator renames RxFilter.Create;
    function Filter (Check : Typed.Actions.TFilter1'Class) return Operator renames RxFilter.Create;
+
+   ---------------
+   -- RxFlatMap --
+   ---------------
 
    function Identity (This : Operate.From.Observer'Class) return Operate.Into.Observer'Class is (This);
 
@@ -535,19 +597,45 @@ private
                       Recursive : Boolean := False) return Operator renames RxFlatMap.Create;
    function Flat_Map (Pipeline  : Observable'Class;
                       Recursive : Boolean := False) return Operator renames RxFlatMap.Create;
+   function "&" (Producer : Operate.Observable'Class;
+                 Consumer : Operate.Transform.Actions.Inflater1)
+                 return Operate.Observable'Class renames RxFlatMap."&";
+   function "&" (Producer : Operate.Observable'Class;
+                 Consumer : Operate.Transform.Actions.TInflater1'Class)
+                 return Operate.Observable'Class renames RxFlatMap."&";
+
+   -----------------
+   -- From_Arrays --
+   -----------------
 
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);
    function From (A : Default_Arrays.Typed_Array) return Observable
                   renames From_Arrays.From;
 
+   ------------
+   -- RxHold --
+   ------------
+
    package RxHold is new Rx.Op.Hold (Operate);
    function Hold (Fixed  : Duration; Random : Duration := 0.0) return Operator
      renames RxHold.Create;
 
+   ------------
+   -- RxJust --
+   ------------
+
    package RxJust is new Rx.Src.Just (Typed);
    function Just (V : T) return Observable renames RxJust.Create;
 
+   ------------
+   -- RxLast --
+   ------------
+
    package RxLast is new Rx.Op.Last (Operate);
+
+   ----------
+   -- Last --
+   ----------
 
    function Last return Operator is (RxLast.Create);
    function Last (Check : Typed.Actions.Filter1) return Operator is
@@ -560,30 +648,62 @@ private
    function Last_Or_Default (V : T; Check : Typed.Actions.TFilter1'Class) return Operator is
       (RxLast.Or_Default (V, Check));
 
+   -------------
+   -- RxLimit --
+   -------------
+
    package RxLimit is new Rx.Op.Limit (Operate);
    function Limit (Max : Rx_Natural) return Operator renames RxLimit.Create;
+
+   -----------
+   -- RxMap --
+   -----------
 
    package RxMap is new Rx.Op.Map (Operate.Transform);
    function Map (F : Operate.Transform.Actions.Func1) return Operator renames RxMap.Create;
    function "&" (Producer : Observable'Class;
                  Consumer : Operate.Transform.Actions.Func1) return Observable renames RxMap."&";
 
+   -------------
+   -- RxMerge --
+   -------------
+
    package RxMerge is new Rx.Op.Merge (Operate);
    function Merge_With (Merge_With : Observable) return Operator is
      (RxMerge.Create (Merge_With, Rx.Merge));
 
+   -----------
+   -- Merge --
+   -----------
+
    function Merge (One, Two : Observable) return Observable is
      (RxMerge.Create (One, Two, Rx.Merge));
+
+   ------------
+   -- RxNoop --
+   ------------
 
    package RxNoop is new Rx.Op.No_Op (Operate);
    function No_Op return Operator renames RxNoop.Create;
 
+   -----------------
+   -- RxObserveOn --
+   -----------------
+
    package RxObserveOn is new Rx.Op.Observe_On (Operate);
    function Observe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxObserveOn.Create;
+
+   -------------
+   -- RxPrint --
+   -------------
 
    package RxPrint is new Rx.Op.Print (Operate);
    function Print (Func           : Typed.Actions.Func1Str := null;
                    With_Timestamp : Boolean                := True) return Operator renames RxPrint.Create;
+
+   --------------
+   -- RxRepeat --
+   --------------
 
    package RxRepeat is new Rx.Op.Repeat (Operate);
 
@@ -596,6 +716,10 @@ private
    function Repeat_Until (Check : Actions.Filter0) return Operator is
      (RxRepeat.Repeat_Until (Actions.Wrap (Check)));
 
+   --------------
+   -- RxSample --
+   --------------
+
    package RxSample is new Rx.Op.Sample (Operate, Valueless.Typed);
    use all type RxSample.Policies;
    function Sample (Policy : Policies; Sampler : Valueless.Observable'Class) return Operator is
@@ -603,22 +727,42 @@ private
          when Keep_First => RxSample.Create (Keep_First, Sampler),
          when Keep_Last  => RxSample.Create (Keep_Last, Sampler));
 
+   -------------
+   -- RxStart --
+   -------------
+
    package RxStart is new Rx.Src.Start (Typed);
    function Start (Func :          Typed.Actions.TFunc0'Class) return Observable renames RxStart.Create;
    function Start (Func : not null Typed.Actions.Func0)        return Observable
      is (Start (Typed.Actions.Wrap (Func)));
+
+   -------------
+   -- RxSplit --
+   -------------
 
    procedure Iterate (V        : T_List;
                       For_Each : access procedure (V : T));
    package RxSplit is new Rx.Op.Split (From_List_Transformers, Iterate);
    function Split return From_List_Transformer renames RxSplit.Create;
 
+   -----------------
+   -- RxStopwatch --
+   -----------------
+
    package RxStopwatch is new Rx.Op.Stopwatch (Operate);
    function Stopwatch (Proc : not null Actions.Inspector) return Operator renames RxStopwatch.Create;
+
+   -------------
+   -- RxStrip --
+   -------------
 
    package RxStrip is new Rx.Op.Map (Into_Valueless);
    function Strip (Dummy : T) return Rx_Nothing is (null record);
    function Strip return Into_Valueless.Operator is (Into_Valueless.Operator (RxStrip.Create (Strip'Access)));
+
+   -----------------
+   -- RxSubscribe --
+   -----------------
 
    package RxSubscribe is new Rx.Subscribe (Typed);
    function Subscribe (On_Next      : Typed.Actions.Proc1   := null;
@@ -638,6 +782,10 @@ private
    package RxSubsOn is new Rx.Op.Subscribe_On (Operate);
    function Subscribe_On (Scheduler : Schedulers.Scheduler) return Operator renames RxSubsOn.Create;
 
+   ------------
+   -- RxTake --
+   ------------
+
    package RxTake is new Rx.Op.Take (Operate);
    function Take  (Count : Rx_Natural) return Operator renames RxTake.Take_Count;
    function Take_Until (Done : not null Typed.Actions.Filter1)        return Operator is
@@ -647,11 +795,19 @@ private
        (RxTake.Take_While (Typed.Actions.Wrap (Pass)));
    function Take_While (Pass :          Typed.Actions.TFilter1'Class) return Operator renames RxTake.Take_While;
 
+   -------------
+   -- RxTimer --
+   -------------
+
    package RxTimer is new Rx.Src.Timer (Typed);
    function Timer (V         : T;
                    After     : Duration;
                    Scheduler : Schedulers.Scheduler := Schedulers.Computation)
                    return Observable renames RxTimer.Create;
+
+   --------------
+   -- While_Do --
+   --------------
 
    function While_Do (Check : Actions.TFilter0'Class) return Operator renames RxRepeat.While_Do;
 

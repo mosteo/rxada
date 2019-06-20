@@ -94,7 +94,17 @@ package Rx.Operators is
                  renames Typed.Concatenate;
 
    function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable;
-   --  The Map operator alternative
+   --  Implicit Map
+
+   function "&" (Producer : From.Observable'Class;
+                 Consumer : Typed.Actions.Inflater1)
+                 return Into.Observable'Class;
+   --  Implicit Flat_Map
+
+   function "&" (Producer : From.Observable'Class;
+                 Consumer : Typed.Actions.TInflater1'Class)
+                 return Into.Observable'Class;
+   --  Implicit Flat_Map
 
    package Linkers is
 
@@ -105,6 +115,14 @@ package Rx.Operators is
 
       function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable
                     renames Operators."&";
+
+      function "&" (Producer : From.Observable'Class;
+                    Consumer : Typed.Actions.Inflater1)
+                    return Into.Observable'Class renames Operators."&";
+
+      function "&" (Producer : From.Observable'Class;
+                    Consumer : Typed.Actions.TInflater1'Class)
+                    return Into.Observable'Class renames Operators."&";
 
    end Linkers;
 
@@ -122,6 +140,10 @@ private
    --  finally set Parent as parent of the first upstream.
    --  See also Diagnose, which does something similar (simpler) for diagnostics.
 
+   ---------------
+   -- RxFlatMap --
+   ---------------
+
    package RxFlatMap is new Rx.Op.Flatmap (Typed,
                                            Identity, Typed.Broken_Identity,
                                            Set_Parent);
@@ -134,10 +156,24 @@ private
    function Flat_Map (Pipeline : Into.Observable'Class)
                       return Typed.Operator'Class is
      (RxFlatMap.Create (Pipeline, Recursive => False));
+   function "&" (Producer : From.Observable'Class;
+                 Consumer : Typed.Actions.Inflater1)
+                 return Into.Observable'Class renames RxFlatMap."&";
+   function "&" (Producer : From.Observable'Class;
+                 Consumer : Typed.Actions.TInflater1'Class)
+                 return Into.Observable'Class renames RxFlatMap."&";
+
+   -----------
+   -- RxMap --
+   -----------
 
    package RxMap is new Rx.Op.Map (Typed);
    function Map (F : Typed.Actions.Func1) return Operator renames RxMap.Create;
    function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable renames RxMap."&";
+
+   ------------
+   -- RxScan --
+   ------------
 
    package RxScan is new Rx.Op.Scan (Typed);
    function Scan (F         : Typed.Actions.Func2;
