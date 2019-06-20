@@ -113,6 +113,15 @@ package body Rx.Impl.Transformers is
       This.Unsubscribe;
    end On_Error;
 
+   -------------
+   -- On_Next --
+   -------------
+
+   overriding procedure On_Next (This : in out Operator; V : From.T) is
+   begin
+      raise Program_Error with "Must be overriden";
+   end On_Next;
+
    -------------------
    -- Unsubscribe --
    -------------------

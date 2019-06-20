@@ -5,6 +5,11 @@ package Rx.Actions with Preelaborate is
 
    --  Procedures/Actions that do not require a type
 
+   type Inspector is access
+     procedure (Event_Kind         : Rx_Event_Kinds;
+                Since_Previous     : Duration;
+                Since_Subscription : Duration);
+
    type Proc0      is access procedure;
    type Proc_Error is access procedure (E : Errors.Occurrence);
    type TProc0 is interface;

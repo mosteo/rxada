@@ -29,6 +29,7 @@ private with Rx.Op.Print;
 private with Rx.Op.Repeat;
 private with Rx.Op.Sample;
 private with Rx.Op.Split;
+private with Rx.Op.Stopwatch;
 private with Rx.Op.Subscribe_On;
 private with Rx.Op.Take;
 private with Rx.Src.Create;
@@ -307,6 +308,12 @@ package Rx.Observables is
    function Start (Func :          Typed.Actions.TFunc0'Class) return Observable;
 
    function Start (Func : not null Typed.Actions.Func0)        return Observable;
+
+   ---------------
+   -- Stopwatch --
+   ---------------
+
+   function Stopwatch (Proc : not null Actions.Inspector) return Operator;
 
    -----------
    -- Strip --
@@ -591,6 +598,9 @@ private
                       For_Each : access procedure (V : T));
    package RxSplit is new Rx.Op.Split (From_List_Transformers, Iterate);
    function Split return From_List_Transformer renames RxSplit.Create;
+
+   package RxStopwatch is new Rx.Op.Stopwatch (Operate);
+   function Stopwatch (Proc : not null Actions.Inspector) return Operator renames RxStopwatch.Create;
 
    package RxStrip is new Rx.Op.Map (Into_Valueless);
    function Strip (Dummy : T) return Rx_Nothing is (null record);
