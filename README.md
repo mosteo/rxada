@@ -22,13 +22,15 @@ declare
    S : Rx.Subscriptions.Subscription;
 begin
    S := -- We can't ignore the resulting subscription in Ada
-     Just ("Hello, world!") &
-     Map (Length'Access) &
-     Subscribe (Put_Line'Access);
+     Just ("Hello, world!")
+     & Map (Length'Access)
+     & Subscribe (Put_Line'Access);
 ```
 Type checks are performed at compile time.
 
-For a working example check the file [rx-examples-basic.adb](https://bitbucket.org/amosteo/rxada/src/default/src/main/rx-examples-basic.adb?at=default) and the other examples in the [src/main](https://bitbucket.org/amosteo/rxada/src/default/src/main?at=default) folder
+For a working example check the file [rx-examples-basic.adb](https://github.com/mosteo/rxada/blob/master/src/main/rx-examples-basic.adb) and the other examples in the [src/main](https://github.com/mosteo/rxada/blob/master/src/main/) folder
+
+For even more exhaustive examples, check the main test suite body: [rx-tests.adb](https://github.com/mosteo/rxada/blob/master/src/utests/rx-tests.adb)
 
 ### Quick start ###
 
@@ -65,7 +67,7 @@ Design goals:
 
 Some highlights about the library implementation:
 
-* The library makes extensive use of "signature packages" aka "traits" (thanks go to Emmanuel Briot for his traits-based container library). Check [rx-types.ads](https://bitbucket.org/amosteo/rxada/src/default/src/rx-types.ads?at=default&fileviewer=file-view-default) and [rx-operators.ads](https://bitbucket.org/amosteo/rxada/src/default/src/rx-operators.ads?at=default) for examples, and the Rx.Traits.* hierarchy. However, this is mostly hidden from the user. Beginners can use simple instantiations of Rx.Definites or Rx.Indefinites with their types of choice.
+* The library makes extensive use of "signature packages" aka "traits" (thanks go to Emmanuel Briot for his traits-based container library). Check [rx-types.ads](https://github.com/mosteo/rxada/blob/master/src/rx-types.ads) and [rx-operators.ads](https://github.com/mosteo/rxada/blob/master/src/rx-operators.ads) for examples, and the Rx.Traits.* hierarchy. However, this is mostly hidden from the user. Beginners can use simple instantiations of Rx.Definites or Rx.Indefinites with their types of choice.
 * There is very little explicit dynamic memory management for now in the library code, thanks to Ada use of unconstrained types and the Ada.Containers.Holders 2012 package. 
 
 ### What's next ###
