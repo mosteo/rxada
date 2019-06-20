@@ -120,7 +120,9 @@ private
    --  finally set Parent as parent of the first upstream.
    --  See also Diagnose, which does something similar (simpler) for diagnostics.
 
-   package RxFlatMap is new Rx.Op.Flatmap (Typed, Identity, Typed.Broken_Identity);
+   package RxFlatMap is new Rx.Op.Flatmap (Typed,
+                                           Identity, Typed.Broken_Identity,
+                                           Set_Parent);
 
    function Flat_Map (Func : Typed.Actions.Inflater1)
                       return Typed.Operator'Class is

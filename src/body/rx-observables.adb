@@ -67,4 +67,15 @@ package body Rx.Observables is
       end loop;
    end Iterate;
 
+   ----------------
+   -- Set_Parent --
+   ----------------
+
+   procedure Set_Parent (This   : in out Observable'Class;
+                         Parent :        Observable'Class)
+   is
+   begin
+      Operator'Class (This).Set_Parent (Parent);
+   end Set_Parent;
+
 end Rx.Observables;

@@ -465,6 +465,9 @@ private
 
    procedure Append (L : in out Collections.List; V : T);
 
+   procedure Set_Parent (This   : in out Observable'Class;
+                         Parent :        Observable'Class);
+
    package RxBuffer is new Rx.Op.Buffer (Into_List_Transformers,
                                          Collections.Lists.Empty_List);
 
@@ -518,7 +521,9 @@ private
 
    function Identity (This : Operate.From.Observer'Class) return Operate.Into.Observer'Class is (This);
 
-   package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform, Identity, Operate.Identity);
+   package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform,
+                                           Identity, Operate.Identity,
+                                           Set_Parent);
    function Flat_Map (Func : Operate.Transform.Actions.Inflater1;
                       Recursive : Boolean := False) return Operator renames RxFlatMap.Create;
 
