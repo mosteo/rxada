@@ -46,13 +46,15 @@ package Rx.Operators is
    function Flat_Map (Func : Typed.Actions.Inflater1)
                       return Typed.Operator'Class;
 
-   function Flat_Map (Func     : Typed.Actions.Inflater1;
-                      Pipeline : Into.Observable'Class) -- Operator in truth
+   function Flat_Map (Func : Typed.Actions.TInflater1'Class)
                       return Typed.Operator'Class;
-   --  Subscribes to Func'Result & Pipeline
-   --  This cannot be given as a single argument, alas, because any chain
-   --    will return in the end a Into.Operator'Class, which cannot be directly
-   --    applied to Func
+
+   function Flat_Map (Pipeline : Into.Observable'Class)
+                      return Typed.Operator'Class;
+   --  Subscribes to Just (V) & Pipeline
+   --  Pipeline must be of ...-AA-AA-AB-BB-BB-... for types to match at runtime
+   --  Pipeline must be made of all Operator'Class
+   --  See notes in Rx.Op.Flat_Map for more detail
 
    ------------
    -- Length --
@@ -123,10 +125,15 @@ private
    package RxFlatMap is new Rx.Op.Flatmap (Typed,
                                            Identity, Typed.Broken_Identity,
                                            Set_Parent);
-
    function Flat_Map (Func : Typed.Actions.Inflater1)
                       return Typed.Operator'Class is
-     (RxFlatMap.Create (Func, Recursive => False));
+      (RxFlatMap.Create (Func, Recursive => False));
+   function Flat_Map (Func : Typed.Actions.TInflater1'Class)
+                      return Typed.Operator'Class is
+      (RxFlatMap.Create (Func, Recursive => False));
+   function Flat_Map (Pipeline : Into.Observable'Class)
+                      return Typed.Operator'Class is
+     (RxFlatMap.Create (Pipeline, Recursive => False));
 
    package RxMap is new Rx.Op.Map (Typed);
    function Map (F : Typed.Actions.Func1) return Operator renames RxMap.Create;

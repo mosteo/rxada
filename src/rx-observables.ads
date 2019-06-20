@@ -154,6 +154,7 @@ package Rx.Observables is
    ------------
 
    function Expand (Func     : Operate.Transform.Actions.Inflater1) return Operator;
+   function Expand (Func     : Operate.Transform.Actions.TInflater1'Class) return Operator;
    function Expand (Pipeline : Observable) return Operator;
    --  See Flat_Map notes below
 
@@ -167,14 +168,16 @@ package Rx.Observables is
    --------------
    -- Flat_Map --
    --------------
-
    function Flat_Map (Func      : Operate.Transform.Actions.Inflater1;
                       Recursive : Boolean := False) return Operator;
-   --  Regular flatmap (or recursive, which is simply Expand)
 
-   function Flat_Map (Pipeline  : Observable;
+   function Flat_Map (Func      : Operate.Transform.Actions.TInflater1'Class;
                       Recursive : Boolean := False) return Operator;
-    -- NOTE: it must actually be an operator, but since "&" returns Observables...
+
+   function Flat_Map (Pipeline  : Observable'Class;
+                      Recursive : Boolean := False) return Operator;
+   -- NOTE: Pipeline must actually be an operator, but since "&" returns Observables...
+   --  See notes in Rx.Op.Flat_Map for more details
    --  Applies Just & Pipeline to incoming values
 
    --------------
@@ -512,6 +515,8 @@ private
 
    function Expand (Func     : Operate.Transform.Actions.Inflater1) return Operator is
       (Flat_Map (Func, Recursive => True));
+   function Expand (Func     : Operate.Transform.Actions.TInflater1'Class) return Operator is
+      (Flat_Map (Func, Recursive => True));
    function Expand (Pipeline : Observable) return Operator is
       (Flat_Map (Pipeline, Recursive => True));
 
@@ -524,7 +529,11 @@ private
    package RxFlatMap is new Rx.Op.Flatmap (Operate.Transform,
                                            Identity, Operate.Identity,
                                            Set_Parent);
-   function Flat_Map (Func : Operate.Transform.Actions.Inflater1;
+   function Flat_Map (Func      : Operate.Transform.Actions.Inflater1;
+                      Recursive : Boolean := False) return Operator renames RxFlatMap.Create;
+   function Flat_Map (Func      : Operate.Transform.Actions.TInflater1'Class;
+                      Recursive : Boolean := False) return Operator renames RxFlatMap.Create;
+   function Flat_Map (Pipeline  : Observable'Class;
                       Recursive : Boolean := False) return Operator renames RxFlatMap.Create;
 
    package From_Arrays is new Rx.Src.From.From_Array (Default_Arrays);

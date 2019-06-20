@@ -22,6 +22,17 @@ package Rx.Op.Flatmap is
    --  by Func.
    --  For the same reason, recursive only works in Preserver cases
 
+   function Create (Secondary : Transformer.Into.Observable'Class;
+                    Recursive : Boolean := False)
+                    return Transformer.Operator'Class;
+   --  Secondary is subscribed to Just (From.V) for every On_Next (V)
+   --  It must be composed of Operator'Class, even if given as plain Observable
+   --    (because that is what concatenation function & returns).
+   --  Also, the types From-Into must be respected. That is, it must form a
+   --    partial chain (without source nor sink) of AA-AB-BB.
+
+   --  Alternate forms that take an Inflater:
+
    function Create (Func      : Transformer.Actions.Inflater1;
                     Recursive : Boolean := False)
                     return Transformer.Operator'Class;

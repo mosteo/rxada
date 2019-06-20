@@ -23,7 +23,7 @@ package body Rx.Devel is
       else Numeric.Integers.Range_Slice (1, I - 1));
 
    procedure Run is
-      Subs : Rx.Subscriptions.Subscription with Unreferenced;
+      Subs : Rx.Subscriptions.Subscription;
    begin
       Debug.Trace ("starting");
 
@@ -40,9 +40,9 @@ package body Rx.Devel is
                               & Rx.Std.Strings.No_Op
                               & Rx.Std.Strings.No_Op;
       begin
-         Rx.Std.Integer_To_String.Dafuk (Only_Strings);
+         Rx.Std.Integer_To_String.Diagnose (Only_Strings);
          Debug.Put_Line ("---");
-         Rx.Std.Integer_To_String.Dafuk (Ints_And_Strings);
+         Rx.Std.Integer_To_String.Diagnose (Ints_And_Strings);
       end;
 
       while Subs.Is_Subscribed loop
