@@ -4,6 +4,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with DirX.Examples;
 with DirX.Observables;
 
+with Rx.Schedulers;
 with Rx.Subscriptions;
 
 with System.Multiprocessors;
@@ -11,6 +12,8 @@ with System.Multiprocessors;
 procedure DirX.Hash_Recursive is
    use Ada.Command_Line;
 
+   use Observables;
+   use Observables.RxEntries.Observables;
    use Examples.RxHashed.Observables;
    use Examples.Entry_To_Hash;
 
@@ -28,6 +31,7 @@ procedure DirX.Hash_Recursive is
                       Since_Previous     : Duration;
                       Since_Subscription : Duration)
    is
+      pragma Unreferenced (Since_Previous);
       use all type Rx.Rx_Event_Kinds;
    begin
       if Kind = On_Complete then
@@ -51,9 +55,23 @@ begin
 
    --  Sequential timing
    Sub :=
-     DirX.Observables.Directory_Entries (Target, Recursive => True)
+     Directory_Entries (Target, Recursive => True)
      & Examples.Hash'Access
      & Stopwatch (Inspect'Unrestricted_Access)
      & Subscribe;
+
+   --  Parallel hashing timing
+   Context := "Concurrent";
+   Sub :=
+     Directory_Entries (Target, Recursive => True)
+     & Examples.To_Hashed_Entry'Access
+     & Flat_Map (Observe_On (Rx.Schedulers.Computation)
+                 & Examples.RxHashed.Observables.Map (Examples.Hash'Access))
+     & Stopwatch (Inspect'Unrestricted_Access)
+     & Subscribe;
+
+   while Sub.Is_Subscribed loop
+      delay 0.1;
+   end loop;
 
 end DirX.Hash_Recursive;
