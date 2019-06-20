@@ -434,16 +434,30 @@ package body Rx.Tests is
       Subs :=
         Ints.Empty
         & Ints.Flat_Map (Ints.No_Op)
-        & Std.Images.Integers.Print
         & Subscribe_Checker (Name     => "flatmap empty master",
                              Do_Count => True, Ok_Count => 0);
 
       Subs :=
         Ints.From ((1, 2, 3))
         & Ints.Flat_Map (Limit (0))
-        & Std.Images.Integers.Print
-        & Subscribe_Checker (Name     => "flatmap empty subs",
+        & Subscribe_Checker (Name     => "flatmap empty subs pipeline",
                              Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Ints.From ((1, 2, 3))
+        & Ints.Flat_Map (Swallow'Access)
+        & Subscribe_Checker (Name     => "flatmap empty subs inflater",
+                             Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Ints.From ((1, 2, 3))
+        & Integer_To_String.Flat_Map (Ints.No_Op
+                                      & Std.Casts.To_String
+                                      & Strings.No_Op)
+        & Subscribe_Checker (Name     => "flatmap AA-AB-BB pipe",
+                             Do_First => True, Ok_First => "1",
+                             Do_Last  => True, Ok_Last  => "3",
+                             Do_Count => True, Ok_Count => 3);
 
       Subs :=
         Std.Numeric.Integers.Range_Slice (1, 4)
