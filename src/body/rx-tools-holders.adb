@@ -2,35 +2,12 @@ with Ada.Unchecked_Deallocation;
 
 with Gnat.IO; use Gnat.IO;
 
---  with Rx.Debug;
+with Rx.Debug;
 
 package body Rx.Tools.Holders is
 
-   Debug : constant Boolean := False;
-
-   -------------
-   -- Counter --
-   -------------
-
-   protected Counter is
-      procedure Add (I : Integer; Msg : String);
-   private
-      Count : Integer := 0;
-   end Counter;
-
-   protected body Counter is
-      procedure Add (I : Integer; Msg : String) is
-      begin
-         Count := Count + I;
-         Put_Line (Id & ": " & Msg & ": instances:" & Count'Img);
-      end Add;
-   end Counter;
-
    function "+" (I : Indef) return Definite is
    begin
-      if Debug then
-         Counter.Add (1, "alloc (+)");
-      end if;
       return (Controlled with Actual => new Indef'(I));
    end "+";
 
@@ -44,9 +21,6 @@ package body Rx.Tools.Holders is
          D.Finalize;
       end if;
       D.Actual := new Indef'(I);
-      if Debug then
-         Counter.Add (1, "alloc (hold)");
-      end if;
    end Hold;
 
    ----------------
@@ -68,9 +42,6 @@ package body Rx.Tools.Holders is
    overriding procedure Adjust (D : in out Definite) is
    begin
       if D.Actual /= null then
-         if Debug then
-            Counter.Add (1, "alloc (adjust)");
-         end if;
          D.Actual := new Indef'(D.Actual.all);
       end if;
    exception
@@ -88,15 +59,12 @@ package body Rx.Tools.Holders is
       procedure Free is new Ada.Unchecked_Deallocation (Indef, Indef_Access);
    begin
       if D.Actual /= null then
-         if Debug then
-            Counter.Add (-1, "free (finalize)");
-         end if;
          Free (D.Actual);
       end if;
    exception
-      when others =>
+      when E : others =>
          Put_Line (Id & ": alloc exception (finalize)");
---           Rx.Debug.Print (E);
+         Rx.Debug.Print (E);
          raise;
    end Finalize;
 

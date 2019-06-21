@@ -58,6 +58,17 @@ package body Rx.Tests is
 
    function Swallow (Unused : Rx.Rx_Integer) return Ints.Observable is (Ints.Empty);
 
+   type Emit_Range is new Ints.Operate.Operator with null record;
+
+   overriding procedure On_Next (This : in out Emit_Range; V : Rx_Integer) is
+   begin
+      for I in 1 .. V loop
+         This.Get_Observer.On_Next (I);
+      end loop;
+   end On_Next;
+
+   Int_Emitter : constant Emit_Range := (Ints.Operate.Operator with null record);
+
    function AAA (I : Rx_Integer) return Strings.Observable'Class is
      (Strings.Just (String'(1 .. Integer (I) => 'a')));
 
@@ -422,21 +433,45 @@ package body Rx.Tests is
 
       Subs :=
         Ints.Empty
-        & Ints.Flat_Map (Std.All_Positives'Access)
-        & Std.Images.Integers.Print
+        & Ints.Flat_Map (Ints.No_Op)
         & Subscribe_Checker (Name     => "flatmap empty master",
                              Do_Count => True, Ok_Count => 0);
 
       Subs :=
         Ints.From ((1, 2, 3))
-        & Ints.Flat_Map (Swallow'Access)
-        & Std.Images.Integers.Print
-        & Subscribe_Checker (Name     => "flatmap empty subs",
+        & Ints.Flat_Map (Limit (0))
+        & Subscribe_Checker (Name     => "flatmap empty subs pipeline",
                              Do_Count => True, Ok_Count => 0);
 
       Subs :=
+        Ints.From ((1, 2, 3))
+        & Ints.Flat_Map (Swallow'Access)
+        & Subscribe_Checker (Name     => "flatmap empty subs inflater",
+                             Do_Count => True, Ok_Count => 0);
+
+      Subs :=
+        Ints.From ((1, 2, 3))
+        & Integer_To_String.Flat_Map (Ints.No_Op
+                                      & Std.Casts.To_String
+                                      & Strings.No_Op)
+        & Subscribe_Checker (Name     => "flatmap AA-AB-BB pipe",
+                             Do_First => True, Ok_First => "1",
+                             Do_Last  => True, Ok_Last  => "3",
+                             Do_Count => True, Ok_Count => 3);
+
+      Subs :=
+        Ints.From ((1, 2, 3))
+        & Swallow'Access
+        & Subscribe_Checker (Name     => "flatmap empty implicit",
+                             Do_Count => True, Ok_Count => 0);
+
+      -----------------
+      -- Range_Slice --
+      -----------------
+
+      Subs :=
         Std.Numeric.Integers.Range_Slice (1, 4)
-        & Ints.Flat_Map (Std.All_Positives'Access)
+        & Ints.Flat_Map (Int_Emitter)
         & Subscribe_Checker (Name     => "flatmap immediate",
                              Do_Count => True, Ok_Count => 10);
 
@@ -455,11 +490,11 @@ package body Rx.Tests is
 
       Subs :=
         From ((1, 2, 3, 4, 5))
-        & Integer_To_String.Flat_Map (AAA'Access,
-                                      Observe_On (Schedulers.Immediate)
-                                      & Std.String_Succ'Access -- <-- implicit map
-                                      & No_Op)
-        & Subscribe_Checker (Name     => "flatmap int -> str w pipeline",
+        & Integer_To_String.Flat_Map (AAA'Access)     -- <-- Flat_Map from Inflater
+        & Flat_Map (Observe_On (Schedulers.Immediate) -- <-- Flat_Map from Pipeline
+                    & Std.String_Succ'Access -- <-- implicit map
+                    & No_Op)
+        & Subscribe_Checker (Name     => "flatmap AB inflater & pipeline",
                              Do_Count => True, Ok_Count => 5,
                              Do_First => True, Ok_First => "b",
                              Do_Last  => True, Ok_Last  => "aaaab");

@@ -3,6 +3,7 @@ private with Ada.Finalization;
 generic
    type Item (<>) is limited private;
    type Item_Access is access Item;
+   Debug_Name : String := "anon";
 package Rx.Tools.Shared_Data with Preelaborate is
 
    --  Your typical refcounted thread-safe access type
@@ -47,10 +48,9 @@ private
 
    protected type Safe_Item is
       procedure Apply (Elem : Item_Access; CB : not null access procedure (I : in out Item));
-      function  Get_Count return Natural;
       procedure Forget (Is_Last : out Boolean);
       procedure Adjust;
-      procedure Finalize;
+      procedure Finalize (Remain : out Natural); -- Says how many remain
    private
       Count : Natural := 1;
    end Safe_Item;

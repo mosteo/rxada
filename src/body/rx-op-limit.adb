@@ -19,13 +19,19 @@ package body Rx.Op.Limit is
 
    overriding procedure On_Complete  (This  : in out Operator) is
    begin
-      Debug.Trace ("limit on_complete");
       if not This.Completed then
+         Debug.Trace ("limit on_complete [completing]");
          This.Completed := True;
          This.Get_Observer.On_Complete ;
          This.Unsubscribe;
       else
-         raise Program_Error with "Doubly completed";
+         Debug.Trace ("limit on_complete [after completed]");
+         --  raise No_Longer_Subscribed;
+         --  Not really necessary to raise, since no more calls are expected.
+         --  This may happen e.g. with Just (V) & Limit (0)
+         --  Limit will complete on the single V and Just.On_Complete will
+         --    trigger this case.
+         --  This was discovered during tests with Flat_Map.
       end if;
    end On_Complete ;
 

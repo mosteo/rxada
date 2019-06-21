@@ -30,7 +30,7 @@ private
 
    type Dispatcher_Access is access all Dispatcher;
 
-   package Runnable_Holders is new Rx.Tools.Holders (Runnable'Class);
+   package Runnable_Holders is new Rx.Tools.Holders (Runnable'Class, "single.runnable'class");
    subtype Runnable_Def is Runnable_Holders.Definite;
 
    type Event_Id is new Long_Long_Integer;

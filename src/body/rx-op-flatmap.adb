@@ -4,7 +4,7 @@ with Rx.Impl.Preservers;
 with Rx.Op.Funnel;
 --  with Rx.Op.Map;
 --  with Rx.Op.No_Op;
---  with Rx.Src.Just;
+with Rx.Src.Just;
 with Rx.Tools.Shared_Data;
 
 package body Rx.Op.Flatmap is
@@ -12,7 +12,7 @@ package body Rx.Op.Flatmap is
  package Preserver is new Rx.Impl.Preservers (Transformer.Into);
 
    package RxFunnel is new Rx.Op.Funnel (Preserver);
---     package RxJust   is new Rx.Src.Just (Transformer.From);
+   package RxJust   is new Rx.Src.Just (Transformer.From);
 --     package RxMap    is new Rx.Op.Map (Transformer);
 --     package RxNoop   is new Rx.Op.No_Op (Preserver);
 
@@ -50,11 +50,19 @@ package body Rx.Op.Flatmap is
 
    type Controller is new Shared_Controllers.Proxy with null record;
 
-   type Front is new Transformer.Operator with record
-      Func    : Transformer.Actions.HInflater1;
+   type Front (Use_Chain : Boolean) is new Transformer.Operator with record
+      -- Status vars:
       Sub2nd  : Boolean := False;
       Control : Controller;
       Recurse : Boolean := False;
+
+      -- Secondary subscription generators:
+      case Use_Chain is
+         when True =>
+            Chain : Transformer.Into.Definite_Observables.Observable;
+         when False =>
+            Func  : Transformer.Actions.HInflater1;
+      end case;
    end record;
 
    overriding function Is_Subscribed (This : Front) return Boolean;
@@ -88,16 +96,31 @@ package body Rx.Op.Flatmap is
    -- Create --
    ------------
 
-   function Create (Func      : Transformer.Actions.TInflater1'Class;
+   function Create (Secondary : Transformer.Into.Observable'Class;
                     Recursive : Boolean := False)
                     return Transformer.Operator'Class
    is
    begin
       return Front'(Transformer.Operator with
-                    Func    => Transformer.Actions.Hold (Func),
-                    Sub2nd  => <>,
-                    Control => <>,
-                    Recurse => Recursive);
+                    Use_Chain => True,
+                    Chain     => Transformer.Into.Definite_Observables.From (Secondary),
+                    Func      => <>,
+                    Sub2nd    => <>,
+                    Control   => <>,
+                    Recurse   => Recursive);
+   end Create;
+
+   function Create (Func      : Transformer.Actions.TInflater1'Class;
+                    Recursive : Boolean := False)
+                    return Transformer.Operator'Class is
+   begin
+      return Front'(Transformer.Operator with
+                    Use_Chain => False,
+                    Chain     => <>,
+                    Func      => Transformer.Actions.Hold (Func),
+                    Sub2nd    => <>,
+                    Control   => <>,
+                    Recurse   => Recursive);
    end Create;
 
    -------------------
@@ -207,12 +230,30 @@ package body Rx.Op.Flatmap is
       Debug.Trace ("front on_next");
 
       if This.Is_Subscribed then
+         --  Track new subscription
+         This.Control.Apply (Add_Sub'Access);
+
          declare
-            Observable : Transformer.Into.Observable'Class :=
-                           This.Func.Cref.Evaluate (V);
-            -- Observable from value
+            function Get_Chain return Transformer.Into.Observable'Class is
+            begin
+               if This.Use_Chain then
+                  return This.Chain.To_Indef;
+                  --  A partial chain
+               else
+                  return This.Func.CRef.Evaluate (V);
+                  --  A complete observable chain
+               end if;
+            end Get_Chain;
+
+            --  The secondary chain to subscribe
+            Observable : Transformer.Into.Observable'Class := Get_Chain;
+            --  Expression function results in controlledness bug
          begin
-            This.Control.Apply (Add_Sub'Access);
+            --  Complete source when given partial Chain instead of Inflater
+            if This.Use_Chain then
+               Set_Parent (Observable, RxJust.Create (V));
+               --  Using special cross-type Set_Parent!
+            end if;
 
             if This.Recurse then
                declare

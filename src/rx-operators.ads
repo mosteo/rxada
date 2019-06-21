@@ -20,6 +20,13 @@ package Rx.Operators is
 
    subtype Operator Is Typed.Operator'Class;
 
+   procedure Diagnose (This : Into.Observable'Class);
+   --  Experimental dump of This chain
+   --  The chain is expected to be formed by
+   --    From.Operator'Class, (any amount)
+   --    Typed.Operator'Class,(one)
+   --    Into.Operator'Class, (any amount)
+
    --------------
    -- Counters --
    --------------
@@ -39,13 +46,15 @@ package Rx.Operators is
    function Flat_Map (Func : Typed.Actions.Inflater1)
                       return Typed.Operator'Class;
 
-   function Flat_Map (Func     : Typed.Actions.Inflater1;
-                      Pipeline : Into.Observable'Class) -- Operator in truth
+   function Flat_Map (Func : Typed.Actions.TInflater1'Class)
                       return Typed.Operator'Class;
-   --  Subscribes to Func'Result & Pipeline
-   --  This cannot be given as a single argument, alas, because any chain
-   --    will return in the end a Into.Operator'Class, which cannot be directly
-   --    applied to Func
+
+   function Flat_Map (Pipeline : Into.Observable'Class)
+                      return Typed.Operator'Class;
+   --  Subscribes to Just (V) & Pipeline
+   --  Pipeline must be of ...-AA-AA-AB-BB-BB-... for types to match at runtime
+   --  Pipeline must be made of all Operator'Class
+   --  See notes in Rx.Op.Flat_Map for more detail
 
    ------------
    -- Length --
@@ -85,7 +94,17 @@ package Rx.Operators is
                  renames Typed.Concatenate;
 
    function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable;
-   --  The Map operator alternative
+   --  Implicit Map
+
+   function "&" (Producer : From.Observable'Class;
+                 Consumer : Typed.Actions.Inflater1)
+                 return Into.Observable'Class;
+   --  Implicit Flat_Map
+
+   function "&" (Producer : From.Observable'Class;
+                 Consumer : Typed.Actions.TInflater1'Class)
+                 return Into.Observable'Class;
+   --  Implicit Flat_Map
 
    package Linkers is
 
@@ -97,6 +116,14 @@ package Rx.Operators is
       function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable
                     renames Operators."&";
 
+      function "&" (Producer : From.Observable'Class;
+                    Consumer : Typed.Actions.Inflater1)
+                    return Into.Observable'Class renames Operators."&";
+
+      function "&" (Producer : From.Observable'Class;
+                    Consumer : Typed.Actions.TInflater1'Class)
+                    return Into.Observable'Class renames Operators."&";
+
    end Linkers;
 
 private
@@ -104,15 +131,49 @@ private
    function Identity (Unused : Typed.From.Observer'Class) return Typed.Into.Observer'Class is
      (raise Program_Error with "identity unavailable in Transformer context");
 
-   package RxFlatMap is new Rx.Op.Flatmap (Typed, Identity, Typed.Broken_Identity);
+   procedure Set_Parent (This   : in out Into.Observable'Class;
+                         Parent :        From.Observable'Class);
+   --  Cross-type Concatenate: used to be able to supply AA-AA-AB-BB-BB chains
+   --  to Flat_Map. Thus, at some point in the upstream of This, an AB operator
+   --  must exist, with optional AA before it, that can observe givent Parent.
+   --  Here, we navigate upstream from This (all must be Operator'Class), and
+   --  finally set Parent as parent of the first upstream.
+   --  See also Diagnose, which does something similar (simpler) for diagnostics.
 
+   ---------------
+   -- RxFlatMap --
+   ---------------
+
+   package RxFlatMap is new Rx.Op.Flatmap (Typed,
+                                           Identity, Typed.Broken_Identity,
+                                           Set_Parent);
    function Flat_Map (Func : Typed.Actions.Inflater1)
                       return Typed.Operator'Class is
-     (RxFlatMap.Create (Func, Recursive => False));
+      (RxFlatMap.Create (Func, Recursive => False));
+   function Flat_Map (Func : Typed.Actions.TInflater1'Class)
+                      return Typed.Operator'Class is
+      (RxFlatMap.Create (Func, Recursive => False));
+   function Flat_Map (Pipeline : Into.Observable'Class)
+                      return Typed.Operator'Class is
+     (RxFlatMap.Create (Pipeline, Recursive => False));
+   function "&" (Producer : From.Observable'Class;
+                 Consumer : Typed.Actions.Inflater1)
+                 return Into.Observable'Class renames RxFlatMap."&";
+   function "&" (Producer : From.Observable'Class;
+                 Consumer : Typed.Actions.TInflater1'Class)
+                 return Into.Observable'Class renames RxFlatMap."&";
+
+   -----------
+   -- RxMap --
+   -----------
 
    package RxMap is new Rx.Op.Map (Typed);
    function Map (F : Typed.Actions.Func1) return Operator renames RxMap.Create;
    function "&" (L : From.Observable; R : Typed.Actions.Func1) return Into.Observable renames RxMap."&";
+
+   ------------
+   -- RxScan --
+   ------------
 
    package RxScan is new Rx.Op.Scan (Typed);
    function Scan (F         : Typed.Actions.Func2;

@@ -24,7 +24,7 @@ package Rx.Impl.Definite_Observables is
 
 private
 
-   package Obs_Holders is new Rx.Tools.Holders (Contracts.Observable'Class);
+   package Obs_Holders is new Rx.Tools.Holders (Contracts.Observable'Class, "definite_observable'class");
 
    type Observable is new Obs_Holders.Definite and Contracts.Observable with null record;
 

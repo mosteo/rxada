@@ -1,5 +1,3 @@
-with Rx.Tools.Holders;
-
 package body Rx.Observables is
 
    ------------
@@ -10,26 +8,6 @@ package body Rx.Observables is
    begin
       L.Append (V);
    end Append;
-
-   --------------
-   -- Flat_Map --
-   --------------
-
-   package Definite_Operators is new Tools.Holders (Operator);
-
-   type Inflater is new Operate.Transform.Actions.TInflater1 with record
-      Operator : Definite_Operators.Definite;
-   end record;
-
-   overriding function Evaluate (This : Inflater; V : Operate.T) return Operate.Observable is
-      (Just (V) & This.Operator.Get);
-
-   function Flat_Map (Pipeline  : Observable; Recursive : Boolean := False) return Operator
-   is
-   begin
-      return RxFlatMap.Create (Inflater'(Operator => Definite_Operators.Hold (Operator (Pipeline))),
-                               Recursive => Recursive);
-   end Flat_Map;
 
    --------------
    -- For_Each --
@@ -66,5 +44,16 @@ package body Rx.Observables is
          For_Each (E);
       end loop;
    end Iterate;
+
+   ----------------
+   -- Set_Parent --
+   ----------------
+
+   procedure Set_Parent (This   : in out Observable'Class;
+                         Parent :        Observable'Class)
+   is
+   begin
+      Operator'Class (This).Set_Parent (Parent);
+   end Set_Parent;
 
 end Rx.Observables;

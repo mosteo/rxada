@@ -49,7 +49,8 @@ private
    type Inner_Observer_Access is access Inner_Observer;
 
    package Safe_Observers is new Tools.Shared_Data (Inner_Observer,
-                                                    Inner_Observer_Access);
+                                                    Inner_Observer_Access,
+                                                    "shared_observer");
 
    type Observer is new Safe_Observers.Proxy and Typed.Contracts.Observer
    with null record;
