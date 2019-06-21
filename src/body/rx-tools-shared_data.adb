@@ -1,5 +1,7 @@
 with Ada.Unchecked_Deallocation;
 
+with Rx.Debug;
+
 package body Rx.Tools.Shared_Data is
 
    ----------
@@ -66,23 +68,15 @@ package body Rx.Tools.Shared_Data is
       ------------
 
       procedure Forget (Is_Last : out Boolean) is
+         New_Count : Natural;
       begin
          if Count > 0 then
-            Finalize;
-            Is_Last := Get_Count = 0;
+            Finalize (New_Count);
+            Is_Last := New_Count = 0;
          else
             raise Constraint_Error;
          end if;
       end Forget;
-
-      ---------------
-      -- Get_Count --
-      ---------------
-
-      function Get_Count return Natural is
-      begin
-         return Count;
-      end Get_Count;
 
       ------------
       -- Adjust --
@@ -91,15 +85,18 @@ package body Rx.Tools.Shared_Data is
       procedure Adjust is
       begin
          Count := Count + 1;
+         Debug.Trace (Debug_Name & " shared_data [safe.adjust]:" & Count'Img);
       end Adjust;
 
       --------------
       -- Finalize --
       --------------
 
-      procedure Finalize is
+      procedure Finalize (Remain : out Natural) is
       begin
-         Count := Count - 1;
+         Count  := Count - 1;
+         Remain := Count;
+         Debug.Trace (Debug_Name & " shared_data [safe.finalize]:" & Count'Img);
       end Finalize;
 
    end Safe_Item;
@@ -122,10 +119,12 @@ package body Rx.Tools.Shared_Data is
    overriding procedure Finalize (P : in out Proxy) is
       procedure Free is new Ada.Unchecked_Deallocation (Item, Item_Access);
       procedure Free is new Ada.Unchecked_Deallocation (Safe_Item, Safe_Access);
+
+      Remain : Natural;
    begin
       if P.Safe /= null then
-         P.Safe.Finalize;
-         if P.Safe.Get_Count = 0 then
+         P.Safe.Finalize (Remain);
+         if Remain = 0 then
             Free (P.Item);
             Free (P.Safe);
          end if;

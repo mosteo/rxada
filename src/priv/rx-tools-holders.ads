@@ -7,7 +7,7 @@ private with Ada.Finalization;
 
 generic
    type Indef (<>) is private;
-   Id : String := ""; -- Debug purposes only
+   Id : String := "anonymous holder"; -- Debug purposes only
 package Rx.Tools.Holders with Preelaborate is
 
    type Indef_Access is access Indef;

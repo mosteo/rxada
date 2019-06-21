@@ -28,16 +28,16 @@ package Rx.Actions.Typed with Preelaborate is
 
    --  Holders
 
-   package Func0_Holders is new Rx.Tools.Holders (TFunc0'Class);
+   package Func0_Holders is new Rx.Tools.Holders (TFunc0'Class, "func0");
    type HTFunc0 is new Func0_Holders.Definite with null record;
 
-   package Func1Str_Holders is new Rx.Tools.Holders (TFunc1Str'Class);
+   package Func1Str_Holders is new Rx.Tools.Holders (TFunc1Str'Class, "func1str");
    type HTFunc1Str is new Func1Str_Holders.Definite with null record;
 
-   package Filter1_Holders is new Rx.Tools.Holders (TFilter1'Class);
+   package Filter1_Holders is new Rx.Tools.Holders (TFilter1'Class, "filter1");
    type HTFilter1 is new Filter1_Holders.Definite with null record;
 
-   package Proc1_Holders is new Rx.Tools.Holders (TProc1'Class);
+   package Proc1_Holders is new Rx.Tools.Holders (TProc1'Class, "proc1");
    type HTProc1 is new Proc1_Holders.Definite with null record;
 
    --  Predefined actions

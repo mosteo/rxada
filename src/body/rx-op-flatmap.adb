@@ -104,6 +104,7 @@ package body Rx.Op.Flatmap is
       return Front'(Transformer.Operator with
                     Use_Chain => True,
                     Chain     => Transformer.Into.Definite_Observables.From (Secondary),
+                    Func      => <>,
                     Sub2nd    => <>,
                     Control   => <>,
                     Recurse   => Recursive);
@@ -115,6 +116,7 @@ package body Rx.Op.Flatmap is
    begin
       return Front'(Transformer.Operator with
                     Use_Chain => False,
+                    Chain     => <>,
                     Func      => Transformer.Actions.Hold (Func),
                     Sub2nd    => <>,
                     Control   => <>,
@@ -232,15 +234,25 @@ package body Rx.Op.Flatmap is
          This.Control.Apply (Add_Sub'Access);
 
          declare
-            Observable : Transformer.Into.Observable'Class :=
-                           (if This.Use_Chain
-                            then This.Chain.To_Indef
-                            else This.Func.Cref.Evaluate (V));
+            function Get_Chain return Transformer.Into.Observable'Class is
+            begin
+               if This.Use_Chain then
+                  return This.Chain.To_Indef;
+                  --  A partial chain
+               else
+                  return This.Func.CRef.Evaluate (V);
+                  --  A complete observable chain
+               end if;
+            end Get_Chain;
+
             --  The secondary chain to subscribe
+            Observable : Transformer.Into.Observable'Class := Get_Chain;
+            --  Expression function results in controlledness bug
          begin
             --  Complete source when given partial Chain instead of Inflater
             if This.Use_Chain then
                Set_Parent (Observable, RxJust.Create (V));
+               --  Using special cross-type Set_Parent!
             end if;
 
             if This.Recurse then

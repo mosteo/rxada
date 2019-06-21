@@ -33,6 +33,6 @@ package Rx.Impl.Preservers with Preelaborate is
    package Linkers renames Transform.Linkers;
    --  Useable package
 
-   package Holders is new Rx.Tools.Holders (Operator'Class, "operator");
+   package Holders is new Rx.Tools.Holders (Operator'Class, "operator'class");
 
 end Rx.Impl.Preservers;
