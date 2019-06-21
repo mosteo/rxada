@@ -5,6 +5,7 @@ with DirX.Examples;
 with DirX.Observables;
 
 with Rx.Schedulers;
+with Rx.Std;
 with Rx.Subscriptions;
 
 with System.Multiprocessors;
@@ -43,7 +44,7 @@ procedure DirX.Hash_Recursive is
       end if;
    end Inspect;
 
-   Sub : Rx.Subscriptions.Subscription with Unreferenced;
+   Sub : Rx.Subscriptions.Subscription;
 begin
    Put_Line ("Number of CPUs:" & System.Multiprocessors.Number_Of_CPUs'Img);
 
@@ -58,17 +59,31 @@ begin
      Directory_Entries (Target, Recursive => True)
      & Examples.Hash'Access
      & Stopwatch (Inspect'Unrestricted_Access)
+     & Rx.Std.String_To_Integer.Counters.Count
      & Subscribe;
 
    --  Parallel hashing timing
    Context := "Concurrent";
    Sub :=
      Directory_Entries (Target, Recursive => True)
-     & Examples.To_Hashed_Entry'Access
      & Flat_Map (Observe_On (Rx.Schedulers.Computation)
-                 & Examples.RxHashed.Observables.Map (Examples.Hash'Access))
+                 & Examples.Hash'Access)
      & Stopwatch (Inspect'Unrestricted_Access)
      & Subscribe;
+
+   while Sub.Is_Subscribed loop
+      delay 0.1;
+   end loop;
+
+   --  Parallel enumeration and hashing
+   Sub :=
+     Directory_Entries (Target, Recursive => False)
+     & Expand (Observe_On (Rx.Schedulers.Computation)
+               & Dirx.Observables.Observe'Access)
+     & Flat_Map (Observe_On (Rx.Schedulers.Computation)
+                 & Examples.Hash'Access)
+     & Stopwatch (Inspect'Unrestricted_Access)
+     & Subscribe; -- (On_Next => Examples.Print_Hash'Access);
 
    while Sub.Is_Subscribed loop
       delay 0.1;

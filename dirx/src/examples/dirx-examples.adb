@@ -32,22 +32,6 @@ package body DirX.Examples is
    -- Hash --
    ----------
 
-   function Hash (This : Hashed_Entry) return Hashed_Entry is
-   begin
-      if This.Is_File then
-         return Hashed_Entry'(Name_Len => This.Name_Len,
-                              Is_File  => True,
-                              Name     => This.Name,
-                              Hash     => Hash (This.Name));
-      else
-         return This;
-      end if;
-   end Hash;
-
-   ----------
-   -- Hash --
-   ----------
-
    function Hash (This : DirX.Directory_Entry) return Hashed_Entry is
 
 
@@ -80,25 +64,5 @@ package body DirX.Examples is
          Put_Line (GNAT.SHA512.Message_Digest'(others => ' ') & "  " & This.Name);
       end if;
    end Print_Hash;
-
-   ---------------------
-   -- To_Hashed_Entry --
-   ---------------------
-
-   function To_Hashed_Entry (This : DirX.Directory_Entry) return Hashed_Entry is
-      use Ada.Directories;
-      Filename : constant String := Full_Name (This.Get_Entry);
-   begin
-       if Kind (Filename) = Directory then
-         return Hashed_Entry'(Name_Len => Filename'Length,
-                              Is_File  => False,
-                              Name     => Filename);
-      else
-         return Hashed_Entry'(Name_Len => Filename'Length,
-                              Is_File  => True,
-                              Name     => Filename,
-                              Hash     => <>);
-      end if;
-   end To_Hashed_Entry;
 
 end DirX.Examples;

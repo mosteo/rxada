@@ -28,12 +28,6 @@ package DirX.Examples is
    -- Subprograms --
    -----------------
 
-   function To_Hashed_Entry (This : DirX.Directory_Entry) return Hashed_Entry;
-   --  Convert without computing the hash!
-
-   function Hash (This : Hashed_Entry) return Hashed_Entry;
-   --  A hashed entry without the hash already computed, obviously
-
    function Hash (This : DirX.Directory_Entry) return Hashed_Entry;
 
    procedure Print_Hash (This : Hashed_Entry);
