@@ -7,7 +7,8 @@ project DirX_Examples is
    for Exec_Dir use "bin";
 
    for Main use ("dirx-ls.adb",   -- Regular ls, only files
-                 "dirx-lsr.adb"); -- Recursive ls, only files
+                 "dirx-lsr.adb",  -- Recursive ls, only files
+                 "dirx-hash_recursive"); -- For 2019 special issue
 
    package Builder is
       for Switches ("ada") use ("-j0", "-g");

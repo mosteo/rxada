@@ -8,36 +8,16 @@ package DirX.Observables is
 
    function Directory_Entries
      (Directory : Path;
-      Kind      : Name_Kinds := Full_Name;
-      Pattern   : String := "*";
-      Filter    : Ada.Directories.Filter_Type := (others => True))
+      Recursive : Boolean)
       return      Entry_Observable;
-   --  Same parameters as Ada.Directories.Start_Search
-
-   function Directory_Entries_Recursive
-     (Directory : Path;
-      Kind      : Name_Kinds := Full_Name;
-      Pattern   : String := "*";
-      Filter    : Ada.Directories.Filter_Type := (others => True))
-      return      Entry_Observable;
+   --  Enumerate entries in a given path.
+   --  Optionally, enter into found directories and emit their contents too
 
    function Observe (This : Directory_Entry) return Entry_Observable;
-   --  For use in Flat_Map: turns an entry into an observable.
-   --  If entry is Directory, it emits itself and all its *immediate* children
-   --  Otherwise it is Just (This)
+   --  For use in Flat_Map: turns a directory entry into an observable.
+   --  If entry is Directory, it emits all its *immediate* children
+   --  Otherwise, nothing is emitted
 
-   function Observe_Recursive (This : Directory_Entry) return Entry_Observable;
-   --  As Observe, but recursive
-
-private
-
-   function Observe_Common (This    : Directory_Entry;
-                            Recurse : Boolean) return Entry_Observable;
-
-   function Observe (This : Directory_Entry) return Entry_Observable is
-      (Observe_Common (This, Recurse => False));
-
-   function Observe_Recursive (This : Directory_Entry) return Entry_Observable
-     is (Observe_Common (This, Recurse => True));
+   --  TODO: filters for file kind, file pattern, but do it in DirX root
 
 end DirX.Observables;
