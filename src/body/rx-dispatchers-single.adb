@@ -8,12 +8,7 @@ package body Rx.Dispatchers.Single is
    -- Is_Idle --
    -------------
 
-   function Is_Idle (This : in out Dispatcher) return Boolean is
-      Idle : Boolean;
-   begin
-      This.Queue.Is_Idle (Idle);
-      return Idle;
-   end Is_Idle;
+   function Is_Idle (This : in out Dispatcher) return Boolean is (This.Idle);
 
    --------------
    -- Schedule --
@@ -56,16 +51,9 @@ package body Rx.Dispatchers.Single is
                   accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
                      Queue.Insert ((Seq, Time, +R));
                   end Enqueue;
+                  Parent.Length := Natural (Queue.Length);
                   Debug.Trace ("queuer [enqueue]:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                   Seq := Seq + 1;
-               or
-                  accept Is_Idle (Idle : out Boolean) do
-                     Idle := True;
-                  end Is_Idle;
-               or
-                  accept Length  (Len  : out Natural) do
-                     Len := Natural (Queue.Length);
-                  end Length;
                or
                   accept Reap;
                   Await := False;
@@ -86,6 +74,7 @@ package body Rx.Dispatchers.Single is
                      select
                         Parent.Thread.Run (Ev.Code);
                         Await := True;
+                        Parent.Length := Natural (Queue.Length);
                         Debug.Trace ("queuer [dequeued] delta:" & Duration'Image (Ev.Time - Clock) & " id:"
                                      & Ev.Id'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                      else
@@ -106,16 +95,9 @@ package body Rx.Dispatchers.Single is
                         accept Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time) do
                            Queue.Insert ((Seq, Time, +R));
                         end Enqueue;
+                        Parent.Length := Natural (Queue.Length);
                         Debug.Trace ("queuer [enqueue]:" & Seq'Img & " (" & Queue.Length'Img & ") " & Addr & Parent.Addr_Img);
                         Seq := Seq + 1;
-                     or
-                        accept Is_Idle (Idle : out Boolean) do
-                           Idle := Ev.Time > Clock;
-                        end Is_Idle;
-                     or
-                        accept Length  (Len  : out Natural) do
-                           Len := Natural (Queue.Length);
-                        end Length;
                      or
                         delay until Min (Ev.Time, Clock + 1.0);
                         Debug.Trace ("queuer [break delta:" & Duration'Image (Ev.Time - Clock)
@@ -147,8 +129,10 @@ package body Rx.Dispatchers.Single is
             RW : Runnable_Def;
          begin
             Debug.Trace ("runner [ready] " & Addr & Parent.Addr_Img);
+            Parent.Idle := True;
             select
                accept Run (R : Runnable_Def) do
+                  Parent.Idle := False;
                   RW := R;
                end Run;
             or

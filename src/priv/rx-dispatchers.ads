@@ -13,6 +13,9 @@ package Rx.Dispatchers is
 
    type Runnable is interface;
 
+   --  Not made explicit, but implementors of this class are (and must be)
+   --  synchronized
+
    procedure Run (This : Runnable) is abstract;
 
    --  Schedule a code to be run at a certain time, in a certain scheduler (thread)

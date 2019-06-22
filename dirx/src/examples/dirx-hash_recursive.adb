@@ -76,7 +76,7 @@ begin
    --  Parallel enumeration and hashing
    Sub :=
      Directory_Entries (Target, Recursive => False)
-     & Expand (Observe_On (Rx.Schedulers.Computation)
+     & Expand (Observe_On (Rx.Schedulers.IO)
                & Dirx.Observables.Observe'Access)
      & Flat_Map (Observe_On (Rx.Schedulers.Computation)
                  & Examples.Hash'Access)

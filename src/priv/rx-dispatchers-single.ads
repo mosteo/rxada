@@ -16,6 +16,7 @@ package Rx.Dispatchers.Single is
                        What  : Runnable'Class;
                        Time  : Ada.Calendar.Time := Ada.Calendar.Clock);
 
+   not overriding
    function Is_Idle (This : in out Dispatcher) return Boolean;
    --  True if it is not running (but may have queued jobs for the future)
 
@@ -58,8 +59,6 @@ private
 
    task type Queuer (Parent : access Dispatcher) is
       entry Enqueue (R : Runnable'Class; Time : Ada.Calendar.Time);
-      entry Is_Idle (Idle : out Boolean);
-      entry Length  (Len  : out Natural);
       entry Reap; -- Used by Runner to notify runnable completion
    end Queuer;
 
@@ -71,6 +70,8 @@ private
      ("#" & System.Address_Image (This'Address));
 
    type Dispatcher is limited new Dispatchers.Dispatcher with record
+      Idle    : aliased Boolean := True with Atomic;
+      Length  : aliased Natural := 0    with Atomic;
       Queue   : Queuer (Dispatcher'Access);
       Thread  : Runner (Dispatcher'Access);
    end record;
