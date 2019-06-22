@@ -5,7 +5,6 @@ with DirX.Examples;
 with DirX.Observables;
 
 with Rx.Schedulers;
-with Rx.Std;
 with Rx.Subscriptions;
 
 with System.Multiprocessors;
@@ -59,7 +58,6 @@ begin
      Directory_Entries (Target, Recursive => True)
      & Examples.Hash'Access
      & Stopwatch (Inspect'Unrestricted_Access)
-     & Rx.Std.String_To_Integer.Counters.Count
      & Subscribe;
 
    --  Parallel hashing timing
