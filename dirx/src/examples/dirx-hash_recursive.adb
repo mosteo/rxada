@@ -21,7 +21,7 @@ procedure DirX.Hash_Recursive is
                               then "."
                               else Argument (1));
 
-   Context : String (1 .. 10) := "Sequential";
+   Context : String (1 .. 3) := "1-1";
 
    -------------
    -- Inspect --
@@ -61,7 +61,7 @@ begin
      & Subscribe;
 
    --  Parallel hashing timing
-   Context := "Concurrent";
+   Context := "1-N";
    Sub :=
      Directory_Entries (Target, Recursive => True)
      & Flat_Map (Observe_On (Rx.Schedulers.Computation)
@@ -74,6 +74,7 @@ begin
    end loop;
 
    --  Parallel enumeration and hashing
+   Context := "M-N";
    Sub :=
      Directory_Entries (Target, Recursive => False)
      & Expand (Observe_On (Rx.Schedulers.IO)
