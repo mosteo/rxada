@@ -46,7 +46,8 @@ package Rx.Schedulers is
    --  Default Schedulers  --
    --------------------------
 
-   function IO 		return Scheduler;
+   function Input_Output return Scheduler;
+   function IO 		 return Scheduler renames Input_Output; -- Rx usual name
    --  This is backed by a thread pool that always returns an idle thread
    --  so it can grow unboundedly
 
@@ -105,7 +106,7 @@ private
    function Immediate      return Scheduler is (To_Scheduler (Immediate_Impl'Access));
 
    function IO_Impl return Thread    is (Thread (Pool_IO.Find_Idle));
-   function IO      return Scheduler is (To_Scheduler (IO_Impl'Access));
+   function Input_Output return Scheduler is (To_Scheduler (IO_Impl'Access));
 
    function Computation_Impl return Thread    is (Thread (Pool_CPU.Get));
    function Computation      return Scheduler is (To_Scheduler (Computation_Impl'Access));

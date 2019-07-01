@@ -47,11 +47,11 @@ procedure DirX.Hash_Recursive is
 begin
    Put_Line ("Number of CPUs:" & System.Multiprocessors.Number_Of_CPUs'Img);
 
-   --  Sequential listing & hashing of files
---     Sub :=
---       DirX.Observables.Directory_Entries (Target, Recursive => True)
---       & Examples.Hash'Access
---       & Subscribe (On_Next => Examples.Print_Hash'Access);
+   --  Sequential listing & hashing of files, with printing
+   Sub :=
+     Directory_Entries (Target, Recursive => True)
+     & Examples.Hash'Access
+     & Subscribe (On_Next => Examples.Print_Hash'Access);
 
    --  Sequential timing
    Sub :=
