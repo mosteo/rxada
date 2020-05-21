@@ -1,8 +1,14 @@
 [![Run Status](https://api.shippable.com/projects/5cab2d66b875100006518dd4/badge?branch=master)](https://app.shippable.com/github/mosteo/rxada/dashboard) 
+[![Alire indexed](https://img.shields.io/badge/alire-0.1.0-blue.svg)](https://alire.ada.dev)
+[![LGPL licensed](https://img.shields.io/badge/license-LGPL%203.0-blue.svg)](./LICENSE)
+
 
 # README #
 
 RxAda, an experiment on porting [ReactiveX](http://reactivex.io/) to Ada. 
+
+[Article](https://authors.elsevier.com/a/1b5sx4weOvebZl) at the Journal of
+Systems Architecture with details about internals and package organization.
 
 Quick example. Suppose a Java 8 case where we print the length of a string:
 
