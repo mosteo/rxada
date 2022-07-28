@@ -1,4 +1,3 @@
-with Rx.Src;
 with Rx.Src.Create;
 
 package body Rx.Src.Just is
