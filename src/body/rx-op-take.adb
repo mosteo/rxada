@@ -1,5 +1,3 @@
-with Rx.Subscriptions;
-
 package body Rx.Op.Take is
 
    subtype Parent is Operate.Operator;

@@ -1,5 +1,4 @@
 with Rx.Debug;
-with Rx.Subscriptions;
 
 package body Rx.Op.Limit is
 

@@ -1,7 +1,6 @@
 with Rx.Debug;
 with Rx.Tools.Holders;
 with Rx.Src.Create;
-with Rx.Subscriptions;
 
 package body Rx.Src.From is
 
