@@ -1,6 +1,5 @@
 with Rx.Debug;
 --  with Rx.Debug.Observers;
-with Rx.Schedulers;
 with Rx.Std; use Rx.Std;
 with Rx.Subscriptions;
 

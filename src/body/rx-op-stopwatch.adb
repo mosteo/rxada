@@ -2,7 +2,6 @@ with Ada.Calendar; use Ada.Calendar;
 
 with Rx.Debug;
 with Rx.Errors;
-with Rx.Tools.Semaphores;
 
 package body Rx.Op.Stopwatch is
 
