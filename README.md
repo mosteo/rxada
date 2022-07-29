@@ -1,4 +1,4 @@
-[![Run Status](https://api.shippable.com/projects/5cab2d66b875100006518dd4/badge?branch=master)](https://app.shippable.com/github/mosteo/rxada/dashboard) 
+[![Alire CI](https://img.shields.io/endpoint?url=https://alire-crate-ci.ada.dev/badges/rxada.json)
 [![Alire indexed](https://img.shields.io/badge/alire-0.1.0-blue.svg)](https://alire.ada.dev)
 [![LGPL licensed](https://img.shields.io/badge/license-LGPL%203.0-blue.svg)](./LICENSE)
 
