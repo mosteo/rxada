@@ -1,5 +1,4 @@
 with Rx.Debug;
-with Rx.Errors;
 with Rx.Impl.Shared_Observer;
 with Rx.Op.Serialize;
 

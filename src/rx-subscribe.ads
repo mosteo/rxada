@@ -2,8 +2,6 @@ with Rx.Actions;
 with Rx.Errors;
 with Rx.Impl.Typed;
 
-private with Rx.Subscriptions;
-
 generic
    with package Typed is new Rx.Impl.Typed (<>);
 package Rx.Subscribe is

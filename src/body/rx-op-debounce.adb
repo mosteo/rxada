@@ -4,7 +4,6 @@ with Rx.Debug;
 with Rx.Errors;
 with Rx.Tools.Holders;
 with Rx.Impl.Events;
-with Rx.Subscriptions;
 
 package body Rx.Op.Debounce is
 

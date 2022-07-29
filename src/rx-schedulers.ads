@@ -87,7 +87,7 @@ private
 
    function To_Scheduler (This : aliased in out Pool'Class) return Scheduler is
      (Scheduler'(Allocator => null,
-                 Pool      => This'Access));
+                 Pool      => This'Unchecked_Access));
 
    function Get_Thread (This : Scheduler) return Thread is
      (if This.Allocator /= null then This.Allocator.all

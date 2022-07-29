@@ -4,7 +4,6 @@ with Rx.Debug;
 with Rx.Dispatchers;
 with Rx.Impl.Shared_Observer;
 with Rx.Src.Create;
-with Rx.Subscriptions;
 
 package body Rx.Src.Interval is
 

@@ -1,6 +1,5 @@
 with Rx.Debug;
 with Rx.Impl.Events;
-with Rx.Subscriptions;
 
 package body Rx.Dispatchers is
 

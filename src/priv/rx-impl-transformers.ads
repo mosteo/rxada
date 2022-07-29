@@ -1,7 +1,6 @@
 with Rx.Actions.Transform;
 with Rx.Errors;
 with Rx.Impl.Links;
-with Rx.Subscriptions;
 with Rx.Impl.Typed;
 
 generic
