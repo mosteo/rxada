@@ -1,0 +1,27 @@
+name = "examples"
+description = "Examples of using RxAda"
+version = "0.1.0"
+
+authors = ["Alejandro R. Mosteo"]
+maintainers = ["Alejandro R. Mosteo <alejandro@mosteo.com>"]
+maintainers-logins = ["mosteo"]
+licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
+website = ""
+tags = []
+
+executables = [
+    "rx-devel-main", 
+    "rx-examples-advanced", 
+    "rx-examples-basic",
+    "rx-examples-minimal",
+    "rx-examples-misc",
+    "rx-examples-tests",
+    "rx-examples-threading"
+               ]
+project-files = ["rxada_examples.gpr"]
+
+[[depends-on]]
+rxada = "~0.1.1"
+
+[[pins]]
+rxada = { path='..' }
